@@ -16,7 +16,7 @@ function Verification() {
          <Link to= "/">
             <button type="submit" className="btn-submit">Submit</button>
         </Link>
-        <p className="card-text">Code was sent to this email:example@exampl.com </p>
+        <p className="card-text">Code was sent to this email:example@example.com </p>
       </div>
     </div>
   );
