@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./Home";
 import Login from "./Login";
+import SignUp from "./SignUp";
 import Verification from "./Verification";
 import Admin from "./Admin";
 import ManageMovies from "./ManageMovies";
@@ -15,6 +16,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/manage-movies" element={<ManageMovies />} />
