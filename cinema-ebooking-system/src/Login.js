@@ -17,7 +17,7 @@ function Login() {
           window.alert("Ensure email and password are input");
         } else { // all is good
             // submit to database
-            navigate('/');
+            navigate('/loggedin');
             
         }
 
