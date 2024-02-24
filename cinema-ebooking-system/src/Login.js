@@ -21,7 +21,7 @@ function Login() {
               <label>Password:</label>
               <input type="password" className="form-control" />
             </div>
-            <Link to= "/">
+            <Link to="/">
               <button type="submit" className="btn btn-primary">Login</button>
             </Link>
           </form>
