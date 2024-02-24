@@ -12,7 +12,9 @@ function ManageMovies() {
           <h2>Manage Movies</h2>
         </div>
         <div className="card-body">
-        
+        <Link to="/admin/manage-movies/manage-existing-movies" className="mainButton">Manage Existing Movies</Link>
+        <Link to="/admin/manage-movies/add-movie" className="mainButton">+ Add Movie</Link>
+
         </div>
 
       </div>

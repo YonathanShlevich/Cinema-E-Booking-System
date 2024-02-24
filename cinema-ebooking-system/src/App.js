@@ -9,6 +9,7 @@ import ManageUsers from "./ManageUsers";
 import ManagePromos from "./ManagePromos";
 import AddMovie from "./AddMovie";
 import AddPromo from "./AddPromo";
+import ManageExistingMovies from "./ManageExistingMovies";
 
 function App() {
   return (
@@ -23,7 +24,9 @@ function App() {
         <Route path="/admin/manage-users" element={<ManageUsers />} />
         <Route path="/admin/manage-promos" element={<ManagePromos />} />
         <Route path="/admin/manage-movies/add-movie" element={<AddMovie />} />
+        <Route path="/admin/manage-movies/manage-existing-movies" element={<ManageExistingMovies />} />
         <Route path="/admin/manage-promos/add-promo" element={<AddPromo />} />
+
 
       </Routes>
     </BrowserRouter>

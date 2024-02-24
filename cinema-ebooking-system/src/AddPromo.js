@@ -3,6 +3,25 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Admin.css';
 
 function AddPromo() {
+
+    const navigate = useNavigate();
+
+    const handleSubmit = (e) => {
+        
+        e.preventDefault();
+    
+        let code = document.getElementById("code");
+        let discount = document.getElementById("discount");
+
+        if (discount.value === "" || code.value === "") {
+          window.alert("Ensure code and discount are input");
+        } else { // all is good
+            // submit to database
+            navigate('/admin/manage-promos');
+            
+        }
+
+    }
   return (
 
     <div>
@@ -12,7 +31,7 @@ function AddPromo() {
           <h2>Add Promo</h2>
         </div>
         <div className="card-body">
-            <form id="add-promo-form" onSubmit={submitHandler}>
+            <form id="add-promo-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Promo Code:</label>
               <input id="code" type="text" className="form-control" />
