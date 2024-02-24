@@ -1,8 +1,48 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './SignUp.css';
 
 function SignUp() {
+
+    const navigate = useNavigate();
+
+    const handleSubmit = (e) => {
+        
+        e.preventDefault();
+    
+        let name = document.getElementById("name");
+        let email = document.getElementById("email");
+        let password = document.getElementById("password");
+        let confirmPass = document.getElementById("confirmPass");
+        let phoneNum = document.getElementById("tel");
+
+        let cardType = document.getElementById("cardType");
+        let exp = document.getElementById("exp");
+        let cardNumber = document.getElementById("cardNumber");
+        let billingAddress = document.getElementById("billingAddress");
+        let billingCity = document.getElementById("billingCity");
+        let billingState = document.getElementById("billingState");
+        let billingZip = document.getElementById("billingZip");
+    
+        let homeAddress = document.getElementById("homeAddress");
+        let homeCity = document.getElementById("homeCity");
+        let homeState = document.getElementById("homeState");
+        let homeZip = document.getElementById("homeZip");
+
+
+
+        if (name.value === "" || phoneNum.value === "" || email.value === "" 
+            || password.value === "" || confirmPass.value === "") {
+          window.alert("Ensure you input a value in all fields marked *");
+        } else { // all is good
+            // submit to database
+            navigate('/verification');
+            
+        }
+
+    }
+
+    
   return (
 
     <div>
@@ -12,31 +52,31 @@ function SignUp() {
           <h2>Sign Up</h2>
         </div>
         <div className="card-body">
-          <form>
+          <form action="" id="signUpForm" onSubmit={handleSubmit}>
             <div className="form-group">
               <label>*Name:</label>
-              <input type="text" className="form-control" />
+              <input type="text" className="form-control" id="name"/>
             </div>
             <div className="form-group">
               <label>*Phone Number: (Format: 123-456-7890)</label>
-              <input type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder='123-456-7890'/>
+              <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder='123-456-7890'/>
             </div>
             <div className="form-group">
               <label>*Email:</label>
-              <input type="email" className="form-control" />
+              <input id="email" type="email" className="form-control" />
             </div>
             <div className="form-group">
               <label>*Password:</label>
-              <input type="password" className="form-control" />
+              <input id="password" type="password" className="form-control" />
             </div>
             <div className="form-group">
               <label>*Confirm Password:</label>
-              <input type="password" className="form-control" />
+              <input id="confirmPass" type="password" className="form-control" />
             </div>
             <p>Optional - Card Information</p>
             <div className="form-group">
               <label>Card Type:</label>
-              <select className="form-control">
+              <select id="cardType" className="form-control">
                 <option selected></option>
                 <option value="visa">Visa</option>
                 <option value="master">Master Card</option>
@@ -45,23 +85,23 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>Expiration Date:</label>
-              <input type="month" className="form-control" />
+              <input id="exp" type="month" className="form-control" />
             </div>
             <div className="form-group">
               <label>Card Number:</label>
-              <input type="number" min="0" className="form-control" />
+              <input id="cardNumber" type="number" min="0" className="form-control" />
             </div>
             <div className="form-group">
               <label>Billing Address:</label>
-              <input type="text" className="form-control" />
+              <input id="billingAddress" type="text" className="form-control" />
             </div>
             <div className="form-group">
               <label>City:</label>
-              <input type="text" className="form-control" />
+              <input id="billingCity" type="text" className="form-control" />
             </div>
             <div className="form-group">
               <label>State:</label>
-              <select className='form-control'>
+              <select id="billingState" className='form-control'>
                 <option selected></option>
                 <option value="AL">AL</option>
                 <option value="AK">AK</option>
@@ -117,19 +157,19 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>Zip:</label>
-              <input type="number" min="0" className="form-control" />
+              <input id="billingZip" type="number" min="0" className="form-control" />
             </div>
-            <div className="form-group">
+            <div  className="form-group">
               <label>Home Address:</label>
-              <input type="text" className="form-control" />
+              <input id="homeAddress" type="text" className="form-control" />
             </div>
-            <div className="form-group">
+            <div  className="form-group">
               <label>City:</label>
-              <input type="text" className="form-control" />
+              <input id="homeCity" type="text" className="form-control" />
             </div>
             <div className="form-group">
               <label>State:</label>
-              <select className='form-control'>
+              <select id="homeState" className='form-control'>
                 <option selected></option>
                 <option value="AL">AL</option>
                 <option value="AK">AK</option>
@@ -185,7 +225,7 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>Zip:</label>
-              <input type="number" min="0" className="form-control" />
+              <input id="homeZip" type="number" min="0" className="form-control" />
             </div>
 
         
