@@ -14,7 +14,7 @@ function Login() {
         <div className="card-body">
           <form>
             <div className="form-group">
-              <label>Username:</label>
+              <label>Email:</label>
               <input type="text" className="form-control" />
             </div>
             <div className="form-group">
