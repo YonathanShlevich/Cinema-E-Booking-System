@@ -10,6 +10,7 @@ function AddMovie() {
     const handleSubmit = (e) => {
         
         e.preventDefault();
+
     
         let title = document.getElementById("title");
         let cast = document.getElementById("cast");
