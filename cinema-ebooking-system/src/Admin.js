@@ -12,16 +12,9 @@ function Admin() {
           <h2>Admin Home</h2>
         </div>
         <div className="card-body">
-        <Link to="/" className="backbutton">Manage Movies</Link>
-       
-        </div>
-        <div className="card-body">
-        <Link to="/" className="manageMovies">Manage Movies</Link>
-
-        </div>
-        <div className="card-body">
-        <Link to="/" className="manageMovies">Manage Movies</Link>
-
+        <Link to="/admin/manage-movies" className="mainButton">Manage Movies</Link>
+        <Link to="/admin/manage-users" className="mainButton">Manage Users</Link>
+        <Link to="/admin/manage-promos" className="mainButton">Manage Promos</Link>
         </div>
 
       </div>

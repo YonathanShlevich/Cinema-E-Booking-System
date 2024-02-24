@@ -15,6 +15,7 @@
   
   .card-body {
     padding: 20px;
+   
   }
   
   .form-group {
@@ -55,5 +56,26 @@
   
   .backbutton:hover {
     text-decoration: underline;
+  }
+
+  .mainButton {
+    display: block;
+    margin: 20px;
+    align-content: center;
+    text-decoration: none;
+    color: gray;
+    font-size: 16px;
+  }
+
+  .mainButton:hover{
+    color: red;
+  }
+
+  .updateButton {
+    margin: 5px;
+    align-content: center;
+    text-decoration: none;
+    color: gray;
+    font-size: 12px;
   }
   
