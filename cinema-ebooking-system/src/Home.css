@@ -1,0 +1,55 @@
+nav  {
+  
+    background-color: #3c3c3c;
+    padding-bottom: 0.5px;
+    display: flex;
+  
+  }
+
+#btnlogin {
+
+    margin-top: 1%;
+    margin-bottom: 1%;
+    padding: 10px 24px;
+    margin-right: 19%;
+    margin-left: 1%;
+
+}
+
+#searchbar {
+
+    padding: 10px 15%;
+    margin-right: 2%;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    
+    
+}
+
+.movie-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    max-height: 500px; /* Adjust height as needed */
+    overflow-y: auto;
+  }
+  
+  
+  .movie-item {
+    width: 200px; /* Adjust as needed */
+    margin: 10px;
+    text-align: center;
+  }
+  
+  .movie-item img {
+    width: 200px; /* Set the width */
+    height: 300px; /* Set the height */
+    object-fit: cover; /* Maintain aspect ratio and cover the container */
+  }
+  
+  
+  .movie-item h3 {
+    margin-top: 5px;
+  }
+  

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
-import './Home.css';
+import './HomeLoggedIn.css';
 
 const Home = () => {
+
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -29,9 +30,16 @@ const Home = () => {
   return (
     <div className="home">
       <nav>
-          <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+      <div className="dropdown">
+          <button className="dropbtn">Account</button>
+          <div className="dropdown-content">
+            <Link to="/profile">View Profile</Link>
+            <Link to="/">Logout</Link>
+         </div>
+        </div>
         <input type="text" id="searchbar" placeholder="Search for movies..." />
         <button> +Filter </button>
+        <button id='btnbook'> <Link to='/bookticket'>Book Ticket</Link></button>
       </nav>
   
       <h1>Now Showing</h1>

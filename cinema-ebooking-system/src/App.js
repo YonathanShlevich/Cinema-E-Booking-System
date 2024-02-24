@@ -10,6 +10,9 @@ import ManagePromos from "./ManagePromos";
 import AddMovie from "./AddMovie";
 import AddPromo from "./AddPromo";
 import ManageExistingMovies from "./ManageExistingMovies";
+import ForgotPassword from "./ForgetPassword";
+import HomeLoggedIn from "./HomeLoggedIn";
+import BookTicket from "./BookTicket";
 
 function App() {
   return (
@@ -19,6 +22,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/verification" element={<Verification />} />
+
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/manage-movies" element={<ManageMovies />} />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
@@ -28,6 +32,10 @@ function App() {
         <Route path="/admin/manage-promos/add-promo" element={<AddPromo />} />
 
 
+        <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/loggedin" element={<HomeLoggedIn />} />
+
+        <Route path="/bookticket" element={<BookTicket />} />
       </Routes>
     </BrowserRouter>
   );
