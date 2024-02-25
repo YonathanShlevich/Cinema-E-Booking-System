@@ -17,13 +17,14 @@ function BookTicket() {
 
         //do stuff to save data
 
-        navigate('/bookticket/order-summary')
-    
-      
+        navigate('/bookticket/order-summary');
 
     }
+    const handleSeats = (e) => {
+        e.preventDefault();
+        navigate('/bookticket/select-seats');
+    }
   return (
-
     <div>
       <Link to="/loggedin" className="backbutton">Cancel</Link>
       <div className="card">
@@ -31,7 +32,7 @@ function BookTicket() {
           <h2>Book Tickets</h2>
         </div>
         <div className="card-body">
-          <form id="loginForm" onSubmit={handleSubmit}>
+          <form id="loginForm">
             <div className="form-group">
               <label>Movie Title:</label>
               <select className='form-control' id="title">
@@ -48,6 +49,7 @@ function BookTicket() {
                 <option value="0" >March 14, 10:15 am</option>
               </select>
             </div>
+            <button className='btn btn-primary' onClick={handleSeats}>Select Seats</button>
             <div className="form-group">
               <label>Selected Seats:</label>
               <ul>
@@ -68,7 +70,7 @@ function BookTicket() {
             </ul>
             </div>
            
-              <button type="submit" className="btn btn-primary">Continue</button>
+              <button className="btn btn-primary" onClick={handleSubmit}>Continue</button>
          
           </form>
           

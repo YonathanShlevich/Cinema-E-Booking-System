@@ -16,6 +16,7 @@ import BookTicket from "./BookTicket";
 import OrderSummary from "./OrderSummary";
 import Checkout from "./Checkout";
 import OrderConfirmation from "./OrderConfirmation";
+import SelectSeats from "./SelectSeats";
 
 function App() {
   return (
@@ -42,6 +43,9 @@ function App() {
         <Route path="/bookticket/order-summary" element={<OrderSummary />} />
         <Route path="/bookticket/checkout" element={<Checkout />} />
         <Route path="/bookticket/order-confirmation" element={<OrderConfirmation />} />
+        <Route path="/bookticket/select-seats" element={<SelectSeats />} />
+
+
 
       </Routes>
     </BrowserRouter>
