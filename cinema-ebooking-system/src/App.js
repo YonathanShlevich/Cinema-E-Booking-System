@@ -13,6 +13,9 @@ import ManageExistingMovies from "./ManageExistingMovies";
 import ForgotPassword from "./ForgetPassword";
 import HomeLoggedIn from "./HomeLoggedIn";
 import BookTicket from "./BookTicket";
+import OrderSummary from "./OrderSummary";
+import Checkout from "./Checkout";
+import OrderConfirmation from "./OrderConfirmation";
 
 function App() {
   return (
@@ -36,6 +39,10 @@ function App() {
         <Route path="/loggedin" element={<HomeLoggedIn />} />
 
         <Route path="/bookticket" element={<BookTicket />} />
+        <Route path="/bookticket/order-summary" element={<OrderSummary />} />
+        <Route path="/bookticket/checkout" element={<Checkout />} />
+        <Route path="/bookticket/order-confirmation" element={<OrderConfirmation />} />
+
       </Routes>
     </BrowserRouter>
   );
