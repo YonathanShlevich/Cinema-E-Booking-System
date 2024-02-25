@@ -33,7 +33,7 @@ const Home = () => {
       <div className="dropdown">
           <button className="dropbtn">Account</button>
           <div className="dropdown-content">
-            <Link to="/profile">View Profile</Link>
+            <Link to="/viewprofile">View Profile</Link>
             <Link to="/">Logout</Link>
          </div>
         </div>

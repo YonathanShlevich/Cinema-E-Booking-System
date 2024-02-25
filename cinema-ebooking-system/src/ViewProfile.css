@@ -1,0 +1,89 @@
+.backhome{
+
+    display: flex;
+    margin-top: 1%;
+    margin-left: 5%;
+    text-decoration: none;
+    color: blue;
+    font-size: 16px;
+
+}
+
+.logoutbutton {
+    display: flex;
+    margin-left: 5%;
+    text-decoration: none;
+    color: blue;
+    font-size: 16px;
+  }
+
+  /* ViewProfile.css */
+.profile-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 500px; /* Adjust width as needed */
+    margin: 10% auto;
+  }
+  
+  .profile-card h2 {
+    margin-top: 0;
+  }
+  
+  .profile-card div {
+    margin-bottom: 10px;
+  }
+  
+  .backhome:hover,
+  .logoutbutton:hover {
+    text-decoration: underline;
+  }
+
+  .cardinfo {
+
+    display: flex;
+    flex: 1;
+    margin-right: 0;
+
+  }
+
+  #deletebutton {
+
+    display: flex;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+
+  }
+  
+  .saved-cards {
+    display: flex;
+    align-items: center;
+  }
+  
+  .useractions {
+
+    display:flex;
+    margin-top: 50%;
+
+  }
+
+  #editprofile {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration:underline;
+  }
+
+  #changepassword {
+
+    margin-left: 50%;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-decoration:underline;
+  }
+  
+  

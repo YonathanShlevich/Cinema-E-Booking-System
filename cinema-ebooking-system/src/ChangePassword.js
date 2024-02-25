@@ -24,7 +24,6 @@ function ChangePassword() {
 
     }
 
-    
   return (
 
     <div>
