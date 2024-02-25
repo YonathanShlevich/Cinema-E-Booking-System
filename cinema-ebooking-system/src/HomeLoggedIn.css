@@ -1,0 +1,68 @@
+#btnbook {
+
+    margin-top: 1%;
+    margin-bottom: 1%;
+    padding: 10px 24px;
+    margin-left: 15%;
+
+}
+
+.accountselect {
+
+    width: 1px;
+
+}
+/* Dropdown container */
+.dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown button */
+  .dropbtn {
+    background-color: #3498db;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* Dropdown content */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  /* Style the search bar and buttons */
+  #searchbar {
+    margin-left: 300px;
+    padding: 5px;
+    width: 40%;
+  }
+  
+  button:hover {
+    background-color: lightgray;
+  }
+  

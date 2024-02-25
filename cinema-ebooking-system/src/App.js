@@ -5,6 +5,7 @@ import SignUp from "./SignUp";
 import Verification from "./Verification";
 import ForgotPassword from "./ForgetPassword";
 import ViewProfile from "./ViewProfile";
+import HomeLoggedIn from "./HomeLoggedIn";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
+        <Route path="/loggedin" element={<HomeLoggedIn />} />
         <Route path="/viewprofile" element={<ViewProfile />} />
       </Routes>
     </BrowserRouter>
