@@ -1,5 +1,5 @@
 #! /bin/bash
 
-docker buildx build -f dockerfile -t app .
+docker build -t app .
 
-docker run -it -v "/$(pwd)":/app app:v2
+docker run -it --rm -p 3000:3000 -v "/$(pwd)":/app app

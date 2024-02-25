@@ -29,6 +29,7 @@ RUN npm --version
 RUN mkdir app
 
 EXPOSE 3000
+EXPOSE 8000
 
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_21_13:${LD_LIBRARY_PATH}
 ENV PATH=${PATH}:/opt/oracle/instantclient_21_13
