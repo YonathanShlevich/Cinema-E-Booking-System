@@ -22,6 +22,7 @@
   .dropbtn {
     background-color: #3498db;
     color: white;
+    margin-left: 10%;
     padding: 10px;
     font-size: 16px;
     border: none;
@@ -57,7 +58,7 @@
   
   /* Style the search bar and buttons */
   #searchbar {
-    margin-left: 300px;
+    margin-left: 20%;
     padding: 5px;
     width: 40%;
   }
