@@ -7,6 +7,7 @@ import ForgotPassword from "./ForgetPassword";
 import ViewProfile from "./ViewProfile";
 import HomeLoggedIn from "./HomeLoggedIn";
 import ChangePassword from "./ChangePassword";
+import EditProfile from "./EditProfile";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/loggedin" element={<HomeLoggedIn />} />
         <Route path="/viewprofile" element={<ViewProfile />} />
         <Route path="/changepassword" element={<ChangePassword />} />
+        <Route path="/editprofile" element={<EditProfile />} />
       </Routes>
     </BrowserRouter>
   );
