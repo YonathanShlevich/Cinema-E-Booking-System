@@ -2,15 +2,33 @@ FROM ubuntu:latest
 
 RUN apt-get update  && apt-get upgrade -y
 RUN apt-get install wget -y
+RUN apt-get install curl -y
 RUN apt-get install unzip -y
+RUN apt-get install git -y
+
 RUN mkdir /download ; cd /download
 RUN cd /download; wget https://download.oracle.com/otn_software/linux/instantclient/2113000/instantclient-basic-linux.x64-21.13.0.0.0dbru.zip
-RUN ls -al
+
 RUN mkdir -p /opt/oracle; cd /opt/oracle
 RUN unzip /download/instantclient-basic-linux.x64-21.13.0.0.0dbru -d /opt/oracle
+
 COPY *Wallet* /opt/oracle/instantclient_21_13/
 RUN unzip -o /opt/oracle/instantclient_21_13/Wallet* -d /opt/oracle/instantclient_21_13/network/admin
 RUN mv /opt/oracle/instantclient_21_13/network/admin/sqlnet.ora /opt/oracle/instantclient_21_13/network/admin/sqlnet.ora_ ;\
     sed 's|?|/opt/oracle/instantclient_21_13|' /opt/oracle/instantclient_21_13/network/admin/sqlnet.ora_ > /opt/oracle/instantclient_21_13/network/admin/sqlnet.ora
+
+ENV NODE_VERSION=20.11.1
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+ENV NVM_DIR=/root/.nvm
+RUN . "$NVM_DIR/nvm.sh" && nvm install ${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm use v${NODE_VERSION}
+RUN . "$NVM_DIR/nvm.sh" && nvm alias default v${NODE_VERSION}
+ENV PATH="/root/.nvm/versions/node/v${NODE_VERSION}/bin/:${PATH}"
+RUN node --version
+RUN npm --version
+RUN mkdir app
+
+EXPOSE 3000
+
 ENV LD_LIBRARY_PATH=/opt/oracle/instantclient_21_13:${LD_LIBRARY_PATH}
 ENV PATH=${PATH}:/opt/oracle/instantclient_21_13
