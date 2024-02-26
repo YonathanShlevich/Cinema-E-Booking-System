@@ -5,6 +5,7 @@ import './Home.css';
 const Home = () => {
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const nowShowingMovies = [
     { id: 1, title: 'Ready Player One', poster: '/rp1.jpg', trailerId: 'cSp1dM2Vj48' },
@@ -26,17 +27,35 @@ const Home = () => {
     setOpen(false);
   };
 
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredNowShowingMovies = nowShowingMovies.filter(movie =>
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredComingSoonMovies = comingSoonMovies.filter(movie =>
+    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="home">
       <nav>
-          <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
-        <input type="text" id="searchbar" placeholder="Search for movies..." />
+        <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+        <input
+          type="text"
+          id="searchbar"
+          placeholder="Search for movies..."
+          value={searchTerm}
+          onChange={handleSearch}
+        />
         <button> +Filter </button>
       </nav>
-  
+
       <h1>Now Showing</h1>
       <div className="movie-gallery">
-        {nowShowingMovies.map((movie) => (
+        {filteredNowShowingMovies.map((movie) => (
           <div key={movie.id} className="movie-item">
             {isOpen && selectedMovie === movie.trailerId ? (
               <>
@@ -62,10 +81,10 @@ const Home = () => {
           </div>
         ))}
       </div>
-  
+
       <h1>Coming Soon</h1>
       <div className="movie-gallery">
-        {comingSoonMovies.map((movie) => (
+        {filteredComingSoonMovies.map((movie) => (
           <div key={movie.id} className="movie-item">
             {isOpen && selectedMovie === movie.trailerId ? (
               <>
@@ -91,7 +110,7 @@ const Home = () => {
           </div>
         ))}
       </div>
-  
+
     </div>
   );
 };
