@@ -2,7 +2,6 @@ nav  {
   
     background-color: #3c3c3c;
     padding-bottom: 0.5px;
-    display: flex;
   
   }
 
@@ -11,7 +10,6 @@ nav  {
     margin-top: 1%;
     margin-bottom: 1%;
     padding: 10px 24px;
-    margin-right: 19%;
     margin-left: 1%;
 
 }
@@ -21,9 +19,6 @@ nav  {
     padding: 10px 15%;
     margin-right: 2%;
     text-align: center;
-    margin-top: auto;
-    margin-bottom: auto;
-    
     
 }
 
