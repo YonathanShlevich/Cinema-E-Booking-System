@@ -1,8 +1,27 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
+
+  const navigate = useNavigate();
+
+    const handleSubmit = (e) => {
+        
+        e.preventDefault();
+    
+        let password = document.getElementById("password");
+        let email = document.getElementById("email");
+
+        if (email.value === "" || password.value === "") {
+          window.alert("Ensure email and password are input");
+        } else { // all is good
+            // submit to database
+            navigate('/loggedin');
+            
+        }
+
+    }
   return (
 
     <div>
@@ -12,18 +31,18 @@ function Login() {
           <h2>Login</h2>
         </div>
         <div className="card-body">
-          <form>
+          <form id="loginForm" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Username:</label>
-              <input type="text" className="form-control" />
+              <label>Email:</label>
+              <input id="email" type="text" className="form-control" />
             </div>
             <div className="form-group">
               <label>Password:</label>
-              <input type="password" className="form-control" />
+              <input id="password" type="password" className="form-control" />
             </div>
-            <Link to= "/">
+           
               <button type="submit" className="btn btn-primary">Login</button>
-            </Link>
+         
           </form>
           <p>New user? <Link to="/signup">Signup</Link></p>
           <p>Forgot Password? <Link to="/forgotpassword">Forgot Password</Link></p>
