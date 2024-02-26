@@ -12,7 +12,7 @@ function ChangePassword() {
         let oldpassword = document.getElementById("oldpassword");
         let newpassword = document.getElementById("newpassword");
         let confirmpassword = document.getElementById("confirmPass");
-        if (oldpassword.trim() === "" || newpassword.trim() === "" || confirmpassword.trim() === "") {
+        if (oldpassword.value === "" || newpassword.value === "" || confirmpassword.value === "") {
             window.alert("Please fill in all fields.");
         } else if (newpassword !== confirmpassword) {
             window.alert("Passwords do not match.");
