@@ -17,7 +17,7 @@ function EditProfile() {
         let homeZip = document.getElementById("homeZip");
 
         // Basic validation
-        if (name.trim() === "" || phoneNum.trim() === "" || homeAddress.trim() === "" || homeCity.trim() === ""|| homeState.trim() === ""|| homeZip.trim() === "") {
+        if (name.value === "" || phoneNum.value === "" || homeAddress.value === "" || homeCity.value === ""|| homeState.value === ""|| homeZip.value === "") {
             window.alert("Please fill in all fields.");
         } else {
 
