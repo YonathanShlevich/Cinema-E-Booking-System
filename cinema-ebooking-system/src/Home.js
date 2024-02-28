@@ -5,8 +5,8 @@ import './Home.css';
 class Movie {
   constructor(title, poster, trailerId, status) {
     this.title = title;
-    this.poster = poster;
-    this.trailerId = trailerId;
+    //this.poster = poster;
+    //this.trailerId = trailerId;
     this.status = status;
   }
 }
@@ -20,16 +20,25 @@ const Home = () => {
   useEffect(() => {
     const fetchMovies = async () => {
 
-      //placeholder to check if setmovies and fetchmovies work
-      const data = [
-        { title: 'Ready Player One', poster: '/rp1.jpg', trailerId: 'cSp1dM2Vj48', status: 'nowShowing' },
-        { title: 'Rush Hour', poster: '/rush hour poster.jpg', trailerId: 'JMiFsFQcFLE', status: 'nowShowing' },
-        { title: 'Morbius', poster: '/morb.jpg', trailerId: 'oZ6iiRrz1SY', status: 'comingSoon' },
-        { title: 'The Bee Movie', poster: '/beemovie.webp', trailerId: 'sxuU39hMpP4', status: 'comingSoon' },
-      ];
+      const jsonData = require('./controllers/response.json');
+      const movieData = jsonData.map(movieArray => {
 
-      const moviesData = data.map((movie) => new Movie(movie.title, movie.poster, movie.trailerId, movie.status));
-      setMovies(moviesData);
+        const title = movieArray[0];
+        const status = movieArray[7];
+        return new Movie(title, status);
+
+      })
+
+      //placeholder to check if setmovies and fetchmovies work
+      //const data = [
+       // { title: 'Ready Player One', poster: '/rp1.jpg', trailerId: 'cSp1dM2Vj48', status: 'nowShowing' },
+       // { title: 'Rush Hour', poster: '/rush hour poster.jpg', trailerId: 'JMiFsFQcFLE', status: 'nowShowing' },
+       // { title: 'Morbius', poster: '/morb.jpg', trailerId: 'oZ6iiRrz1SY', status: 'comingSoon' },
+       // { title: 'The Bee Movie', poster: '/beemovie.webp', trailerId: 'sxuU39hMpP4', status: 'comingSoon' },
+      //];
+
+      //const moviesData = jsonData.map((movie) => new Movie(movie.title));
+      setMovies(movieData);
     };
     fetchMovies();
   }, []);
