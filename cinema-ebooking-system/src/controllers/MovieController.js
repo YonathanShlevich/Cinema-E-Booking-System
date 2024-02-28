@@ -1,4 +1,5 @@
 const oracledb = require('oracledb');
+const fs = require('fs');
 async function runApp()
 {
   let connection;
@@ -12,13 +13,17 @@ async function runApp()
     //await connection.execute(`create table nodetab (id number, data varchar2(20))`);
     
     // Insert some rows
-    const sql = `INSERT INTO movies VALUES (:1, :2, :3, :4, :5, :6, :7)`;
-    const binds = [ ["Rush Hour", "Comedy" , "Brett Ratner", "https://www.youtube.com/watch?v=JMiFsFQcFLE", "PG-13", "March 12, March 13", "12:00pm, 1:30pm"]];    
-    await connection.executeMany(sql, binds);
+    //const sql = `INSERT INTO movies VALUES (:1, :2, :3, :4, :5, :6, :7)`;
+    //const binds = [ ["Rush Hour", "Comedy" , "Brett Ratner", "https://www.youtube.com/watch?v=JMiFsFQcFLE", "PG-13", "March 12, March 13", "12:00pm, 1:30pm"]];    
+    //await connection.executeMany(sql, binds);
     // connection.commit(); // uncomment to make data persistent
     
     // Now query the rows back
-    const result = await connection.execute(`SELECT * FROM MOVIE`);
+    const result = await connection.execute(`SELECT * FROM MOVIES`, [], {output: oracledb.OUT_FORMAT_OBJECT});
+    fs.writeFile("response.json", JSON.stringify(result.rows), err => {
+        if (err) throw err;
+        console.log('File successfully written to disk');
+    });
     console.dir(result.rows, { depth: null });
   } catch (err) {
     console.error(err);
