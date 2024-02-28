@@ -26,20 +26,10 @@ const Home = () => {
         const title = movieArray[0];
         const status = movieArray[7];
         const trailerID = movieArray[3];
-        const poster = "/beemovie.webp";
+        const poster = movieArray[8];
         return new Movie(title, poster ,trailerID, status);
 
       })
-
-      //placeholder to check if setmovies and fetchmovies work
-      //const data = [
-       // { title: 'Ready Player One', poster: '/rp1.jpg', trailerId: 'cSp1dM2Vj48', status: 'nowShowing' },
-       // { title: 'Rush Hour', poster: '/rush hour poster.jpg', trailerId: 'JMiFsFQcFLE', status: 'nowShowing' },
-       // { title: 'Morbius', poster: '/morb.jpg', trailerId: 'oZ6iiRrz1SY', status: 'comingSoon' },
-       // { title: 'The Bee Movie', poster: '/beemovie.webp', trailerId: 'sxuU39hMpP4', status: 'comingSoon' },
-      //];
-
-      //const moviesData = jsonData.map((movie) => new Movie(movie.title));
       setMovies(movieData);
     };
     fetchMovies();
