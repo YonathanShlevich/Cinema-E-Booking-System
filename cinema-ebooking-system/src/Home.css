@@ -26,20 +26,25 @@ nav  {
   display: flex;
   overflow-x: auto;
   max-width: 100%;
-  justify-content: space-evenly;
-} /* contents are spaced evenly and can scroll through the x axis */
+}
 
 .movie-item {
-  margin-right: 20px;
+  margin-left: 10px;
+  margin-right: 20px; /* Add some spacing between movie items */
   text-align: center;
   position: relative;
+}
+
+/* Remove margin-right for the last movie item */
+.movie-item:last-child {
+  margin-right: 0;
 }
 
 .movie-item img {
   width: auto; 
   max-height: 300px;
   object-fit: cover;
-} /* Makes sure the image is correct */
+}
 
 .movie-item h3 {
   margin-top: 5px;
