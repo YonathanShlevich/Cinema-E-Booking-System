@@ -5,8 +5,8 @@ import './Home.css';
 class Movie {
   constructor(title, poster, trailerId, status) {
     this.title = title;
-    //this.poster = poster;
-    //this.trailerId = trailerId;
+    this.poster = poster;
+    this.trailerId = trailerId;
     this.status = status;
   }
 }
@@ -25,7 +25,9 @@ const Home = () => {
 
         const title = movieArray[0];
         const status = movieArray[7];
-        return new Movie(title, status);
+        const trailerID = movieArray[3];
+        const poster = "/beemovie.webp";
+        return new Movie(title, poster ,trailerID, status);
 
       })
 
