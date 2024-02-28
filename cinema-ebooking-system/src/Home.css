@@ -35,11 +35,6 @@ nav  {
   position: relative;
 }
 
-/* Remove margin-right for the last movie item */
-.movie-item:last-child {
-  margin-right: 0;
-}
-
 .movie-item img {
   width: auto; 
   max-height: 300px;
