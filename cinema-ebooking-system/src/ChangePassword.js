@@ -5,10 +5,13 @@ function ChangePassword() {
 
     const navigate = useNavigate();
 
+    //When clicking submit, this will be used to determine if the passwords can be changed or not
+    //this is done by checking to make sure all the fields are filled in and new password = confirmpassword
     const handleSubmit = (e) => {
         
         e.preventDefault();
     
+        //Getting the references from the input field of the form
         let oldpassword = document.getElementById("oldpassword");
         let newpassword = document.getElementById("newpassword");
         let confirmpassword = document.getElementById("confirmPass");
@@ -23,7 +26,8 @@ function ChangePassword() {
         }
 
     }
-
+  
+  //Where the forms and input fields are created
   return (
 
     <div>

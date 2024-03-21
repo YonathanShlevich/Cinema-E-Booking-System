@@ -5,6 +5,7 @@ function EditProfile() {
 
     const navigate = useNavigate();
 
+    //Handling submission
     const handleSubmit = (e) => {
         
         e.preventDefault();
@@ -27,7 +28,7 @@ function EditProfile() {
 
     }
 
-    
+  //Form for editing the profile of the user
   return (
 
     <div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import './Home.css';
 
+// Constructor for the movie class
 class Movie {
   constructor(title, poster, trailerId, status) {
     this.title = title;
@@ -12,39 +13,44 @@ class Movie {
 }
 
 const Home = () => {
+  // State variables
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
 
+  // Fetching movies from JSON file on component mount
   useEffect(() => {
     const fetchMovies = async () => {
-
+      // Fetching JSON data from the file
       const jsonData = require('./controllers/response.json');
+      // Mapping JSON data to Movie objects
       const movieData = jsonData.map(movieArray => {
-
         const title = movieArray[0];
         const status = movieArray[7];
         const trailerID = movieArray[3];
         const poster = movieArray[8];
         return new Movie(title, poster ,trailerID, status);
-
-      })
+      });
+      // Setting movies state
       setMovies(movieData);
     };
     fetchMovies();
   }, []);
 
+  // Function to play trailer
   const playTrailer = (trailerId) => {
     setSelectedMovie(trailerId);
     setOpen(true);
   };
 
+  // Function to close trailer
   const closeTrailer = () => {
     setSelectedMovie(null);
     setOpen(false);
   };
 
+  // Function to handle search input change
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
@@ -57,7 +63,9 @@ const Home = () => {
   return (
     <div className="home">
       <nav>
+        {/* This is where the navbar and the elements inside is located */}
         <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+        {/* Search bar */}
         <input
           type="text"
           id="searchbar"
@@ -68,12 +76,16 @@ const Home = () => {
         <button> +Filter </button>
       </nav>
 
+      {/* Section for Now Showing movies */}
       <h1>Now Showing</h1>
       <div className="movie-gallery">
+        {/* Mapping through filteredMovies array to display Now Showing movies, 
+        this should show all of them since the filter has nothing */}
         {filteredMovies.map((movie, index) => (
           movie.status === 'nowShowing' && (
             <div key={index + 1} className="movie-item">
               {isOpen && selectedMovie === movie.trailerId ? (
+                // If trailer is open, show iframe where the trailer can be played
                 <>
                   <iframe
                     title={movie.title}
@@ -89,6 +101,7 @@ const Home = () => {
                   </div>
                 </>
               ) : (
+                // If trailer is closed, show movie poster
                 <>
                   <img src={movie.poster} alt={movie.title} onClick={() => playTrailer(movie.trailerId)} />
                   <h3>{movie.title}</h3>
@@ -99,12 +112,16 @@ const Home = () => {
         ))}
       </div>
 
+      {/* Section for Coming Soon movies */}
       <h1>Coming Soon</h1>
       <div className="movie-gallery">
+        {/* Mapping through filteredMovies array to display Coming Soon movies, 
+        this should show all of them since the filter has nothing */}
         {filteredMovies.map((movie, index) => (
           movie.status === 'comingSoon' && (
             <div key={index+1} className="movie-item">
               {isOpen && selectedMovie === movie.trailerId ? (
+                // If trailer is open, show iframe where the trailer can be played
                 <>
                   <iframe
                     title={movie.title}
@@ -120,6 +137,7 @@ const Home = () => {
                   </div>
                 </>
               ) : (
+                // If trailer is closed, show movie poster
                 <>
                   <img src={movie.poster} alt={movie.title} onClick={() => playTrailer(movie.trailerId)} />
                   <h3>{movie.title}</h3>

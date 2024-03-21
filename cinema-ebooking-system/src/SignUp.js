@@ -10,6 +10,7 @@ function SignUp() {
         
         e.preventDefault();
     
+        //References to the ids in the form
         let name = document.getElementById("name");
         let email = document.getElementById("email");
         let password = document.getElementById("password");
@@ -46,12 +47,15 @@ function SignUp() {
   return (
 
     <div>
+      {/* Code for form */}
       <Link to="/login" className="backbutton"> Back to Login</Link>
       <div className="card">
+        {/* Heading */}
         <div className="card-header">
           <h2>Sign Up</h2>
         </div>
         <div className="card-body">
+          {/* When submit is click, it is handled by the function*/}
           <form action="" id="signUpForm" onSubmit={handleSubmit}>
             <div className="form-group">
               <label>*Name:</label>
@@ -101,6 +105,7 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>State:</label>
+              {/* Dropdown display of the selected states*/}
               <select id="billingState" className='form-control'>
                 <option selected></option>
                 <option value="AL">AL</option>
@@ -169,6 +174,7 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>State:</label>
+              {/* Dropdown display of the selected states*/}
               <select id="homeState" className='form-control'>
                 <option selected></option>
                 <option value="AL">AL</option>
@@ -228,7 +234,6 @@ function SignUp() {
               <input id="homeZip" type="number" min="0" className="form-control" />
             </div>
 
-        
             <button type="submit" className="btn btn-primary">Register</button>
             <p>* Required</p>
           </form>

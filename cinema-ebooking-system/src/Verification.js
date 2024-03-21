@@ -4,15 +4,19 @@ import './Verification.css';
 
 
 function Verification() {
+
   return (
     <div className="cardVerification">
+      {/* Code for form */}
       <div className="cardverify">
+        {/* Verification Code Display */}
         <h5 className="card-title">Enter Verification Code</h5>
         <input
           type="text"
           className="formcontrolVerification"
           placeholder="Enter verification code"
         />
+        {/* Links at the bottom the card */}
          <Link to= "/homeloggedin">
             <button type="submit" className="btn-submit">Submit</button>
         </Link>
