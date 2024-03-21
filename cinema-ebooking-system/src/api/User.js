@@ -7,34 +7,83 @@ const User = require('./../models/User');
 //Password hashing
 const bcrypt = require('bcrypt');
 
-// Signup API
-router.post('/sigipn', (req, res) => {
-
-})
-
-// Signin API
-router.post('/sigipn', (req, res) => {
-    //All the attributes of a User
-    let {firstName, lastName, email, password, userStatus, type, promo} = req.body;
-
-    userStatus = 2; //Status is 2, meaning it is inactive and requires the email verification 
-    type = 1;
-    //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
-    promo = false; 
-
-    //Creating an if statement for each attribute is absurdly chunky, instead we will be creating an array
-    //of each attribute, it's regex pattern, and its error message. Then just run through it with a loop.
-    //NOTE: Turns out half of the attributes do not need a regex pattern, but we are keeping this and possbily making it a global
-    //function of some kind for all other checks. 
-    const attributes = [
-        {name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered'},
-        {name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered'},
-        {name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered'},
-        {name: 'password', value: password, pattern: /^[a-zA-Z!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered'},
+//Function that pulls inputted 
+//Creating an if statement for each attribute is absurdly chunky, instead we will be creating an array
+//of each attribute, it's regex pattern, and its error message. Then just run through it with a loop.
+//NOTE: Turns out half of the attributes do not need a regex pattern, but we are keeping this and possbily making it a global
+//function of some kind for all other checks. 
+function generateAttributes(firstName, lastName, email, password) {
+    return [
+        { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered' },
+        { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered' },
+        { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered' },
+        { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered' },
         //Nothing for userStatus as it is not a user determined attribute
         //Type also isn't determined by the user
         //Promo is a true/false distinction, no need for regex
-    ]
+    ];
+}
+
+
+// Signin API
+router.post('/signin', (req, res) => {
+    //Login only requires the email and password
+    let {email, password} = req.body; 
+    //Pulls the attributes
+    const attributes = generateAttributes(NULL, NULL, email, password);
+    //Trimming :)
+    email = email.trim();
+    password = password.trim();
+    //Checking if empty inputs, otherwise we checking if the user exists
+    if(!email || !password){
+            return res.json({
+            status: "FAILED",
+            message: 'Empty input fields',
+        });
+    } else { //Checking if user exists
+        User.find({email}).then(data => {
+            if(data){
+                //Comparing passwords
+                const hashedPW = data[0].password;
+                bcrypt.compare(password, hashedPW).then(result => {
+                    //If the passwords are the same
+                    if(result){
+                        rse.json({
+                            status: "SUCCESS",
+                            message: "Signin was successful",
+                            data: data
+                        })
+                    } else { //If they're not the same
+                        res.json({
+                            status: "FAILED",
+                            message: "Invalid password"
+                        })
+
+                    }
+                }).catch(err => {
+                    res.json({
+                        status: "FAILED",
+                        message: "Error while comparing passwords"
+                    })
+                })
+            }
+        });
+    }
+
+
+})
+
+// Signup API
+router.post('/signup', (req, res) => {
+    //All the attributes of a User
+    let {firstName, lastName, email, password, userStatus, type, promo} = req.body;
+    userStatus = 2; //Status is 2, meaning it is inactive and requires the email verification 
+    type = 1; //1 means customer, 2 means admin
+    //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
+    promo = false; 
+
+    const attributes = generateAttributes(firstName, lastName, email, password);
+
     //For loop that ambigiously goes through all attributes' regex pattern
     for(const attribute of attributes){
         attribute.value = attribute.value.trim(); //Trimming all the attributes
