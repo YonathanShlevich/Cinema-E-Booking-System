@@ -1,0 +1,18 @@
+.verifcontent {
+    text-align: center;
+    margin-top: 15%;
+}
+
+.btn-homepage {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-homepage:hover {
+    background-color: #0056b3;
+}

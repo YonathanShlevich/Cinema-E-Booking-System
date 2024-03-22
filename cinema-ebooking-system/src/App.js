@@ -20,6 +20,7 @@ import OrderSummary from "./OrderSummary";
 import Checkout from "./Checkout";
 import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
+import VerifSuccess from "./VerifSuccess";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
         <Route path="/bookticket/checkout" element={<Checkout />} />
         <Route path="/bookticket/order-confirmation" element={<OrderConfirmation />} />
         <Route path="/bookticket/select-seats" element={<SelectSeats />} />
+        <Route path="/verifsuccess" element={<VerifSuccess />} />
 
       </Routes>
     </BrowserRouter>
