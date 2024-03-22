@@ -37,6 +37,10 @@ function ViewProfile() {
           <p className='cardinfo'>Visa ****1234</p>
           <button id='deletebutton'> -Delete Card</button>
         </div>
+        <div>
+          {/* Subscription Display */}
+          <strong>Subscribed for Promo:</strong> Yes
+        </div>
         {/* User actions */}
         <div className='useractions'>
           <Link to="/editprofile" id="editprofile">Edit Profile</Link>

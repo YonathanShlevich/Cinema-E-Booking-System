@@ -16,6 +16,7 @@ function EditProfile() {
         let homeCity = document.getElementById("homeCity");
         let homeState = document.getElementById("homeState");
         let homeZip = document.getElementById("homeZip");
+        let promoSubs = document.querySelector('input[name="promosub"]:checked').value;
 
         // Basic validation
         if (name.value === "" || phoneNum.value === "" || homeAddress.value === "" || homeCity.value === ""|| homeState.value === ""|| homeZip.value === "") {
@@ -114,6 +115,16 @@ function EditProfile() {
             <div className="form-group">
               <label>Zip:</label>
               <input id="homeZip" type="number" min="0" className="form-control" />
+            </div>
+            {/* Checkbox display of whether the user wants promos or not*/}
+            <div className="form-group">
+              <label>Subscribe for promos?:</label>
+              <div>
+                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" />
+                <label for="promoyes" className="form-check-label">Yes</label>
+                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked/>
+                <label for="promono" className="form-check-label">No</label>
+              </div>
             </div>
         
             <button type="submit" className="btn btn-primary">Register</button>

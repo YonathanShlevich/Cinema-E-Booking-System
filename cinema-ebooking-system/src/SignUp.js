@@ -30,6 +30,8 @@ function SignUp() {
         let homeState = document.getElementById("homeState");
         let homeZip = document.getElementById("homeZip");
 
+        //storing what the user input if they want to sub to promo or not
+        let promoSubs = document.querySelector('input[name="promosub"]:checked').value;
 
 
         if (name.value === "" || phoneNum.value === "" || email.value === "" 
@@ -233,6 +235,19 @@ function SignUp() {
               <label>Zip:</label>
               <input id="homeZip" type="number" min="0" className="form-control" />
             </div>
+
+            {/* Checkbox display of whether the user wants promos or not*/}
+            <div className="form-group">
+              <label>Subscribe for promos?:</label>
+              <div>
+                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" />
+                <label for="promoyes" className="form-check-label">Yes</label>
+                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked/>
+                <label for="promono" className="form-check-label">No</label>
+              </div>
+            </div>
+
+
 
             <button type="submit" className="btn btn-primary">Register</button>
             <p>* Required</p>
