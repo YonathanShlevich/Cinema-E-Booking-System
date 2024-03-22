@@ -10,6 +10,7 @@ function SignUp() {
         
         e.preventDefault();
     
+        //References to the ids in the form
         let name = document.getElementById("name");
         let email = document.getElementById("email");
         let password = document.getElementById("password");
@@ -29,6 +30,8 @@ function SignUp() {
         let homeState = document.getElementById("homeState");
         let homeZip = document.getElementById("homeZip");
 
+        //storing what the user input if they want to sub to promo or not
+        let promoSubs = document.querySelector('input[name="promosub"]:checked').value;
 
 
         if (name.value === "" || phoneNum.value === "" || email.value === "" 
@@ -46,12 +49,15 @@ function SignUp() {
   return (
 
     <div>
+      {/* Code for form */}
       <Link to="/login" className="backbutton"> Back to Login</Link>
       <div className="card">
+        {/* Heading */}
         <div className="card-header">
           <h2>Sign Up</h2>
         </div>
         <div className="card-body">
+          {/* When submit is click, it is handled by the function*/}
           <form action="" id="signUpForm" onSubmit={handleSubmit}>
             <div className="form-group">
               <label>*Name:</label>
@@ -101,6 +107,7 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>State:</label>
+              {/* Dropdown display of the selected states*/}
               <select id="billingState" className='form-control'>
                 <option selected></option>
                 <option value="AL">AL</option>
@@ -169,6 +176,7 @@ function SignUp() {
             </div>
             <div className="form-group">
               <label>State:</label>
+              {/* Dropdown display of the selected states*/}
               <select id="homeState" className='form-control'>
                 <option selected></option>
                 <option value="AL">AL</option>
@@ -228,7 +236,19 @@ function SignUp() {
               <input id="homeZip" type="number" min="0" className="form-control" />
             </div>
 
-        
+            {/* Checkbox display of whether the user wants promos or not*/}
+            <div className="form-group">
+              <label>Subscribe for promos?:</label>
+              <div>
+                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" />
+                <label for="promoyes" className="form-check-label">Yes</label>
+                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked/>
+                <label for="promono" className="form-check-label">No</label>
+              </div>
+            </div>
+
+
+
             <button type="submit" className="btn btn-primary">Register</button>
             <p>* Required</p>
           </form>
