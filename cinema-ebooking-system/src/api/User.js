@@ -16,6 +16,9 @@ const {v4: uuidv4} = require("uuid"); //The 'v4' is the c4 model within uuid
 //Env variables
 require("dotenv").config(); //TAKE A SECOND LOOK AT THIS
 
+//Path for the verify page
+const path = require("path");
+
 //Nodemailer
 let transporter = nodemailer.createTransport({
     service: "gmail",
@@ -175,10 +178,10 @@ router.post('/signup', (req, res) => {
 
                 //This saves the new user with a success message
                 newUser.save().then(result => {
-                    res.json({
-                        status: "SUCCESS",
-                        message: "Signup was successful!",
-                    });
+                    // res.json({
+                    //     status: "SUCCESS",
+                    //     message: "Signup was successful!",
+                    // });
                     sendVerificationEmail(result, res); //Send the verification email
                 }).catch(err => {
                     res.json({
@@ -343,10 +346,15 @@ router.get("/verify/:userID/:uniqueString", (req, res) => {
         .catch((err) => {
             console.log(err);
             //MAKE THIS A ROUTE TO AN HTML PAGE THAT SAYS THERE'S AN ERROR IN CHECKING VERIFICATION RECORD
+            let message = "An error occured when checking for existing user verification record";
+            res.redirect(`/user/verified/error=true&message=${message}`);
         })
 });
 
-
+//Verify path route
+router.get("/verified", (req, res) => {
+    
+})
 
 
 module.exports = router;
