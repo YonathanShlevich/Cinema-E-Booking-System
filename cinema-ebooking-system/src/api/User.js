@@ -213,7 +213,7 @@ const sendVerificationEmail = ({_id, email}, res) => {
     const mailOptions = {
         from: process.env.AUTH_EMAIL,
         to: email,
-        subject: "Verift your email!",
+        subject: "Verify your email!",
         html: `<p>Verify your email address to finish signup and login with your account!</p><p> Press <a href=${currentURL + "user/verify/" + _id +
          "/" + uuidString}>here</a> to proceed.</p>`,
     };
