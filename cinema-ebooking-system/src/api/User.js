@@ -29,8 +29,6 @@ function generateAttributes(firstName, lastName, email, password) {
 router.post('/signin', (req, res) => {
     //Login only requires the email and password
     let {email, password} = req.body; 
-    //Pulls the attributes
-    const attributes = generateAttributes(NULL, NULL, email, password);
     //Trimming :)
     email = email.trim();
     password = password.trim();
@@ -42,9 +40,10 @@ router.post('/signin', (req, res) => {
         });
     } else { //Checking if user exists
         User.find({email}).then(data => {
-            if(data){
+            if(data.length){
                 //Comparing passwords
                 const hashedPW = data[0].password;
+                console.log(data[0].password + " : " + hashedPW);
                 bcrypt.compare(password, hashedPW).then(result => {
                     //If the passwords are the same
                     if(result){
@@ -60,13 +59,24 @@ router.post('/signin', (req, res) => {
                         })
 
                     }
-                }).catch(err => {
+                }).catch(err => {  //bcrypt catch blovk
+                    console.log(result);
                     res.json({
                         status: "FAILED",
                         message: "Error while comparing passwords"
                     })
                 })
+            } else { //Incorrect creds were entered
+                res.json({
+                    status: "FAILED",
+                    message: "Invalid credentials"
+                })
             }
+        }).catch(err => {
+            res.json({
+                status: "FAILED",
+                message: "Error while checking for existing user"
+            })
         });
     }
 
