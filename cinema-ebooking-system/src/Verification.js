@@ -17,7 +17,7 @@ function Verification() {
           placeholder="Enter verification code"
         />
         {/* Links at the bottom the card */}
-         <Link to= "/homeloggedin">
+         <Link to= "/loggedin">
             <button type="submit" className="btn-submit">Submit</button>
         </Link>
         <p className="card-text">Code was sent to this email:example@example.com </p>
