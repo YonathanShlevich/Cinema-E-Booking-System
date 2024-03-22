@@ -10,7 +10,7 @@ const UserSchema = new Schema({
     status: Number,
     type: Number, 
     promo: Boolean
-})
+});
 
 const User = mongoose.model('User', UserSchema);
 

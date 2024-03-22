@@ -2,7 +2,7 @@
 require('./db_config/db');
 require('./api/User');
 const app = require('express')();
-const port = 3000;
+const port = 5000;
 
 const UseRouter = require('./api/User');
 
