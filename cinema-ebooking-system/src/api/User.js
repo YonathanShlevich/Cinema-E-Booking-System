@@ -3,7 +3,8 @@ const router = express.Router();
 
 //Mongo User model
 const User = require('./../models/User');
-
+const homeAddress = require('./../models/homeAddress');
+const paymentCard = require('./../models/paymentCard');
 //Mongo UserStatus model
 const UserStatus = require('./../models/UserStatus');
 
@@ -48,7 +49,7 @@ const bcrypt = require('bcrypt');
 //function of some kind for all other checks. 
 function generateAttributes(firstName, lastName, email, password) {
     return [
-        { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered' },
+        { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered', required: True },
         { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered' },
         { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered' },
         { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered' },
@@ -130,12 +131,12 @@ router.post('/signup', (req, res) => {
     //All the attributes of a User
     let {firstName, lastName, email, password, status, type, promo,  //Non-optional data
         cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip, //Optional billing addr
-        homeAddr, homeState, homeZip} = req.body; //Optional home addr
+        homeAddr, homeCity, homeState, homeZip} = req.body; //Optional home addr
     status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
     //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
     promo = promo;
-
+    optionalCounter = 0;
     const attributes = generateAttributes(firstName, lastName, email, password);
 
     //For loop that ambigiously goes through all attributes' regex pattern
@@ -143,10 +144,14 @@ router.post('/signup', (req, res) => {
         attribute.value = attribute.value.trim(); //Trimming all the attributes
         //Checks if an attribute is empty
         if(!attribute.value){
-            return res.json({
-                status: "FAILED",
-                message: 'Empty input fields',
-            });
+            if(attribute.required){ //If required
+                return res.json({
+                    status: "FAILED",
+                    message: 'Empty input fields',
+                });
+            } else { //If optional
+                optionalCounter++;
+            }
         }
         // Check if the attribute matches the regex pattern
         if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
@@ -157,6 +162,13 @@ router.post('/signup', (req, res) => {
         }
     }
 
+    //Checking if all or no optional values are filled out
+    if(optionalCounter != 10 && optionalCounter != 0 ){
+        return res.json({
+            status: 'FAILED',
+            message: "If one optional field is filled, the rest must be filled.",
+        });
+    }
     //TODO: Checking if email already exists in the DB
     User.find({email}).then(result => {
         //Checks if the user exists
@@ -181,10 +193,44 @@ router.post('/signup', (req, res) => {
 
                 //This saves the new user with a success message
                 newUser.save().then(result => {
-                    // res.json({
-                    //     status: "SUCCESS",
-                    //     message: "Signup was successful!",
-                    // });
+                    //Create new homeAddress since user is good to go
+                    const newHomeAddress= new homeAddress({
+                        userId: saved_id,
+                        homeCity,
+                        homeAddr, 
+                        homeState, 
+                        homeZip
+                    });
+                    newHomeAddress.save().then(result => {
+                        //Nothing should happen in here
+                    }).catch(err => {
+                        res.json({
+                            status: "FAILED",
+                            message: "An error occured while hashing the password"
+                        });
+                    });
+                    
+                    //Create new billingAddress since user is good to go
+                    const newPaymentCard = new paymentCard({
+                        userId: saved_id,
+                        cardType, 
+                        expDate,
+                        cardNumber, 
+                        billingAddr, 
+                        billingCity, 
+                        billingState, 
+                        billingZip
+                    })
+                    newPaymentCard.save().then(result => {
+                        //Nothing should happen in here
+                    }).catch(err => {
+                        res.json({
+                            status: "FAILED",
+                            message: "An error occured while hashing the password"
+                        });
+                    });
+
+                    //Send verification email
                     sendVerificationEmail(result, res); //Send the verification email
                 }).catch(err => {
                     res.json({
@@ -198,16 +244,6 @@ router.post('/signup', (req, res) => {
                     message: "An error occured while hashing the password"
                 });
             });
-            //Create new homeAddress
-            const newHomeAddress= new HomeAddress=({
-                firstName,
-                lastName,
-                email,
-                password: hashedPassword,
-                status: 2,
-                type,
-                promo
-            })
         }
     }).catch(err => {
         console.log(err);
