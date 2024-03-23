@@ -1,27 +1,36 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
+import axios from 'axios';
 
 function Login() {
 
   const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
-        
-        e.preventDefault();
-    
-        let password = document.getElementById("password");
-        let email = document.getElementById("email");
-
-        if (email.value === "" || password.value === "") {
-          window.alert("Ensure email and password are input");
-        } else { // all is good
-            // submit to database
-            navigate('/loggedin');
-            
-        }
-
-    }
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      
+      // Get form data
+      const formData = {
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value
+          // Add other form fields here
+      };
+      try {
+          // Make POST request to signin endpoint
+          const response = await axios.post("http://localhost:5000/User/signin", formData);
+          
+          // Handle successful signup
+          console.log(response.data); // Log response from the API
+          navigate('/verification'); // Redirect user to verification page
+      } catch (error) {
+          // Handle signup error
+          console.error('Signin failed:', error);
+          // Display error message to the user
+          window.alert(error);
+      }
+  };
+  
   return (
 
     <div>
