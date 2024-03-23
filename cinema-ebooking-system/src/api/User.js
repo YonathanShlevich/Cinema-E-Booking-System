@@ -127,8 +127,8 @@ router.post('/signin', (req, res) => {
 // Signup API
 router.post('/signup', (req, res) => {
     //All the attributes of a User
-    let {firstName, lastName, email, password, userStatus, type, promo} = req.body;
-    userStatus = 2; //Status is 2, meaning it is inactive and requires the email verification 
+    let {firstName, lastName, email, password, status, type, promo} = req.body;
+    status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
     //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
     promo = false; 
@@ -171,7 +171,7 @@ router.post('/signup', (req, res) => {
                     lastName,
                     email,
                     password: hashedPassword,
-                    userStatus: 2,
+                    status: 2,
                     type,
                     promo
                 })
@@ -320,6 +320,7 @@ router.get("/verify/:userID/:uniqueString", (req, res) => {
                                 UserStatus
                                 .deleteOne({userId})
                                 .then(() => {
+                                    res.redirect()
                                     //Okay this time the routing is good. Just send it to the verified page (I think?) I will link the stuff I'm following
                                     // in the discord
                                 })
