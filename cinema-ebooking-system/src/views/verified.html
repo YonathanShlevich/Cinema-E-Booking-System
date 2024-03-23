@@ -4,8 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>API Response</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .message {
+        background-color: #ffffff;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
 </head>
 <body>
+
+<div class="message" id="message"></div>
 
 <script>
 // Parse query parameters from URL
@@ -25,17 +47,16 @@ document.addEventListener("DOMContentLoaded", function() {
     // Check for error query parameter
     var error = getQueryVariable("error");
     var message = getQueryVariable("message");
+    var messageDiv = document.getElementById("message");
 
     if (error === "true") {
         // Display error message
-        var errorMessage = document.createElement("p");
-        errorMessage.textContent = message || "An error occurred.";
-        document.body.appendChild(errorMessage);
+        messageDiv.textContent = message || "An error occurred.";
+        messageDiv.style.color = "red";
     } else {
         // Display success message
-        var successMessage = document.createElement("p");
-        successMessage.textContent = "Success!";
-        document.body.appendChild(successMessage);
+        messageDiv.textContent = "Success! Return to the site and continue to login";
+        messageDiv.style.color = "green";
     }
 });
 </script>
