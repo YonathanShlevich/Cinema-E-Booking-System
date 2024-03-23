@@ -47,13 +47,24 @@ const bcrypt = require('bcrypt');
 //of each attribute, it's regex pattern, and its error message. Then just run through it with a loop.
 //NOTE: Turns out half of the attributes do not need a regex pattern, but we are keeping this and possbily making it a global
 //function of some kind for all other checks. 
-function generateAttributes(firstName, lastName, email, password) {
+function generateAttributes(firstName, lastName, email, password, cardType, expDate, cardNumber, 
+    billingAddr, billingCity, billingState, billingZip, homeAddr, homeCity, homeState, homeZip) {
     return [
-        { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered', required: True },
-        { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered' },
-        { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered' },
-        { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered' },
-
+        { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered', required: true},
+        { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered', required: true},
+        { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered',required: true},
+        { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered', required: true},
+        { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'cardNumber', value: cardNumber, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'billingAddr', value: billingAddr, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'billingCity', value: billingCity, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'billingState', value: billingState, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'billingZip', value: billingZip, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'homeAddr', value: homeAddr, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'homeCity', value: homeCity, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'homeZip', value: homeZip, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
         //Nothing for userStatus as it is not a user determined attribute
         //Type also isn't determined by the user
         //Promo is a true/false distinction, no need for regex
@@ -141,6 +152,7 @@ router.post('/signup', (req, res) => {
 
     //For loop that ambigiously goes through all attributes' regex pattern
     for(const attribute of attributes){
+        if()
         attribute.value = attribute.value.trim(); //Trimming all the attributes
         //Checks if an attribute is empty
         if(!attribute.value){
@@ -163,7 +175,7 @@ router.post('/signup', (req, res) => {
     }
 
     //Checking if all or no optional values are filled out
-    if(optionalCounter != 10 && optionalCounter != 0 ){
+    if(optionalCounter != 11 && optionalCounter != 0 ){
         return res.json({
             status: 'FAILED',
             message: "If one optional field is filled, the rest must be filled.",
