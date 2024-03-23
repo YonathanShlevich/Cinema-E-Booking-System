@@ -22,7 +22,13 @@ function Login() {
           
           // Handle successful signup
           console.log(response.data); // Log response from the API
-          navigate('/loggedin'); // Redirect user to verification page
+          if (response.data.status === "SUCCESS") {
+            // Redirect user to verification page or any other appropriate page
+            navigate('/loggedin');
+          } else {
+            // Display error message to the user
+            window.alert(response.data.message);
+          }
       } catch (error) {
           // Handle signup error
           console.error('Signin failed:', error);
