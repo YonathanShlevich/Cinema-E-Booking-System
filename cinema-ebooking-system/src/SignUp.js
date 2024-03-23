@@ -59,7 +59,22 @@ function SignUp() {
             lastName: document.getElementById("lastName").value,
             status: 2,
             type: 1,
-            promo: document.getElementById("promoyes").checked
+            promo: document.getElementById("promoyes").checked,
+            cardType: document.getElementById("cardType").value,
+            expDate: document.getElementById("exp").value,
+            cardNumber: document.getElementById("cardNumber").value,
+            billingAddr: document.getElementById("billingAddress").value,
+            billingCity: document.getElementById("billingCity").value,
+            billingState: document.getElementById("billingState").value,
+            billingZip: document.getElementById("billingZip").value,
+
+            homeAddr: document.getElementById("homeAddress").value,
+            homeCity: document.getElementById("homeCity").value,
+            homeState: document.getElementById("homeState").value,
+
+            homeZip:document.getElementById("homeZip").value
+    
+         
             
             // Add other form fields here
         };
