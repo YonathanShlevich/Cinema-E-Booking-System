@@ -116,6 +116,51 @@ function EditProfile() {
               <label>Zip:</label>
               <input id="homeZip" type="number" min="0" className="form-control" />
             </div>
+            <p className ='editprofcards'>Add Card</p>
+            <div className="form-group">
+              <label>Card Type:</label>
+              <select id="cardType" className="form-control">
+                <option selected></option>
+                <option value="visa">Visa</option>
+                <option value="master">Master Card</option>
+                <option value="amex">American Express</option>
+                </select>
+            </div>
+            <div className="form-group">
+              <label>Expiration Date:</label>
+              <input id="exp" type="month" className="form-control" />
+            </div>
+            <div className="form-group">
+              <label>Card Number:</label>
+              <input id="cardNumber" type="number" min="0" className="form-control" />
+            </div>
+            <p className ='editprofcards'>Edit Card Information</p>
+            <div className="form-group">
+              <label>Card:</label>
+              <select id="cardType" className="form-control">
+                <option selected></option>
+                <option value="visa">Card 1</option>
+                <option value="master">Card 2</option>
+                <option value="amex">Card 3</option>
+                </select>
+            </div>
+            <div className="form-group">
+              <label>Card Type:</label>
+              <select id="cardType" className="form-control">
+                <option selected></option>
+                <option value="visa">Visa</option>
+                <option value="master">Master Card</option>
+                <option value="amex">American Express</option>
+                </select>
+            </div>
+            <div className="form-group">
+              <label>Expiration Date:</label>
+              <input id="exp" type="month" className="form-control" />
+            </div>
+            <div className="form-group">
+              <label>Card Number:</label>
+              <input id="cardNumber" type="number" min="0" className="form-control" />
+            </div>
             {/* Checkbox display of whether the user wants promos or not*/}
             <div className="form-group">
               <label>Subscribe for promos?:</label>
@@ -127,7 +172,7 @@ function EditProfile() {
               </div>
             </div>
         
-            <button type="submit" className="btn btn-primary">Register</button>
+            <button type="submit" className="btn btn-primary">Finish</button>
           </form>
           
         </div>

@@ -28,6 +28,12 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
+
+  .editprofcards {
+
+    text-decoration: underline;
+
+  }
   
   .btn {
     padding: 8px 16px;
