@@ -10,17 +10,13 @@ function Verification() {
       {/* Code for form */}
       <div className="cardverify">
         {/* Verification Code Display */}
-        <h5 className="card-title">Enter Verification Code</h5>
-        <input
-          type="text"
-          className="formcontrolVerification"
-          placeholder="Enter verification code"
-        />
+        <h2 className="card-title">Verify your email, then login</h2>
+        
         {/* Links at the bottom the card */}
-         <Link to= "/loggedin">
-            <button type="submit" className="btn-submit">Submit</button>
+         <Link to= "/login">
+            <button className="btn-submit">Proceed to Login</button>
         </Link>
-        <p className="card-text">Code was sent to this email:example@example.com </p>
+        <p className="card-text">Link was sent to your inbox</p>
       </div>
     </div>
   );
