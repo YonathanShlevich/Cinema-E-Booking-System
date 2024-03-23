@@ -52,6 +52,7 @@ function generateAttributes(firstName, lastName, email, password) {
         { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered' },
         { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered' },
         { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered' },
+
         //Nothing for userStatus as it is not a user determined attribute
         //Type also isn't determined by the user
         //Promo is a true/false distinction, no need for regex
@@ -127,7 +128,9 @@ router.post('/signin', (req, res) => {
 // Signup API
 router.post('/signup', (req, res) => {
     //All the attributes of a User
-    let {firstName, lastName, email, password, status, type, promo} = req.body;
+    let {firstName, lastName, email, password, status, type, promo,  //Non-optional data
+        cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip, //Optional billing addr
+        homeAddr, homeState, homeZip} = req.body; //Optional home addr
     status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
     //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
@@ -195,6 +198,16 @@ router.post('/signup', (req, res) => {
                     message: "An error occured while hashing the password"
                 });
             });
+            //Create new homeAddress
+            const newHomeAddress= new HomeAddress=({
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword,
+                status: 2,
+                type,
+                promo
+            })
         }
     }).catch(err => {
         console.log(err);
