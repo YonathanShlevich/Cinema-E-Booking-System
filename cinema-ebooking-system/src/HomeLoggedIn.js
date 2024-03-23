@@ -15,7 +15,6 @@ const Home = () => {
   };
 
 
-
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -45,6 +44,7 @@ const Home = () => {
       <div className="dropdown">
           <button className="dropbtn">Account</button>
           <div className="dropdown-content">
+          <input type="text" value={getLoggedInUserId()} />
             <Link to="/viewprofile">View Profile</Link>
             <Link to="/">Logout</Link>
          </div>
