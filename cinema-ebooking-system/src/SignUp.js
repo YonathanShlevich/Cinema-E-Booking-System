@@ -12,12 +12,12 @@ function SignUp() {
         e.preventDefault();
 
         // Get form data
-      const formData = {
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
+      //const formData = {
+       // email: document.getElementById("email").value,
+       // password: document.getElementById("password").value
 
         // Add other form fields here
-    };
+    //};
     
         //References to the ids in the form
         let firstName = document.getElementById("firstName");
@@ -69,6 +69,14 @@ function SignUp() {
           
           // Handle successful signup
           console.log(response.data); // Log response from the API
+            // Check if sign-up was successful
+          if (response.data.status === "PENDING") {
+            // Redirect user to verification page or any other appropriate page
+            navigate('/verification');
+          } else {
+            // Display error message to the user
+            window.alert(response.data.message);
+          }
 
           // testing for response
           // window.alert(response.data)
