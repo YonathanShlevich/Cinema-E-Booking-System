@@ -10,7 +10,7 @@ const paymentCardSchema = new Schema({
     billingAddr: String,
     billingCity: String, 
     billingState: String, 
-    billingZip: String
+    billingZip: Number
 });
 
 const User = mongoose.model('paymentCard', paymentCardSchema);

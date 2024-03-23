@@ -7,7 +7,7 @@ const homeAddressSchema = new Schema({
     homeAddr: String,
     homeCity: String,
     homeState: String,
-    homeZip: String,
+    homeZip: Number,
 });
 
 const User = mongoose.model('homeAddress', homeAddressSchema);

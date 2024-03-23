@@ -55,16 +55,16 @@ function generateAttributes(firstName, lastName, email, password, cardType, expD
         { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered',required: true},
         { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered', required: true},
         { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'cardNumber', value: cardNumber, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'billingAddr', value: billingAddr, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'billingCity', value: billingCity, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'billingState', value: billingState, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'billingZip', value: billingZip, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'homeAddr', value: homeAddr, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'homeCity', value: homeCity, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
-        { name: 'homeZip', value: homeZip, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
+        { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid expDate', required: false},
+        { name: 'cardNumber', value: cardNumber, pattern: /^.{1,}$/, errMessage: 'Invalid cardNumber', required: false},
+        { name: 'billingAddr', value: billingAddr, pattern: /^.{1,}$/, errMessage: 'Invalid billingAddr', required: false},
+        { name: 'billingCity', value: billingCity, pattern: /^.{1,}$/, errMessage: 'Invalid billingCity', required: false},
+        { name: 'billingState', value: billingState, pattern: /^.{1,}$/, errMessage: 'Invalid billingState', required: false},
+        { name: 'billingZip', value: billingZip, pattern: /^.{1,}$/, errMessage: 'Invalid billingZip', required: false},
+        { name: 'homeAddr', value: homeAddr, pattern: /^.{1,}$/, errMessage: 'Invalid homeAddr', required: false},
+        { name: 'homeCity', value: homeCity, pattern: /^.{1,}$/, errMessage: 'Invalid homeCity', required: false},
+        { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid homeState', required: false},
+        { name: 'homeZip', value: homeZip, pattern: /^.{1,}$/, errMessage: 'Invalid homeZip', required: false},
         //Nothing for userStatus as it is not a user determined attribute
         //Type also isn't determined by the user
         //Promo is a true/false distinction, no need for regex
@@ -145,15 +145,18 @@ router.post('/signup', (req, res) => {
         homeAddr, homeCity, homeState, homeZip} = req.body; //Optional home addr
     status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
-    //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
     promo = promo;
     optionalCounter = 0;
-    const attributes = generateAttributes(firstName, lastName, email, password);
+    const attributes = generateAttributes(firstName, lastName, email, password, cardType, expDate, cardNumber, 
+        billingAddr, billingCity, billingState, billingZip, homeAddr, homeCity, homeState, homeZip);
 
     //For loop that ambigiously goes through all attributes' regex pattern
     for(const attribute of attributes){
-        if()
-        attribute.value = attribute.value.trim(); //Trimming all the attributes
+        // Only trim string values
+        if(typeof attribute.value === 'string'){
+            attribute.value = attribute.value.trim(); //Trimming all the attributes
+        }
+
         //Checks if an attribute is empty
         if(!attribute.value){
             if(attribute.required){ //If required
@@ -164,16 +167,14 @@ router.post('/signup', (req, res) => {
             } else { //If optional
                 optionalCounter++;
             }
-        }
-        // Check if the attribute matches the regex pattern
-        if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
+        } else if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
             return res.json({
                 status: 'FAILED',
                 message: attribute.errMessage,
             });
         }
     }
-
+    console.log(optionalCounter)
     //Checking if all or no optional values are filled out
     if(optionalCounter != 11 && optionalCounter != 0 ){
         return res.json({
@@ -205,9 +206,9 @@ router.post('/signup', (req, res) => {
 
                 //This saves the new user with a success message
                 newUser.save().then(result => {
-                    //Create new homeAddress since user is good to go
+                    //Send verification email
                     const newHomeAddress= new homeAddress({
-                        userId: saved_id,
+                        userId: result._id,
                         homeCity,
                         homeAddr, 
                         homeState, 
@@ -218,13 +219,13 @@ router.post('/signup', (req, res) => {
                     }).catch(err => {
                         res.json({
                             status: "FAILED",
-                            message: "An error occured while hashing the password"
+                            message: "An error occured while saving the home address"
                         });
                     });
                     
                     //Create new billingAddress since user is good to go
                     const newPaymentCard = new paymentCard({
-                        userId: saved_id,
+                        userId: result.result._id,
                         cardType, 
                         expDate,
                         cardNumber, 
@@ -238,11 +239,9 @@ router.post('/signup', (req, res) => {
                     }).catch(err => {
                         res.json({
                             status: "FAILED",
-                            message: "An error occured while hashing the password"
+                            message: "An error occured while saving the payment card"
                         });
                     });
-
-                    //Send verification email
                     sendVerificationEmail(result, res); //Send the verification email
                 }).catch(err => {
                     res.json({
