@@ -269,7 +269,7 @@ const sendVerificationEmail = ({_id, email}, res) => {
 
 
 //Verify email
-router.get("/verify/:userID/:uniqueString", (req, res) => {
+router.get("/verify/:userId/:uniqueString", (req, res) => {
     let {userId, uniqueString} = req.params;
 
     //Does the verification record exist?
@@ -289,72 +289,85 @@ router.get("/verify/:userID/:uniqueString", (req, res) => {
                             User
                                 .deleteOne({ _id: userId}) //Once the verification record expires, delete the user
                                 .then(() => {
+                                    let message = "Account deleted - expired - sign up again";
+                                    res.redirect(`/user/verified/?error=true&message=${message}`);
                                     //Record was deleted
                                     //Message should be that the link has expired and they'll need to sign up again
                                     //MORE BLASTED ROUTING
                                 })
                                 .catch(err => {
+
                                     console.log(err);
+                                    let message = "Error occured";
+                                    res.redirect(`/user/verified/?error=true&message=${message}`);
                                     //MORE DAMNED ROUTING ARGH!!
                                 }) 
                         })
                         .catch((err) => {
                             console.log(err);
+                            let message = "Error occured";
+                            res.redirect(`/user/verified/?error=true&message=${message}`);
                             //Same routing stuff as earlier (later technically? Look at the last catch in this function)
                         })
                 } else { //If there is a valid record, so validate!
                     //Compare the hashed string to the db
                     bcrypt
-                    .compare(uniqueString, hashedUniqueString, (err, result) =>{
-                        if(err){
-                            //Damn routing again... You front enders better make a verification page
-                        }
-                        if(!result){ //If the strings don't match
-                            //Routing, man...
-                        }
-                        //If the strings match
-
-                        User
+                    .compare(uniqueString, hashedUniqueString)
+                    .then(result => {
+                        if (result) {
+                            //strings match
+                            User
                             .updateOne({_id: userId}, {status: 1})
                             .then(() =>{
                                 UserStatus
                                 .deleteOne({userId})
                                 .then(() => {
-                                    res.redirect()
+                                    res.sendFile(path.join(__dirname, "./../views/verified.html"));
                                     //Okay this time the routing is good. Just send it to the verified page (I think?) I will link the stuff I'm following
                                     // in the discord
                                 })
-                                .catch(err => {
+                                .catch(error => {
+                                    console.log(console.error);
+                                    let message = "Error occured";
+                                    res.redirect(`/user/verified/?error=true&message=${message}`);
                                     //Okay so the routing stuff goes like this:
                                     // There is an html page that needs to take in a message from these routing commands and takes the message as an input
                                     // That's it. It all goes on one page, I just don't have the will or the knowledge to do this with
                                     // any level of effiency. Please.
                                 })
                             })
-                            .catch(err => {
-                                console.log(err);
+                            .catch(error => {
+                                console.log(error);
+                                let message = "An error occured while updating records";
+                                res.redirect(`/user/verified/?error=true&message=${message}`);
+                                
                                 //ARG THIS ROUTING FUUUUUUUUUU
                             })
+                        }
+
+                        
 
                     })
 
                 }
 
-            } else { //Record doesn't exist
+            } else { //Record doesn't exist (result length = 0)
                 //Paste same thing here as in the catch block below for routing
+                let message = "No record exists, you may already be verified";
+                res.redirect(`/user/verified/?error=true&message=${message}`);
             }
         })
         .catch((err) => {
             console.log(err);
             //MAKE THIS A ROUTE TO AN HTML PAGE THAT SAYS THERE'S AN ERROR IN CHECKING VERIFICATION RECORD
             let message = "An error occured when checking for existing user verification record";
-            res.redirect(`/user/verified/error=true&message=${message}`);
+            res.redirect(`/user/verified/?error=true&message=${message}`);
         })
 });
 
 //Verify path route
 router.get("/verified", (req, res) => {
-    
+    res.sendFile(path.join(__dirname, "./../views/verified.html"));
 })
 
 
