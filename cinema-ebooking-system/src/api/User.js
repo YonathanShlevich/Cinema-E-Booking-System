@@ -130,7 +130,7 @@ router.post('/signup', (req, res) => {
     //All the attributes of a User
     let {firstName, lastName, email, password, status, type, promo,  //Non-optional data
         cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip, //Optional billing addr
-        homeAddr, homeState, homeZip} = req.body; //Optional home addr
+        homeAddr, homeCity, homeState, homeZip} = req.body; //Optional home addr
     status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
     //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
