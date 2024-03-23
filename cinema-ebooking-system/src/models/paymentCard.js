@@ -6,7 +6,11 @@ const paymentCardSchema = new Schema({
     userId: String,
     cardType: String,
     expDate: Date,
+    cardNumber: Number,
     billingAddr: String,
+    billingCity: String, 
+    billingState: String, 
+    billingZip: String
 });
 
 const User = mongoose.model('paymentCard', paymentCardSchema);
