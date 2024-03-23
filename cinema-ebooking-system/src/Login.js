@@ -18,11 +18,11 @@ function Login() {
       };
       try {
           // Make POST request to signin endpoint
-          const response = await axios.post("http://localhost:5000/User/signin", formData);
+          const response = await axios.post("http://localhost:5000/user/signin", formData);
           
           // Handle successful signup
           console.log(response.data); // Log response from the API
-          navigate('/verification'); // Redirect user to verification page
+          navigate('/loggedin'); // Redirect user to verification page
       } catch (error) {
           // Handle signup error
           console.error('Signin failed:', error);

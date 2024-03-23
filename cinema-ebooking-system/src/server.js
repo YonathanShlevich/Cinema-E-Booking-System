@@ -6,6 +6,10 @@ const port = 5000;
 
 const UseRouter = require('./api/User');
 
+//Adding CORS
+let cors = require("cors");
+app.use(cors());
+
 //Accepts post data
 const bodyParser = require('express').json;
 app.use(bodyParser());
