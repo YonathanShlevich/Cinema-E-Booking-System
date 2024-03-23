@@ -7,6 +7,11 @@ function Login() {
 
   const navigate = useNavigate();
 
+  // Function to set user ID in localStorage
+  const setLoggedInUserId = (userId) => {
+    localStorage.setItem('loggedInUserId', userId);
+  };
+
   const handleSubmit = async (e) => {
       e.preventDefault();
       
@@ -24,6 +29,7 @@ function Login() {
           console.log(response.data); // Log response from the API
           if (response.data.status === "SUCCESS") {
             // Redirect user to verification page or any other appropriate page
+            setLoggedInUserId(response.data._id);
             navigate('/loggedin');
           } else {
             // Display error message to the user

@@ -4,6 +4,18 @@ import './HomeLoggedIn.css';
 
 const Home = () => {
 
+    // Function to get user ID from localStorage
+  const getLoggedInUserId = () => {
+    return localStorage.getItem('loggedInUserId');
+  };
+
+  // Function to clear user ID from localStorage (logout)
+  const clearLoggedInUserId = () => {
+    localStorage.removeItem('loggedInUserId');
+  };
+
+
+
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
 
