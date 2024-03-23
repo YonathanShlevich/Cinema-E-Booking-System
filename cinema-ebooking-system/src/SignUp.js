@@ -1,17 +1,27 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './SignUp.css';
+import axios from 'axios';
 
 function SignUp() {
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
         e.preventDefault();
+
+        // Get form data
+      const formData = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+
+        // Add other form fields here
+    };
     
         //References to the ids in the form
-        let name = document.getElementById("name");
+        let firstName = document.getElementById("firstName");
+        let lastName = document.getElementById("lastName");
         let email = document.getElementById("email");
         let password = document.getElementById("password");
         let confirmPass = document.getElementById("confirmPass");
@@ -34,12 +44,43 @@ function SignUp() {
         let promoSubs = document.querySelector('input[name="promosub"]:checked').value;
 
 
-        if (name.value === "" || phoneNum.value === "" || email.value === "" 
+        if (firstName.value === "" || lastName.value === "" || phoneNum.value === "" || email.value === "" 
             || password.value === "" || confirmPass.value === "") {
           window.alert("Ensure you input a value in all fields marked *");
-        } else { // all is good
-            // submit to database
-            navigate('/verification');
+        } else if (password.value !== confirmPass.value) {
+          window.alert("Ensure passwords match!")
+        }
+        
+        else { // all is good
+          const formData = {
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value,
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            status: 2,
+            type: 1,
+            promo: document.getElementById("promoyes").checked
+            
+            // Add other form fields here
+        };
+        try {
+          // Make POST request to signup endpoint
+          const response = await axios.post("http://localhost:5000/user/signup", formData);
+          
+          // Handle successful signup
+          console.log(response.data); // Log response from the API
+
+          // testing for response
+          // window.alert(response.data)
+          // Redirect user to verification page
+      } catch (error) {
+          // Handle signup error
+          console.error('signup failed:', error);
+          // Display error message to the user
+          window.alert(error);
+      }
+
+          //  navigate('/verification');
             
         }
 
@@ -60,8 +101,12 @@ function SignUp() {
           {/* When submit is click, it is handled by the function*/}
           <form action="" id="signUpForm" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>*Name:</label>
-              <input type="text" className="form-control" id="name"/>
+              <label>*First Name:</label>
+              <input type="text" className="form-control" id="firstName"/>
+            </div>
+            <div className="form-group">
+              <label>*Last Name:</label>
+              <input type="text" className="form-control" id="lastName"/>
             </div>
             <div className="form-group">
               <label>*Phone Number: (Format: 123-456-7890)</label>

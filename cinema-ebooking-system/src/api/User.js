@@ -131,7 +131,7 @@ router.post('/signup', (req, res) => {
     status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
     //TODO: Make the promo code a box that is checked by the user. For now it defaults to false
-    promo = false; 
+    promo = promo;
 
     const attributes = generateAttributes(firstName, lastName, email, password);
 
@@ -203,7 +203,7 @@ router.post('/signup', (req, res) => {
             message: "An error occured while checking for existing user"
          });
     });
-});
+}); // /signup
 
 //Send email type beat
 const sendVerificationEmail = ({_id, email}, res) => {
