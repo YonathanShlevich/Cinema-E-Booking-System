@@ -47,13 +47,15 @@ const bcrypt = require('bcrypt');
 //of each attribute, it's regex pattern, and its error message. Then just run through it with a loop.
 //NOTE: Turns out half of the attributes do not need a regex pattern, but we are keeping this and possbily making it a global
 //function of some kind for all other checks. 
-function generateAttributes(firstName, lastName, email, password, cardType, expDate, cardNumber, 
+function generateAttributes(firstName, lastName, email, password, phoneNumber, cardType, expDate, cardNumber, 
     billingAddr, billingCity, billingState, billingZip, homeAddr, homeCity, homeState, homeZip) {
     return [
         { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered', required: true},
         { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered', required: true},
         { name: 'email', value: email, pattern: /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/, errMessage: 'Invalid email entered',required: true},
         { name: 'password', value: password, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered', required: true},
+        { name: 'phoneNumber', value: phoneNumber, pattern: /^[0-9-]+$/, errMessage: 'Invalid password entered', required: true},
+
         { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
         { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid expDate', required: false},
         { name: 'cardNumber', value: cardNumber, pattern: /^.{10}$/, errMessage: 'Invalid cardNumber', required: false},
@@ -205,14 +207,14 @@ router.post('/signin', (req, res) => {
 // Signup API
 router.post('/signup', (req, res) => {
     //All the attributes of a User
-    let {firstName, lastName, email, password, status, type, promo,  //Non-optional data
+    let {firstName, lastName, email, password, status, type, promo, phoneNumber,  //Non-optional data
         cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip, //Optional billing addr
         homeAddr, homeCity, homeState, homeZip} = req.body; //Optional home addr
     status = 2; //Status is 2, meaning it is inactive and requires the email verification 
     type = 1; //1 means customer, 2 means admin
     promo = promo;
     optionalCounter = 0;
-    const attributes = generateAttributes(firstName, lastName, email, password, cardType, expDate, cardNumber, 
+    const attributes = generateAttributes(firstName, lastName, email, password, phoneNumber, cardType, expDate, cardNumber, 
         billingAddr, billingCity, billingState, billingZip, homeAddr, homeCity, homeState, homeZip);
     //For loop that ambigiously goes through all attributes' regex pattern
     for(const attribute of attributes){
@@ -255,6 +257,7 @@ router.post('/signup', (req, res) => {
                 message: "A user with this email already exists"
             })
         } else { //Creates the user
+            console.log(phoneNumber)
             const saltRounds = 10; //Hashing attribute
             bcrypt.hash(password, saltRounds).then(hashedPassword => {
                 //This creates a new user with the hashpassword
@@ -263,14 +266,17 @@ router.post('/signup', (req, res) => {
                     lastName,
                     email,
                     password: hashedPassword,
+                    phoneNumber,
                     status: 2,
                     type,
                     promo
                 })
+                console.log(phoneNumber)
 
                 //This saves the new user with a success message
                 newUser.save().then(result => {
                     //Send verification email
+                    console.log(phoneNumber)
                     if(optionalCounter == 0 ){
                         const newHomeAddress= new homeAddress({
                             userId: result._id,
@@ -290,8 +296,8 @@ router.post('/signup', (req, res) => {
                         
                         //Need to hash the credit card info
                         //
-                        const cardNumberHashedPortion = cardNumber.toString().slice(-4);
-                        bcrypt.hash(cardNumber, saltRounds)
+                        // const cardNumberHashedPortion = cardNumber.toString().slice(-4);
+                        // bcrypt.hash(cardNumber, saltRounds)
 
                         //Create new billingAddress since user is good to go
                         const newPaymentCard = new paymentCard({

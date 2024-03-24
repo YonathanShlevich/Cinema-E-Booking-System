@@ -57,6 +57,7 @@ function SignUp() {
             password: document.getElementById("password").value,
             firstName: document.getElementById("firstName").value,
             lastName: document.getElementById("lastName").value,
+            phoneNumber: document.getElementById("tel").value,
             status: 2,
             type: 1,
             promo: document.getElementById("promoyes").checked,

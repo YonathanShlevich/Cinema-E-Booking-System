@@ -15,7 +15,12 @@ function ViewProfile() {
     //Pulls the userID and sets response to second var
     axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
       .then(response => {
-        setUserInfo(response.data); //Set user info to the response data
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setUserInfo(response.data); //Set user info to the response data
+        }
+        
       })
       .catch(error => {
         console.error('Error fetching user info:', error);
@@ -27,7 +32,12 @@ function ViewProfile() {
     //Pulls the userID and sets response to second var
     axios.get(`http://localhost:5000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
       .then(response => {
-        setHomeInfo(response.data); //Set user info to the response data
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setHomeInfo(response.data); //Set user info to the response data
+        }
+        
       })
       .catch(error => {
         console.error('Error fetching user info:', error);
@@ -39,7 +49,12 @@ function ViewProfile() {
     //Pulls the userID and sets response to second var
     axios.get(`http://localhost:5000/user/data/paymentCard/${userId}`) //Calls our data backend GET call
       .then(response => {
-        setCardInfo(response.data); //Set user info to the response data
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setCardInfo(response.data); //Set user info to the response data
+
+        }
       })
       .catch(error => { 
         console.error('Error fetching user info:', error);
