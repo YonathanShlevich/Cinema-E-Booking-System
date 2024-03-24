@@ -35,8 +35,8 @@ function ChangePassword() {
           
           
           const formData = {
-            oldPass: document.getElementById("oldpassword").value,
-            newPass: document.getElementById("newpassword").value
+            oldPassword: document.getElementById("oldpassword").value,
+            newPassword: document.getElementById("newpassword").value
 
           };
           
