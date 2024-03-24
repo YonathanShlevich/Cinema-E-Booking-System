@@ -404,6 +404,59 @@ const sendVerificationEmail = ({_id, email}, res) => {
     });
 }
 
+//Change password API ping, 
+router.post("/changePassword/:userId", (req, res) => {
+    let {userId} = req.params; //Brings in userId
+    let {oldPassword, newPassword} = req.body
+    //Checking if user exists, then checking if passwords match
+    User.find({userId}).then((result) => {
+        if(result.length > 0) { //User exists
+            //Code copied from signin
+            const hashedPW = result[0].password;
+            //Debugging passwords: console.log(result[0].password + " : " + hashedPW);
+            //Compared the hashed password to oldPassword
+            bcrypt.compare(oldPassword, hashedPW, (err, data) => {
+                if(err){ //Error in comparison
+                    res.json({
+                        status: "FAILED",
+                        message: "Error while comparing passwords"
+                    })
+                }
+                if(!data) { //Incorrect password
+                    res.json({
+                        status: "FAILED",
+                        message: "Invalid old password"
+                    })
+                }
+
+                //Old password is equal to stored password
+                //This means that we need to hash the new password and update it
+                bcrypt.hash(newPassword, saltRounds).then(newPasswordHashed => {
+                    User.findOneAndUpdate({_id: userId}, {password: newPasswordHashed}, {status: 2})
+                        .then(() => {
+                            sendVerificationEmail(userId, result[0].email); //Send the verification email
+                            res.json({
+                                status: "SUCCESS",
+                                message: "New password creation was successful",
+                                data: data
+                            });
+                        }).catch(err => {
+                            res.json({
+                                status: "FAILED",
+                                message: "New password creation failed",
+                                data: data
+                            });
+                        })
+                });
+                  
+            })  
+        }
+    })
+    
+})
+
+
+
 
 //Verify email
 router.get("/verify/:userId/:uniqueString", (req, res) => {
