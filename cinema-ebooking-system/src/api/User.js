@@ -407,7 +407,9 @@ const sendVerificationEmail = ({_id, email}, res) => {
 //Change password API ping, 
 router.post("/changePassword/:userId", (req, res) => {
     let {userId} = req.params; //Brings in userId
-    let {oldPassword, newPassword} = req.body
+
+    let {oldPassword, newPassword} = req.body;
+    console.log(userId + " " + oldPassword + " " + newPassword);
     //Checking if user exists, then checking if passwords match
     User.find({userId}).then((result) => {
         if(result.length > 0) { //User exists

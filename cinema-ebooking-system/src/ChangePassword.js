@@ -1,13 +1,25 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 function ChangePassword() {
+    const userId = localStorage.getItem('loggedInUserId');
 
     const navigate = useNavigate();
 
+    // Function to clear user ID from localStorage (logout)
+    const setLoggedInUserId = (userId) => {
+      localStorage.setItem('loggedInUserId', userId);
+    };
+  const clearLoggedInUserId = () => {
+    localStorage.removeItem('loggedInUserId');
+    setLoggedInUserId(null);
+  };
+
     //When clicking submit, this will be used to determine if the passwords can be changed or not
     //this is done by checking to make sure all the fields are filled in and new password = confirmpassword
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
         e.preventDefault();
     
@@ -20,9 +32,38 @@ function ChangePassword() {
         } else if (newpassword.value !== confirmpassword.value) {
             window.alert("Passwords do not match.");
         } else {
+          
+          
+          const formData = {
+            oldPass: document.getElementById("oldpassword").value,
+            newPass: document.getElementById("newpassword").value
 
-            window.alert("Password changed successfully.");
-            navigate('/login');
+          };
+          
+
+          try {
+            // Make POST request to signin endpoint
+            const response = await axios.post(`http://localhost:5000/user/changePassword/${userId}`, formData);
+            
+            // Handle successful signup
+            if (response.data.status === "SUCCESS") {
+              // Redirect user to verification page or any other appropriate page
+              clearLoggedInUserId();
+              navigate('/verification');
+              
+            } else {
+              // Display error message to the user
+              window.alert(response.data.message);
+            }
+        } catch (error) {
+            // Handle signup error
+            console.error('Change password failed:', error);
+            // Display error message to the user
+            window.alert(error);
+        }
+
+            // window.alert("Password changed successfully.");
+            // navigate('/login');
         }
 
     }
