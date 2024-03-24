@@ -46,7 +46,7 @@ function ChangePassword() {
             const response = await axios.post(`http://localhost:5000/user/changePassword/${userId}`, formData);
             
             // Handle successful signup
-            if (response.data.status === "SUCCESS") {
+            if (response.data.status === "PENDING") {
               // Redirect user to verification page or any other appropriate page
               clearLoggedInUserId();
               navigate('/verification');

@@ -347,8 +347,8 @@ router.post('/signup', (req, res) => {
 //Send email type beat
 const sendVerificationEmail = ({_id, email}, res) => {
     //URL for the email, in our case currently it is localhost:5000
-    cosole.log("sendVerEmail email: " + email);
-    cosole.log("sendVerEmail id: " + _id);
+    console.log("sendVerEmail email: " + email);
+    console.log("sendVerEmail id: " + _id);
 
     const currentURL = "http://localhost:5000/";
 
@@ -408,7 +408,7 @@ const sendVerificationEmail = ({_id, email}, res) => {
         });
     });
 }
-
+/* 
 //Change password API ping, 
 router.post("/changePassword/:userId", (req, res) => {
     let {userId} = req.params; //Brings in userId
@@ -427,11 +427,13 @@ router.post("/changePassword/:userId", (req, res) => {
             bcrypt.compare(oldPassword, hashedPW, (err, data) => {
                 console.log(data);
                 if(!data) { //Incorrect password
+                    console.log("incorrect pass entered when attempting to change");
                     res.json({
                         status: "FAILED",
                         message: "Invalid old password"
                     })
-                }
+                } else { // correct password
+                    console.log("correct pass entered when attempting to change");
                 //Old password is equal to stored password
                 //This means that we need to hash the new password and update it
                 const saltRounds = 10;
@@ -454,13 +456,17 @@ router.post("/changePassword/:userId", (req, res) => {
                             });
                         });
                 }).catch(err => {
+                    console.log("hashing failed");
                     res.json({
                         status: "FAILED",
                         message: "Hashing failed",
                     });
                 });
+                } // correct password
+                
                   
             }).catch(err => {
+                console.log("compare failed");
                 res.json({
                     status: "FAILED",
                     message: "Compare failed",
@@ -468,7 +474,9 @@ router.post("/changePassword/:userId", (req, res) => {
             });
         }
     }).catch(err => {
+        console.log("user not found");
         res.json({
+            
             status: "FAILED",
             message: "User not found",
         });
@@ -477,6 +485,41 @@ router.post("/changePassword/:userId", (req, res) => {
     
 })
 
+*/
+
+router.post("/changePassword/:userId", async (req, res) => {
+    try {
+        const { userId } = req.params; //Brings in userId
+        const { oldPassword, newPassword } = req.body;
+        
+        // Checking if user exists
+        const user = await User.findOne({ _id: userId });
+        if (!user) {
+            return res.json({ status: "FAILED", message: "User not found" });
+        }
+
+        // Comparing old password
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isPasswordValid) {
+            return res.json({ status: "FAILED", message: "Invalid old password" });
+        }
+
+        // Hashing new password
+        const saltRounds = 10;
+        const newPasswordHashed = await bcrypt.hash(newPassword, saltRounds);
+
+        // Updating password
+        await User.findOneAndUpdate({ _id: userId }, { password: newPasswordHashed }, { status: 2 });
+
+        // Sending email
+        await sendVerificationEmail(user, res);
+
+        // res.json({ status: "SUCCESS", message: "Password changed successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "FAILED", message: "Internal server error" });
+    }
+});
 
 
 
