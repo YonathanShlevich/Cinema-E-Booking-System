@@ -503,6 +503,17 @@ router.post("/changePassword/:userId", async (req, res) => {
         if (!isPasswordValid) {
             return res.json({ status: "FAILED", message: "Invalid old password" });
         }
+        const passwordCheck = { 
+            name: 'password', value: newPassword, pattern: /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`])[a-zA-Z\d!@#$%^&*()\-_=+{}[\]:;"'<>,.?/|\\~`]{8,}$/, errMessage: 'Invalid password entered, must contain upper case, lower case, number, symbol, and be 8+ length', required: true
+        }
+
+      // if the password does not meet regex
+        if (passwordCheck.pattern && !passwordCheck.pattern.test(passwordCheck.value)) {
+            return res.json({
+                status: 'FAILED',
+                message: passwordCheck.errMessage,
+            });
+        }
 
         // Hashing new password
         const saltRounds = 10;
