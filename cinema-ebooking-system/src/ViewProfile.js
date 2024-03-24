@@ -8,7 +8,7 @@ function ViewProfile() {
   return (
     <div>
       {/* Code for showing the profile */}
-      <Link to="/loggedin" className="backhome"> Back to Home</Link>
+      <Link to="/" className="backhome"> Back to Home</Link>
       <Link to="/" className="logoutbutton">Logout</Link>
       <div className="profile-card">
         <h2>User Profile</h2>

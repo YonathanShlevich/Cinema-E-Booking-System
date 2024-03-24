@@ -26,7 +26,7 @@ function BookTicket() {
     }
   return (
     <div>
-      <Link to="/loggedin" className="backbutton">Cancel</Link>
+      <Link to="/" className="backbutton">Cancel</Link>
       <div className="card">
         <div className="card-header">
           <h2>Book Tickets</h2>

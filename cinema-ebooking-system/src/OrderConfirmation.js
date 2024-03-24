@@ -16,7 +16,7 @@ function OrderConfirmation() {
     const navigate = useNavigate();
 
     const backToHome = () => {
-        navigate("/loggedin")
+        navigate("/")
     }
   return (
 
