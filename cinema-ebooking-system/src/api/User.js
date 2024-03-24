@@ -411,49 +411,60 @@ router.post("/changePassword/:userId", (req, res) => {
     let {oldPassword, newPassword} = req.body;
     console.log(userId + " " + oldPassword + " " + newPassword);
     //Checking if user exists, then checking if passwords match
-    User.find({userId}).then((result) => {
-        if(result.length > 0) { //User exists
+    User.findOne({_id: userId}).then((result) => {
+        console.log(`Entry to find: ${result}`);
+        if(result) { //User exists
             //Code copied from signin
-            const hashedPW = result[0].password;
+            const hashedPW = result.password;
+            console.log(hashedPW);
             //Debugging passwords: console.log(result[0].password + " : " + hashedPW);
             //Compared the hashed password to oldPassword
             bcrypt.compare(oldPassword, hashedPW, (err, data) => {
-                if(err){ //Error in comparison
-                    res.json({
-                        status: "FAILED",
-                        message: "Error while comparing passwords"
-                    })
-                }
+                console.log(data);
                 if(!data) { //Incorrect password
                     res.json({
                         status: "FAILED",
                         message: "Invalid old password"
                     })
                 }
-
                 //Old password is equal to stored password
                 //This means that we need to hash the new password and update it
+                const saltRounds = 10;
+                console.log(saltRounds);
                 bcrypt.hash(newPassword, saltRounds).then(newPasswordHashed => {
+                    console.log("hashbrowns");
                     User.findOneAndUpdate({_id: userId}, {password: newPasswordHashed}, {status: 2})
                         .then(() => {
-                            sendVerificationEmail(userId, result[0].email); //Send the verification email
-                            res.json({
-                                status: "SUCCESS",
-                                message: "New password creation was successful",
-                                data: data
-                            });
+                            console.log("We are about to send the email!");
+                            sendVerificationEmail(userId, result.email); //Send the verification email
+                            console.log("Sent!");
                         }).catch(err => {
                             res.json({
                                 status: "FAILED",
                                 message: "New password creation failed",
-                                data: data
                             });
-                        })
+                        });
+                }).catch(err => {
+                    res.json({
+                        status: "FAILED",
+                        message: "Hashing failed",
+                    });
                 });
                   
-            })  
+            }).catch(err => {
+                res.json({
+                    status: "FAILED",
+                    message: "Compare failed",
+                });
+            });
         }
-    })
+    }).catch(err => {
+        res.json({
+            status: "FAILED",
+            message: "User not found",
+        });
+    });
+    console.log("Skipped");
     
 })
 
