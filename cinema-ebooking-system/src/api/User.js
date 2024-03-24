@@ -57,13 +57,13 @@ function generateAttributes(firstName, lastName, email, password, cardType, expD
         { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: false},
         { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid expDate', required: false},
         { name: 'cardNumber', value: cardNumber, pattern: /^.{10}$/, errMessage: 'Invalid cardNumber', required: false},
-        { name: 'billingAddr', value: billingAddr, pattern: /^.{1,}$/, errMessage: 'Invalid billingAddr', required: false},
-        { name: 'billingCity', value: billingCity, pattern: /^.{1,}$/, errMessage: 'Invalid billingCity', required: false},
-        { name: 'billingState', value: billingState, pattern: /^[a-zA-z]$/, errMessage: 'Invalid billingState', required: false},
+        { name: 'billingAddr', value: billingAddr, pattern: /^[1-9][0-9]*[ ]+[a-zA-Z ]+$/, errMessage: 'Invalid billingAddr', required: false},
+        { name: 'billingCity', value: billingCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid billingCity', required: false},
+        { name: 'billingState', value: billingState, pattern: /^.{1,}$/, errMessage: 'Invalid billingState', required: false},
         { name: 'billingZip', value: billingZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid billingZip', required: false},
-        { name: 'homeAddr', value: homeAddr, pattern: /^[a-zA-z]$/, errMessage: 'Invalid homeAddr', required: false},
-        { name: 'homeCity', value: homeCity, pattern: /^[a-zA-z]$/, errMessage: 'Invalid homeCity', required: false},
-        { name: 'homeState', value: homeState, pattern: /^[a-zA-z]$/, errMessage: 'Invalid homeState', required: false},
+        { name: 'homeAddr', value: homeAddr, pattern: /^[1-9][0-9]*[ ]+[a-zA-Z ]+$/, errMessage: 'Invalid homeAddr', required: false},
+        { name: 'homeCity', value: homeCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid homeCity', required: false},
+        { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid homeState', required: false},
         { name: 'homeZip', value: homeZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid homeZip', required: true},
         //Nothing for userStatus as it is not a user determined attribute
         //Type also isn't determined by the user
@@ -82,8 +82,7 @@ router.get("/data/:userID", (req, res) =>{
                     status: "FAILED",
                     message: 'User does not exist'
                 });
-            } 
-            console.log(userID + " : " + result);    
+            }   
             return res.json(result); //This just returns the full json of the items in the User
         }).catch(error =>{
             console.log(`Error: ${error}`);
@@ -95,27 +94,48 @@ router.get("/data/:userID", (req, res) =>{
 })
 
 
-// //GET function to pull homeAddress into View Profile
-// router.get("/data/homeAddr/:userID", (req, res) =>{
-//     const userID = req.params.userID; //Pulling userId from the URL parameters
-//     User.findOne({userId: userID})
-//         .then(result => {
-//             if(!result){ //If the userID doesn't exist
-//                 return res.json({
-//                     status: "FAILED",
-//                     message: 'Home Address user does not exist'
-//                 });
-//             } 
-//             console.log(userID + " : " + result);    
-//             return res.json(result); //This just returns the full json of the items in the User
-//         }).catch(error =>{
-//             console.log(`Error: ${error}`);
-//             return res.json({
-//                 status: "FAILED",
-//                 message: 'Error with pulling data'
-//             });
-//         })
-// })
+//GET function to pull homeAddress into View Profile
+router.get("/data/homeAddr/:userID", (req, res) =>{
+    const userID = req.params.userID; //Pulling userId from the URL parameters
+    homeAddress.findOne({userId: userID})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Home Address user does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+//GET function to pull homeAddress into View Profile
+router.get("/data/paymentCard/:userID", (req, res) =>{
+    const userID = req.params.userID; //Pulling userId from the URL parameters
+    paymentCard.findOne({userId: userID})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Payment card user does not exist'
+                });
+            } 
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
 
 // Signin API
 router.post('/signin', (req, res) => {
@@ -194,14 +214,13 @@ router.post('/signup', (req, res) => {
     optionalCounter = 0;
     const attributes = generateAttributes(firstName, lastName, email, password, cardType, expDate, cardNumber, 
         billingAddr, billingCity, billingState, billingZip, homeAddr, homeCity, homeState, homeZip);
-
     //For loop that ambigiously goes through all attributes' regex pattern
     for(const attribute of attributes){
         // Only trim string values
         if(typeof attribute.value === 'string'){
             attribute.value = attribute.value.trim(); //Trimming all the attributes
         }
-
+        console.log(attribute.value + " : " + attribute.pattern);
         //Checks if an attribute is empty
         if(!attribute.value){
             if(attribute.required){ //If required
