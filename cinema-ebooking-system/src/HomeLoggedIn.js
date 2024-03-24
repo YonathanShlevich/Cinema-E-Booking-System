@@ -21,6 +21,10 @@ const Home = () => {
     localStorage.removeItem('loggedInUserId');
   };
 
+  const handleLogout = () => {
+    clearLoggedInUserId();
+  };
+
 
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -52,7 +56,7 @@ const Home = () => {
           <button className="dropbtn">Account</button>
           <div className="dropdown-content">
             <Link to="/viewprofile">View Profile</Link>
-            <Link to="/">Logout</Link>
+            <Link to="/" onClick={handleLogout}>Logout</Link>
          </div>
         </div>
         <input type="text" id="searchbar" placeholder="Search for movies..." />
@@ -60,7 +64,6 @@ const Home = () => {
         <button id='btnbook'> <Link to='/bookticket'>Book Ticket</Link></button>
       </nav>
   
-      <input type="text" value={loggedInUserId} />
       <h1>Now Showing</h1>
       <div className="movie-gallery">
         {nowShowingMovies.map((movie) => (

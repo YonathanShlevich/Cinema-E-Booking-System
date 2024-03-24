@@ -18,6 +18,26 @@ const Home = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
+
+  useEffect(() => {
+    //Function to get user ID from localStorage
+    const getLoggedInUserId = () => {
+     return localStorage.getItem('loggedInUserId');
+    };
+
+    //Set the initial value for loggedInUserId when the component mounts
+    setLoggedInUserId(getLoggedInUserId());
+  }, []);
+
+  // Function to clear user ID from localStorage (logout)
+  const clearLoggedInUserId = () => {
+    localStorage.removeItem('loggedInUserId');
+  };
+
+  const handleLogout = () => {
+    clearLoggedInUserId();
+  };
 
   // Fetching movies from JSON file on component mount
   useEffect(() => {
@@ -64,16 +84,31 @@ const Home = () => {
     <div className="home">
       <nav>
         {/* This is where the navbar and the elements inside is located */}
-        <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+        {loggedInUserId ? (
+          // If user is logged in, display account-related buttons
+          <>
+            <button className="dropbtn">Account</button>
+            <div>
+              <Link to="/viewprofile">View Profile</Link>
+              <Link to="/" onClick={handleLogout}>Logout</Link>
+            </div>
+          </>
+        ) : (
+          // If user is not logged in, display login/signup button
+          <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+        )}
         {/* Search bar */}
         <input
           type="text"
-          id="searchbar"
+          id="searchbarloggedin"
           placeholder="Search for movies..."
           value={searchTerm}
           onChange={handleSearch}
         />
         <button> +Filter </button>
+        {loggedInUserId && (
+          <button id='btnbook'> <Link to='/bookticket'>Book Ticket</Link></button>
+        )}
       </nav>
 
       {/* Section for Now Showing movies */}

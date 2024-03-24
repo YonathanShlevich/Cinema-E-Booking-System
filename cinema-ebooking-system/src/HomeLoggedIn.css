@@ -1,11 +1,4 @@
-#btnbook {
 
-    margin-top: 1%;
-    margin-bottom: 1%;
-    padding: 10px 24px;
-    margin-left: 15%;
-
-}
 
 .accountselect {
 
@@ -16,26 +9,6 @@
 .dropdown {
     position: relative;
     display: inline-block;
-  }
-  
-  /* Dropdown button */
-  .dropbtn {
-    background-color: #3498db;
-    color: white;
-    margin-left: 10%;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  /* Dropdown content */
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    z-index: 1;
   }
   
   /* Links inside the dropdown */
@@ -56,12 +29,7 @@
     display: block;
   }
   
-  /* Style the search bar and buttons */
-  #searchbar {
-    margin-left: 20%;
-    padding: 5px;
-    width: 40%;
-  }
+
   
   button:hover {
     background-color: lightgray;
