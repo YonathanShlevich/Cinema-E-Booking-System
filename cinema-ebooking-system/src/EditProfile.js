@@ -1,7 +1,31 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
 
 function EditProfile() {
+
+    const [userInfo, setUserInfo] = useState(null); //Used for User's info
+    const [homeInfo, setHomeInfo] = useState(null); //Home info
+    
+    const userId = localStorage.getItem('loggedInUserId');
+
+    //Pulling data from our backend using a Use Effect block: User
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setUserInfo(response.data); //Set user info to the response data
+        }
+        
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
 
     const navigate = useNavigate();
 
@@ -10,7 +34,9 @@ function EditProfile() {
         
         e.preventDefault();
     
-        let name = document.getElementById("name");
+        let firstName = document.getElementById("firstName");
+        let lastName = document.getElementById("lastName");
+
         let phoneNum = document.getElementById("tel");
         let homeAddress = document.getElementById("homeAddress");
         let homeCity = document.getElementById("homeCity");
@@ -19,7 +45,7 @@ function EditProfile() {
         let promoSubs = document.querySelector('input[name="promosub"]:checked').value;
 
         // Basic validation
-        if (name.value === "" || phoneNum.value === "" || homeAddress.value === "" || homeCity.value === ""|| homeState.value === ""|| homeZip.value === "") {
+        if (firstName.value === "" || lastName.value === "" || phoneNum.value === "" || homeAddress.value === "" || homeCity.value === ""|| homeState.value === ""|| homeZip.value === "") {
             window.alert("Please fill in all fields.");
         } else {
 
@@ -38,15 +64,20 @@ function EditProfile() {
         <div className="card-header">
           <h2>Edit Profile</h2>
         </div>
-        <div className="card-body">
+        {userInfo && (
+          <div className="card-body">
           <form action="" id="signUpForm" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Name:</label>
-              <input type="text" className="form-control" id="name"/>
+              <label>First Name:</label>
+              <input type="text" className="form-control" id="firstName" placeholder={userInfo.firstName}/>
+            </div>
+            <div className="form-group">
+              <label>Last Name:</label>
+              <input type="text" className="form-control" id="lastName" placeholder={userInfo.lastName}/>
             </div>
             <div className="form-group">
               <label>Phone Number: (Format: 123-456-7890)</label>
-              <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder='123-456-7890'/>
+              <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo.phoneNumber}/>
             </div>
             <div  className="form-group">
               <label>Home Address:</label>
@@ -131,6 +162,9 @@ function EditProfile() {
           </form>
           
         </div>
+
+        )}
+        
       </div>
     </div>
 
