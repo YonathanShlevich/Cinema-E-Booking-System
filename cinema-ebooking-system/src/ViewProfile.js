@@ -1,4 +1,3 @@
-// ViewProfile.js
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -31,22 +30,26 @@ function ViewProfile() {
       <Link to="/" className="logoutbutton">Logout</Link>
       <div className="profile-card">
         <h2>User Profile</h2>
-        <div>
-          {/* Fisrt name Display */}
-          <strong>Fist Name:</strong> {userInfo.firstName}
-        </div>
-        <div>
-          {/* Name Display */}
-          <strong>Last Name:</strong> {userInfo.lastName}
-        </div>
-        <div>
-          {/* Phone Number Display */}
-          <strong>Phone Number:</strong> 
-        </div>
-        <div>
-          {/* Email Display */}
-          <strong>Email:</strong> {userInfo.email}
-        </div>
+        {userInfo && (
+          <>
+            <div>
+              {/* Fisrt name Display */}
+              <strong>First Name:</strong> {userInfo.firstName}
+            </div>
+            <div>
+              {/* Last name Display */}
+              <strong>Last Name:</strong> {userInfo.lastName}
+            </div>
+            <div>
+              {/* Phone Number Display */}
+              <strong>Phone Number:</strong> {userInfo.phoneNumber}
+            </div>
+            <div>
+              {/* Email Display */}
+              <strong>Email:</strong> {userInfo.email}
+            </div>
+          </>
+        )}
         <div>
           {/* Address Display */}
           <strong>Home Address:</strong> 123 Sample Drive, Athens, GA, 12345
