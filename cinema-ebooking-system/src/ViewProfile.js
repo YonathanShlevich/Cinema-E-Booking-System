@@ -41,7 +41,7 @@ function ViewProfile() {
       .then(response => {
         setCardInfo(response.data); //Set user info to the response data
       })
-      .catch(error => {
+      .catch(error => { 
         console.error('Error fetching user info:', error);
       });
   }, []);
@@ -54,7 +54,7 @@ function ViewProfile() {
       <Link to="/" className="logoutbutton">Logout</Link>
       <div className="profile-card">
         <h2>User Profile</h2>
-        {userInfo && cardInfo && homeInfo && (
+        {userInfo && (
           <>
             <div>
               {/* Fisrt name Display */}
@@ -74,23 +74,35 @@ function ViewProfile() {
             </div>
           </>
         )}
-        <div>
-          {/* Address Display */}
-          <strong>Home Address:</strong> {homeInfo.homeAddr}, {homeInfo.homeCity}, {homeInfo.homeState}
-        </div>
+        {homeInfo && (
+          <>
+            <div>
+            {/* Address Display */}
+            <strong>Home Address:</strong> {homeInfo.homeAddr}, {homeInfo.homeCity}, {homeInfo.homeState}
+          </div>
+          </>
+        )}
         <hr />
-        <div>
-          {/* Cards Display */}
-          <strong>Saved Cards:</strong>
-        </div>
-        <div className="saved-cards">
-          <p className='cardinfo'>Visa ****1234</p>
-          <button id='deletebutton'> -Delete Card</button>
-        </div>
-        <div>
-          {/* Subscription Display */}
-          <strong>Subscribed for Promo:</strong> Yes
-        </div>
+        {cardInfo && (
+          <>
+            <div>
+              {/* Cards Display */}
+              <strong>Saved Cards:</strong>
+            </div>
+            <div className="saved-cards">
+              <p className='cardinfo'>{cardInfo.cardType} ****{cardInfo.cardNumber.toString().slice(-4)}</p>
+              <button id='deletebutton'> -Delete Card</button>
+            </div>
+          </>
+        )}
+        {userInfo && (
+          <>
+            <div>
+            {/* Subscription Display */}
+            <strong>Subscribed for Promo:</strong> {userInfo.promo ? 'Yes' : 'No'} {/* Checks if promo is true */}
+            </div>  
+          </>
+        )}
         {/* User actions */}
         <div className='useractions'>
           <Link to="/editprofile" id="editprofile">Edit Profile</Link>

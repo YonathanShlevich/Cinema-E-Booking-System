@@ -288,6 +288,11 @@ router.post('/signup', (req, res) => {
                             });
                         });
                         
+                        //Need to hash the credit card info
+                        //
+                        const cardNumberHashedPortion = cardNumber.toString().slice(-4);
+                        bcrypt.hash(cardNumber, saltRounds)
+
                         //Create new billingAddress since user is good to go
                         const newPaymentCard = new paymentCard({
                             userId: result._id,
