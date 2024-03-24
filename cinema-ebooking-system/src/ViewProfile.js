@@ -8,10 +8,11 @@ function ViewProfile() {
 
   const [userInfo, setUserInfo] = useState(null);
 
+  const userId = localStorage.getItem('loggedInUserId');
+
   //Pulling data from our backend using a Use Effect block
   useEffect(() => {
     //Pulls the userID and sets response to second var
-    const userId = localStorage.getItem('loggedInUserId');
     axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
       .then(response => {
         setUserInfo(response.data); // Set user info to the response data
@@ -40,7 +41,7 @@ function ViewProfile() {
         </div>
         <div>
           {/* Phone Number Display */}
-          <strong>Phone Number:</strong> {userInfo.phoneNumber}
+          <strong>Phone Number:</strong> 
         </div>
         <div>
           {/* Email Display */}
