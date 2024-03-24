@@ -83,6 +83,7 @@ router.get("/data/:userID", (req, res) =>{
                     message: 'User does not exist'
                 });
             } 
+            console.log(userID + " : " + result);    
             return res.json(result); //This just returns the full json of the items in the User
         }).catch(error =>{
             console.log(`Error: ${error}`);
