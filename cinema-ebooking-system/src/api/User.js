@@ -172,18 +172,20 @@ router.post('/signin', (req, res) => {
                                 status: "FAILED",
                                 message: "Error while comparing passwords"
                             })
-                        }
-                        if(!result) { //Incorrect password
+                        } else if (!result) { //Incorrect password
                             res.json({
                                 status: "FAILED",
                                 message: "Invalid password"
                             })
-                        }
-                        res.json({
+                        } else {
+                            res.json({
                             status: "SUCCESS",
                             message: "Signin was successful",
                             data: data
-                        })                   
+                        })  
+                        }
+                        
+                                         
                     })                   
                 } 
                 
@@ -345,6 +347,9 @@ router.post('/signup', (req, res) => {
 //Send email type beat
 const sendVerificationEmail = ({_id, email}, res) => {
     //URL for the email, in our case currently it is localhost:5000
+    cosole.log("sendVerEmail email: " + email);
+    cosole.log("sendVerEmail id: " + _id);
+
     const currentURL = "http://localhost:5000/";
 
     const uuidString = uuidv4() + _id;
@@ -434,9 +439,13 @@ router.post("/changePassword/:userId", (req, res) => {
                 bcrypt.hash(newPassword, saltRounds).then(newPasswordHashed => {
                     console.log("hashbrowns");
                     User.findOneAndUpdate({_id: userId}, {password: newPasswordHashed}, {status: 2})
-                        .then(() => {
+                        .then((result) => {
                             console.log("We are about to send the email!");
-                            sendVerificationEmail(userId, result.email); //Send the verification email
+                            console.log("Email: " + result.email);
+                            console.log("userId: " + userId);
+                            console.log("result " + result );
+
+                            sendVerificationEmail(result, res); //Send the verification email
                             console.log("Sent!");
                         }).catch(err => {
                             res.json({
