@@ -509,10 +509,12 @@ router.post("/changePassword/:userId", async (req, res) => {
         const newPasswordHashed = await bcrypt.hash(newPassword, saltRounds);
 
         // Updating password
-        await User.findOneAndUpdate({ _id: userId }, { password: newPasswordHashed }, { status: 2 });
+        await User.findOneAndUpdate({ _id: userId }, { password: newPasswordHashed, status: 2 });
 
         // Sending email
         await sendVerificationEmail(user, res);
+
+        
 
         // res.json({ status: "SUCCESS", message: "Password changed successfully" });
     } catch (error) {
@@ -526,11 +528,14 @@ router.post("/changePassword/:userId", async (req, res) => {
 //Verify email
 router.get("/verify/:userId/:uniqueString", (req, res) => {
     let {userId, uniqueString} = req.params;
+    console.log("verifying user ...");
 
     //Does the verification record exist?
     UserStatus
         .find({userId})
         .then((result) => {
+            console.log("verifying user : " + userId);
+
             if (result.length > 0){ //Record exists
                 //Checking if the email has expired
                 const {expiresAt} = result[0]; 
@@ -569,7 +574,9 @@ router.get("/verify/:userId/:uniqueString", (req, res) => {
                     bcrypt
                     .compare(uniqueString, hashedUniqueString)
                     .then(result => {
+                        console.log("made it past bcrypt");
                         if (result) {
+                            console.log("strings match when verifying");
                             //strings match
                             User
                             .updateOne({_id: userId}, {status: 1})
@@ -577,6 +584,7 @@ router.get("/verify/:userId/:uniqueString", (req, res) => {
                                 UserStatus
                                 .deleteOne({userId})
                                 .then(() => {
+                                    console.log("verified");
                                     res.sendFile(path.join(__dirname, "./../views/verified.html"));
                                     //Okay this time the routing is good. Just send it to the verified page (I think?) I will link the stuff I'm following
                                     // in the discord
@@ -598,6 +606,8 @@ router.get("/verify/:userId/:uniqueString", (req, res) => {
                                 
                                 //ARG THIS ROUTING FUUUUUUUUUU
                             })
+                        } else {
+                            console.log("strings don't match");
                         }
 
                         
