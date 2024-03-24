@@ -72,6 +72,28 @@ function generateAttributes(firstName, lastName, email, password, cardType, expD
 }
 
 
+//GET function to pull info into View Profile
+router.get("/data/:userID", (req, res) =>{
+    const userID = req.params.userID; //Pulling userId from the URL parameters
+    User.findOne({_id: userID})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'User does not exist'
+                });
+            } 
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+
 // Signin API
 router.post('/signin', (req, res) => {
     //Login only requires the email and password
@@ -81,7 +103,7 @@ router.post('/signin', (req, res) => {
     password = password.trim();
     //Checking if empty inputs, otherwise we checking if the user exists
     if(!email || !password){
-            return res.json({
+        return res.json({
             status: "FAILED",
             message: 'Empty input fields',
         });
@@ -207,41 +229,43 @@ router.post('/signup', (req, res) => {
                 //This saves the new user with a success message
                 newUser.save().then(result => {
                     //Send verification email
-                    const newHomeAddress= new homeAddress({
-                        userId: result._id,
-                        homeCity,
-                        homeAddr, 
-                        homeState, 
-                        homeZip
-                    });
-                    newHomeAddress.save().then(result => {
-                        //Nothing should happen in here
-                    }).catch(err => {
-                        res.json({
-                            status: "FAILED",
-                            message: "An error occured while saving the home address"
+                    if(optionalCounter == 0 ){
+                        const newHomeAddress= new homeAddress({
+                            userId: result._id,
+                            homeCity,
+                            homeAddr, 
+                            homeState, 
+                            homeZip
                         });
-                    });
-                    
-                    //Create new billingAddress since user is good to go
-                    const newPaymentCard = new paymentCard({
-                        userId: result.result._id,
-                        cardType, 
-                        expDate,
-                        cardNumber, 
-                        billingAddr, 
-                        billingCity, 
-                        billingState, 
-                        billingZip
-                    })
-                    newPaymentCard.save().then(result => {
-                        //Nothing should happen in here
-                    }).catch(err => {
-                        res.json({
-                            status: "FAILED",
-                            message: "An error occured while saving the payment card"
+                        newHomeAddress.save().then(result => {
+                            //Nothing should happen in here
+                        }).catch(err => {
+                            res.json({
+                                status: "FAILED",
+                                message: "An error occured while saving the home address"
+                            });
                         });
-                    });
+                        
+                        //Create new billingAddress since user is good to go
+                        const newPaymentCard = new paymentCard({
+                            userId: result._id,
+                            cardType, 
+                            expDate,
+                            cardNumber, 
+                            billingAddr, 
+                            billingCity, 
+                            billingState, 
+                            billingZip
+                        })
+                        newPaymentCard.save().then(result => {
+                            //Nothing should happen in here
+                        }).catch(err => {
+                            res.json({
+                                status: "FAILED",
+                                message: "An error occured while saving the payment card"
+                            });
+                        });
+                    }   
                     sendVerificationEmail(result, res); //Send the verification email
                 }).catch(err => {
                     res.json({

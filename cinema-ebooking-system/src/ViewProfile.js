@@ -1,10 +1,28 @@
 // ViewProfile.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import "./ViewProfile.css";
 
 function ViewProfile() {
-    
+
+  const [userInfo, setUserInfo] = useState(null);
+
+  //Pulling data from our backend using a Use Effect block
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    const userId = localStorage.getItem('loggedInUserId');
+    axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
+      .then(response => {
+        setUserInfo(response.data); // Set user info to the response data
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
+  // Make GET request to fetch user data
+
+  //TODO: Get request to pull the information in
   return (
     <div>
       {/* Code for showing the profile */}
@@ -13,16 +31,20 @@ function ViewProfile() {
       <div className="profile-card">
         <h2>User Profile</h2>
         <div>
+          {/* Fisrt name Display */}
+          <strong>Fist Name:</strong> {userInfo.firstName}
+        </div>
+        <div>
           {/* Name Display */}
-          <strong>Name:</strong> John Doe
+          <strong>Last Name:</strong> {userInfo.lastName}
         </div>
         <div>
           {/* Phone Number Display */}
-          <strong>Phone Number:</strong> 123-123-1231
+          <strong>Phone Number:</strong> {userInfo.phoneNumber}
         </div>
         <div>
           {/* Email Display */}
-          <strong>Email:</strong> chouses@gmail.com
+          <strong>Email:</strong> {userInfo.email}
         </div>
         <div>
           {/* Address Display */}
