@@ -5,22 +5,46 @@ import "./ViewProfile.css";
 
 function ViewProfile() {
 
-  const [userInfo, setUserInfo] = useState(null);
-
+  const [userInfo, setUserInfo] = useState(null); //Used for User's info
+  const [homeInfo, setHomeInfo] = useState(null); //Home info
+  const [cardInfo, setCardInfo] = useState(null); //Card info, TODO: How to only store 3 cards
   const userId = localStorage.getItem('loggedInUserId');
 
-  //Pulling data from our backend using a Use Effect block
+  //Pulling data from our backend using a Use Effect block: User
   useEffect(() => {
     //Pulls the userID and sets response to second var
     axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
       .then(response => {
-        setUserInfo(response.data); // Set user info to the response data
+        setUserInfo(response.data); //Set user info to the response data
       })
       .catch(error => {
         console.error('Error fetching user info:', error);
       });
   }, []);
-  // Make GET request to fetch user data
+
+  //Pulling data from our backend using a Use Effect block: Home Address
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:5000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
+      .then(response => {
+        setHomeInfo(response.data); //Set user info to the response data
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
+ 
+  //Same as previous 2 but for payment card info
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:5000/user/data/paymentCard/${userId}`) //Calls our data backend GET call
+      .then(response => {
+        setCardInfo(response.data); //Set user info to the response data
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
 
   //TODO: Get request to pull the information in
   return (
@@ -30,7 +54,7 @@ function ViewProfile() {
       <Link to="/" className="logoutbutton">Logout</Link>
       <div className="profile-card">
         <h2>User Profile</h2>
-        {userInfo && (
+        {userInfo && cardInfo && homeInfo && (
           <>
             <div>
               {/* Fisrt name Display */}
@@ -52,7 +76,7 @@ function ViewProfile() {
         )}
         <div>
           {/* Address Display */}
-          <strong>Home Address:</strong> 123 Sample Drive, Athens, GA, 12345
+          <strong>Home Address:</strong> {homeInfo.homeAddr}, {homeInfo.homeCity}, {homeInfo.homeState}
         </div>
         <hr />
         <div>
