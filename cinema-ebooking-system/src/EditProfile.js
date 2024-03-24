@@ -27,6 +27,23 @@ function EditProfile() {
       });
   }, []);
 
+  //Pulling data from our backend using a Use Effect block: Home Address
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:5000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setHomeInfo(response.data); //Set user info to the response data
+        }
+        
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
+
     const navigate = useNavigate();
 
     //Handling submission
@@ -79,17 +96,19 @@ function EditProfile() {
               <label>Phone Number: (Format: 123-456-7890)</label>
               <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo.phoneNumber}/>
             </div>
-            <div  className="form-group">
+            {homeInfo && (
+              <>
+              <div  className="form-group">
               <label>Home Address:</label>
-              <input id="homeAddress" type="text" className="form-control" />
+              <input id="homeAddress" type="text" className="form-control" placeholder={homeInfo.homeAddr}/>
             </div>
             <div  className="form-group">
               <label>City:</label>
-              <input id="homeCity" type="text" className="form-control" />
+              <input id="homeCity" type="text" className="form-control" placeholder={homeInfo.homeCity}/>
             </div>
             <div className="form-group">
               <label>State:</label>
-              <select id="homeState" className='form-control'>
+              <select id="homeState" className='form-control' placeholder={homeInfo.homeState}>
                 <option selected></option>
                 <option value="AL">AL</option>
                 <option value="AK">AK</option>
@@ -145,15 +164,18 @@ function EditProfile() {
             </div>
             <div className="form-group">
               <label>Zip:</label>
-              <input id="homeZip" type="number" min="0" className="form-control" />
+              <input id="homeZip" type="number" min="0" className="form-control" placeholder={homeInfo.homeZip}/>
             </div>
+            </>
+            )}
+            
             {/* Checkbox display of whether the user wants promos or not*/}
             <div className="form-group">
               <label>Subscribe for promos?:</label>
               <div>
-                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" />
+                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" checked={userInfo.promo}/>
                 <label for="promoyes" className="form-check-label">Yes</label>
-                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked/>
+                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked={!userInfo.promo}/>
                 <label for="promono" className="form-check-label">No</label>
               </div>
             </div>

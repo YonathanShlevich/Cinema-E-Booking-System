@@ -66,7 +66,7 @@ function generateAttributes(firstName, lastName, email, password, phoneNumber, c
         { name: 'homeAddr', value: homeAddr, pattern: /^[1-9][0-9]*[ ]+[a-zA-Z ]+$/, errMessage: 'Invalid homeAddr', required: false},
         { name: 'homeCity', value: homeCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid homeCity', required: false},
         { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid homeState', required: false},
-        { name: 'homeZip', value: homeZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid homeZip', required: true},
+        { name: 'homeZip', value: homeZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid homeZip', required: false},
         //Nothing for userStatus as it is not a user determined attribute
         //Type also isn't determined by the user
         //Promo is a true/false distinction, no need for regex
@@ -230,7 +230,7 @@ router.post('/signup', (req, res) => {
             if(attribute.required){ //If required
                 return res.json({
                     status: "FAILED",
-                    message: 'Empty input fields',
+                    message: 'Empty input fields, please enter ' + attribute.name ,
                 });
             } else { //If optional
                 optionalCounter++;
@@ -244,7 +244,7 @@ router.post('/signup', (req, res) => {
     }
     console.log(optionalCounter)
     //Checking if all or no optional values are filled out
-    if(optionalCounter != 10 && optionalCounter != 0 ){
+    if(optionalCounter != 11 && optionalCounter != 0 ){
         return res.json({
             status: 'FAILED',
             message: "If one optional field is filled, the rest must be filled.",
