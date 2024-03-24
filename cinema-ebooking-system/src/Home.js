@@ -33,10 +33,12 @@ const Home = () => {
   // Function to clear user ID from localStorage (logout)
   const clearLoggedInUserId = () => {
     localStorage.removeItem('loggedInUserId');
+    setLoggedInUserId(null);
   };
 
   const handleLogout = () => {
     clearLoggedInUserId();
+    window.location.href = '/';
   };
 
   // Fetching movies from JSON file on component mount
@@ -87,11 +89,13 @@ const Home = () => {
         {loggedInUserId ? (
           // If user is logged in, display account-related buttons
           <>
-            <button className="dropbtn">Account</button>
-            <div>
-              <Link to="/viewprofile">View Profile</Link>
-              <Link to="/" onClick={handleLogout}>Logout</Link>
-            </div>
+      <div className="dropdown">
+          <button className="dropbtn">Account</button>
+          <div className="dropdown-content">
+            <Link to="/viewprofile">View Profile</Link>
+            <Link to="/" onClick={handleLogout}>Logout</Link>
+         </div>
+        </div>
           </>
         ) : (
           // If user is not logged in, display login/signup button
@@ -100,7 +104,7 @@ const Home = () => {
         {/* Search bar */}
         <input
           type="text"
-          id="searchbarloggedin"
+          id="searchbar"
           placeholder="Search for movies..."
           value={searchTerm}
           onChange={handleSearch}

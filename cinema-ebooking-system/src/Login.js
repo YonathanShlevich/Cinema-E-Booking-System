@@ -29,8 +29,12 @@ function Login() {
           if (response.data.status === "SUCCESS") {
             // Redirect user to verification page or any other appropriate page
             setLoggedInUserId(response.data.data[0]._id);
-            //console.log(localStorage.getItem('loggedInUserId')); // Log the value
-            navigate('/');
+            if (response.data.data[0].type === 2) {
+              navigate('/admin');
+            }
+            else {
+              navigate('/');
+            }
           } else {
             // Display error message to the user
             window.alert(response.data.message);

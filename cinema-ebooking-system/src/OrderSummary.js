@@ -32,7 +32,7 @@ function OrderSummary() {
 
   return (
     <div>
-      <Link to="/loggedin" className="backbutton">Cancel Order</Link>
+      <Link to="/" className="backbutton">Cancel Order</Link>
       <div className="card">
         <div className="card-header">
           <h2>Order Summary</h2>
