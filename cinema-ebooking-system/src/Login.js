@@ -26,10 +26,10 @@ function Login() {
           const response = await axios.post("http://localhost:5000/user/signin", formData);
           
           // Handle successful signup
-          console.log(response.data); // Log response from the API
           if (response.data.status === "SUCCESS") {
             // Redirect user to verification page or any other appropriate page
-            setLoggedInUserId(response.data._id);
+            setLoggedInUserId(response.data.data[0]._id);
+            //console.log(localStorage.getItem('loggedInUserId')); // Log the value
             navigate('/loggedin');
           } else {
             // Display error message to the user

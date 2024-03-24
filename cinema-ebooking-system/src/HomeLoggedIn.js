@@ -1,13 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect} from 'react';
 import { Link } from "react-router-dom";
 import './HomeLoggedIn.css';
 
 const Home = () => {
 
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
+
+  useEffect(() => {
     // Function to get user ID from localStorage
-  const getLoggedInUserId = () => {
-    return localStorage.getItem('loggedInUserId');
-  };
+    const getLoggedInUserId = () => {
+      return localStorage.getItem('loggedInUserId');
+    };
+
+    // Set the initial value for loggedInUserId when the component mounts
+    setLoggedInUserId(getLoggedInUserId());
+  }, []);
 
   // Function to clear user ID from localStorage (logout)
   const clearLoggedInUserId = () => {
@@ -44,7 +51,6 @@ const Home = () => {
       <div className="dropdown">
           <button className="dropbtn">Account</button>
           <div className="dropdown-content">
-          <input type="text" value={getLoggedInUserId()} />
             <Link to="/viewprofile">View Profile</Link>
             <Link to="/">Logout</Link>
          </div>
@@ -54,6 +60,7 @@ const Home = () => {
         <button id='btnbook'> <Link to='/bookticket'>Book Ticket</Link></button>
       </nav>
   
+      <input type="text" value={loggedInUserId} />
       <h1>Now Showing</h1>
       <div className="movie-gallery">
         {nowShowingMovies.map((movie) => (
