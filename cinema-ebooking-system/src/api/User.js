@@ -324,16 +324,17 @@ router.post('/signup', (req, res) => {
                         
                         //Need to hash the credit card info
                         // TODO: Hash all but last 4 digits in credit card number
-                        const cardNumberHashedPortion = cardNumber.toString().slice(-4);
-                        console.log(cardNumberHashedPortion);
-                        bcrypt.hash(cardNumber, saltRounds).then
-
+                        const lastFourDigits = result.cardNumber.slice(-4);
+                        // Hash everything except the last 4 digits
+                        const hashedPortion = bcrypt.hashSync(result.cardNumber.slice(0, -4), 10); // Adjust the salt rounds as needed
+                        // Concatenate the hashed portion with the last 4 digits
+                        const hashedCreditCard = hashedPortion + lastFourDigits;
                         //Create new billingAddress since user is good to go
                         const newPaymentCard = new paymentCard({
                             userId: result._id,
                             cardType, 
                             expDate,
-                            cardNumber, 
+                            cardNumber: hashedCreditCard, 
                             billingAddr, 
                             billingCity, 
                             billingState, 
@@ -347,6 +348,7 @@ router.post('/signup', (req, res) => {
                                 message: "An error occured while saving the payment card"
                             });
                         });
+
                     }   
                     sendVerificationEmail(result, res); //Send the verification email
                 }).catch(err => {
@@ -968,12 +970,18 @@ router.post("/addCard/:userId", async (req, res) => {
                 message: "User not found"
             });
         }
-
+        
+        const lastFourDigits = cardNumber.slice(-4);
+        // Hash everything except the last 4 digits
+        const hashedPortion = bcrypt.hashSync(cardNumber.slice(0, -4), 10); // Adjust the salt rounds as needed
+        // Concatenate the hashed portion with the last 4 digits
+        const hashedCreditCard = hashedPortion + lastFourDigits;
+        
         const newPaymentCard = new paymentCard({
             userId: user._id,
             cardType,
             expDate,
-            cardNumber,
+            cardNumber: hashedCreditCard,
             billingAddr,
             billingCity,
             billingState,

@@ -6,7 +6,7 @@ const paymentCardSchema = new Schema({
     userId: String,
     cardType: String,
     expDate: Date,
-    cardNumber: Number,
+    cardNumber: String,
     billingAddr: String,
     billingCity: String, 
     billingState: String, 
