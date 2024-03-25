@@ -259,7 +259,6 @@ router.post('/signup', (req, res) => {
                 message: "A user with this email already exists"
             })
         } else { //Creates the user
-            console.log(phoneNumber)
             const saltRounds = 10; //Hashing attribute
             bcrypt.hash(password, saltRounds).then(hashedPassword => {
                 //This creates a new user with the hashpassword
@@ -273,12 +272,10 @@ router.post('/signup', (req, res) => {
                     type,
                     promo
                 })
-                console.log(phoneNumber)
 
                 //This saves the new user with a success message
                 newUser.save().then(result => {
                     //Send verification email
-                    console.log(phoneNumber)
                     if(optionalCounter == 0 ){
                         const newHomeAddress= new homeAddress({
                             userId: result._id,
@@ -297,9 +294,10 @@ router.post('/signup', (req, res) => {
                         });
                         
                         //Need to hash the credit card info
-                        //
+                        // TODO: Hash all but last 4 digits in credit card number
                         // const cardNumberHashedPortion = cardNumber.toString().slice(-4);
-                        // bcrypt.hash(cardNumber, saltRounds)
+                        // console.log(cardNumberHashedPortion);
+                        // bcrypt.hash(cardNumber, saltRounds).then
 
                         //Create new billingAddress since user is good to go
                         const newPaymentCard = new paymentCard({
@@ -408,84 +406,6 @@ const sendVerificationEmail = ({_id, email}, res) => {
         });
     });
 }
-/* 
-//Change password API ping, 
-router.post("/changePassword/:userId", (req, res) => {
-    let {userId} = req.params; //Brings in userId
-
-    let {oldPassword, newPassword} = req.body;
-    console.log(userId + " " + oldPassword + " " + newPassword);
-    //Checking if user exists, then checking if passwords match
-    User.findOne({_id: userId}).then((result) => {
-        console.log(`Entry to find: ${result}`);
-        if(result) { //User exists
-            //Code copied from signin
-            const hashedPW = result.password;
-            console.log(hashedPW);
-            //Debugging passwords: console.log(result[0].password + " : " + hashedPW);
-            //Compared the hashed password to oldPassword
-            bcrypt.compare(oldPassword, hashedPW, (err, data) => {
-                console.log(data);
-                if(!data) { //Incorrect password
-                    console.log("incorrect pass entered when attempting to change");
-                    res.json({
-                        status: "FAILED",
-                        message: "Invalid old password"
-                    })
-                } else { // correct password
-                    console.log("correct pass entered when attempting to change");
-                //Old password is equal to stored password
-                //This means that we need to hash the new password and update it
-                const saltRounds = 10;
-                console.log(saltRounds);
-                bcrypt.hash(newPassword, saltRounds).then(newPasswordHashed => {
-                    console.log("hashbrowns");
-                    User.findOneAndUpdate({_id: userId}, {password: newPasswordHashed}, {status: 2})
-                        .then((result) => {
-                            console.log("We are about to send the email!");
-                            console.log("Email: " + result.email);
-                            console.log("userId: " + userId);
-                            console.log("result " + result );
-
-                            sendVerificationEmail(result, res); //Send the verification email
-                            console.log("Sent!");
-                        }).catch(err => {
-                            res.json({
-                                status: "FAILED",
-                                message: "New password creation failed",
-                            });
-                        });
-                }).catch(err => {
-                    console.log("hashing failed");
-                    res.json({
-                        status: "FAILED",
-                        message: "Hashing failed",
-                    });
-                });
-                } // correct password
-                
-                  
-            }).catch(err => {
-                console.log("compare failed");
-                res.json({
-                    status: "FAILED",
-                    message: "Compare failed",
-                });
-            });
-        }
-    }).catch(err => {
-        console.log("user not found");
-        res.json({
-            
-            status: "FAILED",
-            message: "User not found",
-        });
-    });
-    console.log("Skipped");
-    
-})
-
-*/
 
 router.post("/changePassword/:userId", async (req, res) => {
     try {
@@ -533,6 +453,105 @@ router.post("/changePassword/:userId", async (req, res) => {
         res.status(500).json({ status: "FAILED", message: "Internal server error" });
     }
 });
+
+//API to update profile within edit profile
+router.post("/editProfile/:userId", async (req, res) => {
+    let userId = req.params;
+    let {firstName, lastName, phoneNumber, homeAddr, homeCity, homeState, homeZip, promo} = req.body; //Not all of these will change
+    const attributes = [
+        { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered', required: true},
+        { name: 'lastName', value: lastName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid last name entered', required: true},
+        { name: 'phoneNumber', value: phoneNumber, pattern: /^[0-9-]+$/, errMessage: 'Invalid password entered', required: true},
+        { name: 'homeAddr', value: homeAddr, pattern: /^[1-9][0-9]*[ ]+[a-zA-Z ]+$/, errMessage: 'Invalid homeAddr', required: false},
+        { name: 'homeCity', value: homeCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid homeCity', required: false},
+        { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid homeState', required: false},
+        { name: 'homeZip', value: homeZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid homeZip', required: false},
+        { name: 'promo', value, promo, pattern: /^/, errMessage: 'Promo error', required: true}
+    ]
+    const userUpdates = {};
+    const homeUpdates = {};
+    for(const attribute of attributes){
+        if(typeof attribute.value === 'string'){
+            attribute.value = attribute.value.trim(); //Trimming all the attributes
+        }
+        //console.log(attribute.value + " : " + attribute.pattern);
+        //Checks if an attribute is empty
+        if(!attribute.value){
+            if(attribute.required){ //If required
+                return res.json({
+                    status: "FAILED",
+                    message: 'Empty input fields, please enter ' + attribute.name ,
+                });
+            }
+        } else if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
+            return res.json({
+                status: 'FAILED',
+                message: attribute.errMessage,
+            });
+        }
+        if(attribute.name.substring(0, 4) === "home"){ //If it is a "home" attribute from homeAddress
+            homeUpdates.attribute.name = attribute.value;
+        } else { //Adding to updates list
+            updates.attribute.name = attribute.value; // Push non-empty attributes into User updates for later
+        }
+    }
+    
+    //Check if there exists a homeAddress and if they want to change their home address
+    //  1) If they don't have an HA and don't want to change it, only update User
+    //  2) If they don't have an HA and want to change it, create a HA schema 
+    //      2.5) Must have all values filled out!
+    //  3) If they have an HA and don't want to change it, then only update User
+    //  4) If they have an HA and want to change it, update it
+
+    const filter = {_id: userId};
+
+
+    // 1) No HA and updating User
+    if(Object.keys(homeUpdates).length == 0 && Object.keys(userUpdates).length > 0){
+        User.findOneAndUpdate(filter, 
+            {$set: userUpdates}, //'$set' stops the command from wiping other fields
+            {new: true} //returns updates info
+            ).catch((err) => {
+            return res.json({
+                status: 'FAILED',
+                message: "User not found",
+            });
+        });
+    } 
+    //  2) If they don't have an HA and want to change it, create a HA schema + User updating
+    //  2.5) Must have all values filled out!
+    else if(Object.keys(homeUpdates).length > 0 && Object.keys(userUpdates).length > 0) {
+        if (homeAddress.findOne({userId: userId})){ //If the homeAddress exists
+            homeAddress.findOneAndUpdate()
+        }
+    }
+
+
+    // User.findOneAndUpdate(filter, 
+    //     {$set: updates}, //'$set' stops the command from wiping other fields
+    //     {new: true} //returns updates info
+    //     ).catch((err) => {
+    //     return res.json({
+    //         status: 'FAILED',
+    //         message: "User not found",
+    //     });
+    // });
+
+    // //Attributes of the User Schema//
+    // const filterHome = {userID: userId};
+    // homeAddress.findOneAndUpdate(filterHome, 
+    //     {$set: updates}, //'$set' stops the command from wiping other fields
+    //     {new: true} //returns updates info
+    //     ).catch((err) => {
+    //     return res.json({
+    //         status: 'FAILED',
+    //         message: "User not found",
+    //     });
+    // });
+
+
+});
+    
 
 
 
