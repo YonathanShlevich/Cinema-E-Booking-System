@@ -51,26 +51,27 @@ function EditProfile() {
         
         e.preventDefault();
     
-        let firstName = document.getElementById("firstName");
-        let lastName = document.getElementById("lastName");
+        let firstName = document.getElementById("firstName") ? document.getElementById("firstName").value : undefined;
+        let lastName = document.getElementById("lastName") ? document.getElementById("lastName").value : undefined;
 
-        let phoneNum = document.getElementById("tel");
-        let homeAddress = document.getElementById("homeAddress");
-        let homeCity = document.getElementById("homeCity");
-        let homeState = document.getElementById("homeState");
-        let homeZip = document.getElementById("homeZip");
+        let phoneNum = document.getElementById("tel") ? document.getElementById("tel").value : undefined;
+        let homeAddress = document.getElementById("homeAddress") ? document.getElementById("homeAddress").value : undefined;
+        let homeCity = document.getElementById("homeCity") ? document.getElementById("homeCity").value : undefined;
+        let homeState = document.getElementById("homeState") ? document.getElementById("homeState").value : undefined;
+        let homeZip = document.getElementById("homeZip") ? document.getElementById("homeZip").value : undefined;
+
         let promo = document.getElementById("promoyes").checked;
 
         
           const formData = {
-            firstName: document.getElementById("firstName").value,
-            lastName: document.getElementById("lastName").value,
-            phoneNumber: document.getElementById("phoneNum").value,
-            homeAddr: document.getElementById("homeAddress").value,
-            homeCity: document.getElementById("homeCity").value,
-            homeState: document.getElementById("homeState").value,
-            homeZip: document.getElementById("homeZip").value,
-            promo: document.getElementById("promoyes").checked,
+            firstName: firstName,
+            lastName: lastName,
+            phoneNumber: phoneNum,
+            homeAddr: homeAddress,
+            homeCity: homeCity,
+            homeState: homeState,
+            homeZip: homeZip,
+            promo: promo
 
 
           };
@@ -79,14 +80,14 @@ function EditProfile() {
             const response = await axios.post(`http://localhost:5000/user/editProfile/${userId}`, formData);
             
             // Handle successful signup
-            if (response.data.status === "SUCCESS") {
-              // Redirect user to verification page or any other appropriate page
-              navigate("/viewprofile")
+            if (response.data.status === "FAILED") {
+              // error
+              window.alert(response.data.message);
               
               
             } else {
-              // Display error message to the user
-              window.alert(response.data.message);
+              navigate("/viewprofile");
+              
             }
         } catch (error) {
             // Handle signup error
@@ -202,9 +203,9 @@ function EditProfile() {
             <div className="form-group">
               <label>Subscribe for promos?:</label>
               <div>
-                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" checked={userInfo.promo}/>
+                <input id="promoyes" type="radio" name="promosub" value="yes" className="form-check-input" checked={userInfo.promo} onChange={() => setUserInfo({...userInfo, promo: true})}/>
                 <label for="promoyes" className="form-check-label">Yes</label>
-                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked={!userInfo.promo}/>
+                <input id="promono" type="radio" name="promosub" value="no" className="form-check-input" checked={!userInfo.promo} onChange={() => setUserInfo({...userInfo, promo: false})}/>
                 <label for="promono" className="form-check-label">No</label>
               </div>
             </div>

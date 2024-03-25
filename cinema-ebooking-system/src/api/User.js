@@ -131,7 +131,7 @@ router.get("/data/paymentCard/:userID", (req, res) =>{
             });
         }
         // Cards found, return them
-        console.log(cards + typeof cards);
+        // console.log(cards + typeof cards);
         return res.status(200).json({
             status: "SUCCESS",
             cards: cards
