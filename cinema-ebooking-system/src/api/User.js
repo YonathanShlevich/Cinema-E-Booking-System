@@ -324,9 +324,9 @@ router.post('/signup', (req, res) => {
                         
                         //Need to hash the credit card info
                         // TODO: Hash all but last 4 digits in credit card number
-                        const lastFourDigits = result.cardNumber.slice(-4);
+                        const lastFourDigits = cardNumber.slice(-4);
                         // Hash everything except the last 4 digits
-                        const hashedPortion = bcrypt.hashSync(result.cardNumber.slice(0, -4), 10); // Adjust the salt rounds as needed
+                        const hashedPortion = bcrypt.hashSync(cardNumber.slice(0, -4), 10); // Adjust the salt rounds as needed
                         // Concatenate the hashed portion with the last 4 digits
                         const hashedCreditCard = hashedPortion + lastFourDigits;
                         //Create new billingAddress since user is good to go
