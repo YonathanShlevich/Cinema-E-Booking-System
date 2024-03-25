@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./ViewProfile.css";
 
 function ViewProfile() {
+  const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState(null); //Used for User's info
   const [homeInfo, setHomeInfo] = useState(null); //Home info
@@ -60,6 +61,41 @@ function ViewProfile() {
         console.error('Error fetching user info:', error);
       });
   }, []);
+/* eslint-disable no-restricted-globals */
+  function handleDeleteButtonClick(event) {
+    const cardId = event.target.value; // Get the ID of the card to be deleted
+    const isConfirmed = confirm("Are you sure you want to delete " + cardInfo.cardType + " ending in " + cardInfo.cardNumber.toString().slice(-4) + " ?");
+    
+    if (isConfirmed) {
+        // Perform the deletion operation (e.g., send a request to delete the card)
+        // Here, you can make an API call to delete the card using the cardId
+        deleteCard(cardId);
+    }
+}
+/* eslint-enable no-restricted-globals */
+
+// Function to delete the card (you need to implement this)
+function deleteCard(cardId) {
+    // Make an API call to delete the card
+    // For example:
+    // window.alert("delting a card");
+    axios.delete(`http://localhost:5000/user/card/${cardId}/${userId}`)
+          .then(response => {
+            if (response.data.status === "SUCCESS") {
+              window.location.reload();
+            } else {
+              window.alert(response.message)
+    
+            }
+         })
+         .catch(error => {
+            console.error(error)
+         });
+    console.log("Deleting card with ID:", cardId);
+}
+  
+
+
 
   //TODO: Get request to pull the information in
   return (
@@ -105,10 +141,13 @@ function ViewProfile() {
             </div>
             <div className="saved-cards">
               <p className='cardinfo'>{cardInfo.cardType} ****{cardInfo.cardNumber.toString().slice(-4)}</p>
-              <button id='deletebutton'> -Delete Card</button>
+              <button id='deletebutton' value={cardInfo._id} onClick={handleDeleteButtonClick}> -Delete Card</button>
             </div>
           </>
         )}
+        <div>
+          <Link to="/addcard" id="addcard"> + Add Card</Link>
+        </div>
         {userInfo && (
           <>
             <div>
