@@ -295,9 +295,9 @@ router.post('/signup', (req, res) => {
                         
                         //Need to hash the credit card info
                         // TODO: Hash all but last 4 digits in credit card number
-                        // const cardNumberHashedPortion = cardNumber.toString().slice(-4);
-                        // console.log(cardNumberHashedPortion);
-                        // bcrypt.hash(cardNumber, saltRounds).then
+                        const cardNumberHashedPortion = cardNumber.toString().slice(-4);
+                        console.log(cardNumberHashedPortion);
+                        bcrypt.hash(cardNumber, saltRounds).then
 
                         //Create new billingAddress since user is good to go
                         const newPaymentCard = new paymentCard({
@@ -456,7 +456,7 @@ router.post("/changePassword/:userId", async (req, res) => {
 
 //API to update profile within edit profile
 router.post("/editProfile/:userId", async (req, res) => {
-    let userId = req.params;
+    let { userId } = req.params;
     let {firstName, lastName, phoneNumber, homeAddr, homeCity, homeState, homeZip, promo} = req.body; //Not all of these will change
     const attributes = [
         { name: 'firstName', value: firstName, pattern: /^[a-zA-z]*$/, errMessage: 'Invalid first name entered', required: true},
@@ -466,17 +466,16 @@ router.post("/editProfile/:userId", async (req, res) => {
         { name: 'homeCity', value: homeCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid homeCity', required: false},
         { name: 'homeState', value: homeState, pattern: /^.{1,}$/, errMessage: 'Invalid homeState', required: false},
         { name: 'homeZip', value: homeZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid homeZip', required: false},
-        { name: 'promo', value, promo, pattern: /^/, errMessage: 'Promo error', required: true}
-    ]
+        { name: 'promo', value: promo, pattern: /^/, errMessage: 'Promo error', required: true}
+    ];
     const userUpdates = {};
     const homeUpdates = {};
     for(const attribute of attributes){
         if(typeof attribute.value === 'string'){
             attribute.value = attribute.value.trim(); //Trimming all the attributes
         }
-        //console.log(attribute.value + " : " + attribute.pattern);
         //Checks if an attribute is empty
-        if(!attribute.value){
+        if(!attribute.value || attribute.value === undefined){
             if(attribute.required){ //If required
                 return res.json({
                     status: "FAILED",
@@ -490,12 +489,11 @@ router.post("/editProfile/:userId", async (req, res) => {
             });
         }
         if(attribute.name.substring(0, 4) === "home"){ //If it is a "home" attribute from homeAddress
-            homeUpdates.attribute.name = attribute.value;
+            homeUpdates[attribute.name] = attribute.value;
         } else { //Adding to updates list
-            updates.attribute.name = attribute.value; // Push non-empty attributes into User updates for later
+            userUpdates[attribute.name] = attribute.value; // Push non-empty attributes into User updates for later
         }
     }
-    
     //Check if there exists a homeAddress and if they want to change their home address
     //  1) If they don't have an HA and don't want to change it, only update User
     //  2) If they don't have an HA and want to change it, create a HA schema 
@@ -503,12 +501,34 @@ router.post("/editProfile/:userId", async (req, res) => {
     //  3) If they have an HA and don't want to change it, then only update User
     //  4) If they have an HA and want to change it, update it
 
-    const filter = {_id: userId};
+    const userFilter = {_id: userId};
+    const homeFilter = {userId: userId};
 
-
-    // 1) No HA and updating User
-    if(Object.keys(homeUpdates).length == 0 && Object.keys(userUpdates).length > 0){
-        User.findOneAndUpdate(filter, 
+    let userUpdateCount = 0;
+    for(let key in userUpdates){
+        console.log(key);
+        if(userUpdates[key] === undefined){
+            console.log("undefined");
+        } else {
+            userUpdateCount++;
+            console.log(userUpdateCount);
+        }
+    }
+    let homeUpdateCount = 0;
+    for(let key in homeUpdates){
+        console.log(key);
+        if(homeUpdates[key] === undefined){
+            console.log("undefined");
+        } else {
+            homeUpdateCount++;
+            console.log(homeUpdateCount);
+        }
+    }
+    console.log(userUpdateCount + " : " + homeUpdateCount);
+    // 1 & 3) No HA and only updating User
+    if(homeUpdateCount == 0 && userUpdateCount > 0){
+        console.log("1 & 3) No HA and only updating User");
+        await User.findOneAndUpdate(userFilter, 
             {$set: userUpdates}, //'$set' stops the command from wiping other fields
             {new: true} //returns updates info
             ).catch((err) => {
@@ -517,39 +537,78 @@ router.post("/editProfile/:userId", async (req, res) => {
                 message: "User not found",
             });
         });
+        console.log("Done!")
+        return res.json({
+            status: "SUCCESSFUL",
+            message: "User profile Updated!"
+        })
     } 
-    //  2) If they don't have an HA and want to change it, create a HA schema + User updating
+    //  2 + 4) If they don't have an HA and want to change it, create a HA schema + User updating
     //  2.5) Must have all values filled out!
-    else if(Object.keys(homeUpdates).length > 0 && Object.keys(userUpdates).length > 0) {
-        if (homeAddress.findOne({userId: userId})){ //If the homeAddress exists
-            homeAddress.findOneAndUpdate()
+    else if(homeUpdateCount > 0 && userUpdateCount > 0) {
+        console.log("2 + 4) If they don't have an HA and want to change it, create a HA schema + User updating");
+        if (await homeAddress.findOne(homeFilter)){ //If the homeAddress exists
+            console.log("If home address exists...");
+            await homeAddress.findOneAndUpdate(homeFilter, 
+                {$set: homeUpdates},
+                {new: true}
+                ).catch((error) => {
+                    return res.json({
+                        status: 'FAILED',
+                        message: "homeAddress schema not found",
+                    });
+                });
+            console.log("Found home address...");
+            await User.findOneAndUpdate(userFilter, {$set: userUpdates}, {new: true})
+                .catch((error) => {
+                    return res.json({
+                    status: 'FAILED',
+                    message: "homeAddress schema not found",
+                });
+            });
+            console.log("Done!");
+            return res.json({
+                status: "SUCCESSFUL",
+                message: "User profile and homeAddress were Updated!"
+            });
+        } else if (homeUpdateCount == 4){ //If we cannot find a HA and all options are filled out
+            console.log("If home address doesn't exist...");
+            const newHomeAddress= new homeAddress({
+                userId: userId,
+                homeCity: homeCity,
+                homeAddr: homeAddr, 
+                homeState: homeState, 
+                homeZip: homeZip
+            });
+            await newHomeAddress.save().catch((error) => {
+                res.json({
+                    status: "FAILED",
+                    message: "An error occured while saving the home address"
+                });
+            })
+            await User.findOneAndUpdate(userFilter, {$set: userUpdates}, {new: true})
+                .catch((error) => {
+                    return res.json({
+                    status: 'FAILED',
+                    message: "homeAddress schema not found",
+                });
+            });
+            return res.json({
+                status: "SUCCESSFUL",
+                message: "User profile was updated and a new homeAddress was created!"
+            });
+        } else {//If not all fields are filled in for the home address
+            return res.json({
+                status: 'FAILED',
+                message: "Must fill in all fields for a new home address",
+            });
         }
+    } else {
+        return res.json({
+            status: 'FAILED',
+            message: "Didn't fit possible conditions",
+        });
     }
-
-
-    // User.findOneAndUpdate(filter, 
-    //     {$set: updates}, //'$set' stops the command from wiping other fields
-    //     {new: true} //returns updates info
-    //     ).catch((err) => {
-    //     return res.json({
-    //         status: 'FAILED',
-    //         message: "User not found",
-    //     });
-    // });
-
-    // //Attributes of the User Schema//
-    // const filterHome = {userID: userId};
-    // homeAddress.findOneAndUpdate(filterHome, 
-    //     {$set: updates}, //'$set' stops the command from wiping other fields
-    //     {new: true} //returns updates info
-    //     ).catch((err) => {
-    //     return res.json({
-    //         status: 'FAILED',
-    //         message: "User not found",
-    //     });
-    // });
-
-
 });
     
 
