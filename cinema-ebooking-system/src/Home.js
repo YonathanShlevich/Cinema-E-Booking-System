@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import './Home.css';
 
 // Constructor for the movie class
@@ -13,6 +13,7 @@ class Movie {
 }
 
 const Home = () => {
+  const navigate = useNavigate();
   // State variables
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -99,7 +100,7 @@ const Home = () => {
           </>
         ) : (
           // If user is not logged in, display login/signup button
-          <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+          <button id="btnlogin" onClick={() => navigate("/login")}>  Login/Sign Up </button>
         )}
         {/* Search bar */}
         <input
@@ -111,7 +112,7 @@ const Home = () => {
         />
         <button> +Filter </button>
         {loggedInUserId && (
-          <button id='btnbook'> <Link to='/bookticket'>Book Ticket</Link></button>
+          <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
       </nav>
 

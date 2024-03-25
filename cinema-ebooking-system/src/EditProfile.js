@@ -71,7 +71,7 @@ function EditProfile() {
             homeCity: homeCity,
             homeState: homeState,
             homeZip: homeZip,
-            promo: promo
+            promo: userInfo.promo
 
 
           };
