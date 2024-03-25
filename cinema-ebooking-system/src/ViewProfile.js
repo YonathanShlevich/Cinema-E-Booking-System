@@ -53,7 +53,14 @@ function ViewProfile() {
         if (response.data.status === "FAILED") {
           // do nothing
         } else {
-          setCardInfo(response.data); //Set user info to the response data
+          if (Array.isArray(response.data)) {
+            
+            setCardInfo(response.data); //Set user info to the response data
+            
+          } else {
+            
+            console.error('Invalid data format for cardInfo:', response.data);
+          }
 
         }
       })
@@ -134,9 +141,27 @@ function deleteCard(cardId) {
         )}
         <hr />
         {cardInfo && (
+    <>
+        <div>
+            {/* Cards Display */}
+            <strong>Saved Cards:</strong>
+        </div>
+        <div className="saved-cards">
+            {cardInfo.map(card => (
+                <div key={card._id} className="card-info">
+                    <p>{card.cardType} ****{card.cardNumber.toString().slice(-4)}</p>
+                    <button id={`deletebutton-${card._id}`} value={card._id} onClick={handleDeleteButtonClick}>- Delete Card</button>
+                </div>
+            ))}
+        </div>
+    </>
+)}
+
+        {/* 
+        {cardInfo && (
           <>
             <div>
-              {/* Cards Display */}
+              
               <strong>Saved Cards:</strong>
             </div>
             <div className="saved-cards">
@@ -145,6 +170,9 @@ function deleteCard(cardId) {
             </div>
           </>
         )}
+        */}
+        
+        
         <div>
           <Link to="/addcard" id="addcard"> + Add Card</Link>
         </div>

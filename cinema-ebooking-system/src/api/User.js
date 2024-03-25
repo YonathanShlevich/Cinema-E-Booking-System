@@ -120,6 +120,33 @@ router.get("/data/homeAddr/:userID", (req, res) =>{
 //GET function to pull homeAddress into View Profile
 router.get("/data/paymentCard/:userID", (req, res) =>{
     const userID = req.params.userID; //Pulling userId from the URL parameters
+
+    paymentCard.find({ userId: userID })
+    .then(cards => {
+        if (cards.length === 0) {
+            // No cards found for the given userId
+            return res.status(404).json({
+                status: "FAILED",
+                message: "No cards found for the user"
+            });
+        }
+        // Cards found, return them
+        console.log(cards);
+        return res.status(200).json({
+            status: "SUCCESS",
+            cards: cards
+        });
+    })
+    .catch(error => {
+        console.error('Error finding cards:', error);
+        return res.status(500).json({
+            status: "FAILED",
+            message: "Error finding cards"
+        });
+    });
+
+
+    /*
     paymentCard.findOne({userId: userID})
         .then(result => {
             if(!result){ //If the userID doesn't exist
@@ -136,6 +163,8 @@ router.get("/data/paymentCard/:userID", (req, res) =>{
                 message: 'Error with pulling data'
             });
         })
+
+        */
 })
 
 
