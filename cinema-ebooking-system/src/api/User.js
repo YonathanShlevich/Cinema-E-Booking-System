@@ -500,8 +500,10 @@ router.post("/editProfile/:userId", async (req, res) => {
     const userUpdates = {};
     const homeUpdates = {};
     for(const attribute of attributes){
-        if(typeof attribute.value === 'string'){
+        if(attribute.value && typeof attribute.value === 'string'){
             attribute.value = attribute.value.trim(); //Trimming all the attributes
+        } else if (!attribute.value){
+            continue;
         }
         //Checks if an attribute is empty
         if(!attribute.value || attribute.value === undefined){
@@ -516,7 +518,7 @@ router.post("/editProfile/:userId", async (req, res) => {
                 status: 'FAILED',
                 message: attribute.errMessage,
             });
-        }
+        } 
         if(attribute.name.substring(0, 4) === "home"){ //If it is a "home" attribute from homeAddress
             homeUpdates[attribute.name] = attribute.value;
         } else { //Adding to updates list
@@ -534,24 +536,28 @@ router.post("/editProfile/:userId", async (req, res) => {
     const homeFilter = {userId: userId};
 
     let userUpdateCount = 0;
-    for(let key in userUpdates){
+    for(const key in userUpdates){
         if(userUpdates[key] === undefined){
             //Nothing
         } else {
+            console.log(`Key = ${key} : ${userUpdates[key]}`);
             userUpdateCount++;
         }
     }
     let homeUpdateCount = 0;
-    for(let key in homeUpdates){
+    for(const key in homeUpdates){
         if(homeUpdates[key] === undefined){
             //Nothing
         } else {
+            console.log(`Key = ${key} : ${homeUpdates[key]}`);
             homeUpdateCount++;
         }
     }
     // 1 & 3) No HA and only updating User
+    console.log(userUpdateCount + " :  " + homeUpdateCount);
     if(homeUpdateCount == 0 && userUpdateCount > 0){
         // console.log("1 & 3) No HA and only updating User");
+        console.log(homeUpdateCount);
         await User.findOneAndUpdate(userFilter, 
             {$set: userUpdates}, //'$set' stops the command from wiping other fields
             {new: true} //returns updates info

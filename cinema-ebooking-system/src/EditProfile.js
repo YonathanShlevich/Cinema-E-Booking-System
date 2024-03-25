@@ -47,7 +47,7 @@ function EditProfile() {
     const navigate = useNavigate();
 
     //Handling submission
-    const handleSubmit = async (e) => {
+    const handleSubmitEditProfile = async (e) => {
         
         e.preventDefault();
     
@@ -65,11 +65,11 @@ function EditProfile() {
           const formData = {
             firstName: document.getElementById("firstName").value,
             lastName: document.getElementById("lastName").value,
-            phoneNumber: document.getElementById("lastName").value,
-            homeAddr: document.getElementById("lastName").value,
-            homeCity: document.getElementById("lastName").value,
-            homeState: document.getElementById("lastName").value,
-            homeZip: document.getElementById("lastName").value,
+            phoneNumber: document.getElementById("phoneNum").value,
+            homeAddr: document.getElementById("homeAddress").value,
+            homeCity: document.getElementById("homeCity").value,
+            homeState: document.getElementById("homeState").value,
+            homeZip: document.getElementById("homeZip").value,
             promo: document.getElementById("promoyes").checked,
 
 
@@ -112,7 +112,7 @@ function EditProfile() {
         </div>
         {userInfo && (
           <div className="card-body">
-          <form action="" id="signUpForm" onSubmit={handleSubmit}>
+          <form action="" id="signUpForm" onSubmit={handleSubmitEditProfile}>
             <div className="form-group">
               <label>* First Name:</label>
               <input type="text" className="form-control" id="firstName" placeholder={userInfo.firstName}/>
