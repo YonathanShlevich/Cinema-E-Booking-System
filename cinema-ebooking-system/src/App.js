@@ -19,6 +19,7 @@ import OrderSummary from "./OrderSummary";
 import Checkout from "./Checkout";
 import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
+import AddCard from "./AddCard"
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/viewprofile" element={<ViewProfile />} />
         <Route path="/changepassword" element={<ChangePassword />} />
         <Route path="/editprofile" element={<EditProfile />} />
+        <Route path="/addcard" element={<AddCard />} />
 
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/manage-movies" element={<ManageMovies />} />

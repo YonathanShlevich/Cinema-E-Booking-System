@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./ViewProfile.css";
 
 function ViewProfile() {
+  const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState(null); //Used for User's info
   const [homeInfo, setHomeInfo] = useState(null); //Home info
@@ -92,6 +93,8 @@ function deleteCard(cardId) {
          });
     console.log("Deleting card with ID:", cardId);
 }
+  
+
 
 
   //TODO: Get request to pull the information in
@@ -142,6 +145,9 @@ function deleteCard(cardId) {
             </div>
           </>
         )}
+        <div>
+          <Link to="/addcard" id="addcard"> + Add Card</Link>
+        </div>
         {userInfo && (
           <>
             <div>

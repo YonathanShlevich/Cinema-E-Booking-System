@@ -808,6 +808,88 @@ router.delete("/card/:cardId/:userId", (req, res) => {
         });
 });
 
+router.post("/addCard/:userId", (req,res) => {
+    console.log("adding a card");
+    const {userId} = req.params;
+
+    let {cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip,} = req.body;
+
+    const attributes = [
+        { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: true},
+        { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid expDate', required: true},
+        { name: 'cardNumber', value: cardNumber, pattern: /^.{10}$/, errMessage: 'Invalid cardNumber', required: true},
+        { name: 'billingAddr', value: billingAddr, pattern: /^[1-9][0-9]*[ ]+[a-zA-Z ]+$/, errMessage: 'Invalid billingAddr', required: true},
+        { name: 'billingCity', value: billingCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid billingCity', required: true},
+        { name: 'billingState', value: billingState, pattern: /^.{1,}$/, errMessage: 'Invalid billingState', required: true},
+        { name: 'billingZip', value: billingZip, pattern: /^(?=(?:.{5}|.{9})$)[0-9]*$/, errMessage: 'Invalid billingZip', required: true}
+    ]
+    for(const attribute of attributes){
+        if(typeof attribute.value === 'string'){
+            attribute.value = attribute.value.trim(); //Trimming all the attributes
+        }
+        //console.log(attribute.value + " : " + attribute.pattern);
+        //Checks if an attribute is empty
+        if(!attribute.value){
+            if(attribute.required){ //If required
+                console.log(attribute.name + " is reqired");
+                return res.json({
+                    status: "FAILED",
+                    message: 'Empty input fields, please enter ' + attribute.name ,
+                });
+            }
+        } else if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
+            console.log("doesnt meet regex");
+            return res.json({
+                status: 'FAILED',
+                message: attribute.errMessage,
+            });
+        }
+        
+    }
+    // done with checking, time to add a card brother
+  
+    User.findOne({_id: userId})
+        .then((result) => {
+            
+            const newPaymentCard = new paymentCard({
+                userId: result._id,
+                cardType, 
+                expDate,
+                cardNumber, 
+                billingAddr, 
+                billingCity, 
+                billingState, 
+                billingZip
+            })
+            newPaymentCard.save().then(result => {
+                res.json({
+                    status: "SUCCESS",
+                    message: "Card successfully added"
+                });
+                
+            }).catch(err => {
+                
+
+                res.json({
+                    status: "FAILED",
+                    message: "An error occured while saving the payment card"
+                });
+            });
+        }
+            
+        )
+        .catch(err => {
+            res.json({
+                status: "FAILED",
+                message: "An error occured while saving the payment card"
+            });
+        })
+
+
+
+
+})
+
 
 
 module.exports = router;
