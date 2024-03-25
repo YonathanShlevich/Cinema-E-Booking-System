@@ -47,7 +47,7 @@ function EditProfile() {
     const navigate = useNavigate();
 
     //Handling submission
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
         e.preventDefault();
     
@@ -59,16 +59,45 @@ function EditProfile() {
         let homeCity = document.getElementById("homeCity");
         let homeState = document.getElementById("homeState");
         let homeZip = document.getElementById("homeZip");
-        let promoSubs = document.querySelector('input[name="promosub"]:checked').value;
+        let promo = document.getElementById("promoyes").checked;
 
-        // Basic validation
-        if (firstName.value === "" || lastName.value === "" || phoneNum.value === "" || homeAddress.value === "" || homeCity.value === ""|| homeState.value === ""|| homeZip.value === "") {
-            window.alert("Please fill in all fields.");
-        } else {
+        
+          const formData = {
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            phoneNumber: document.getElementById("lastName").value,
+            homeAddr: document.getElementById("lastName").value,
+            homeCity: document.getElementById("lastName").value,
+            homeState: document.getElementById("lastName").value,
+            homeZip: document.getElementById("lastName").value,
+            promo: document.getElementById("promoyes").checked,
+
+
+          };
+          try {
+            // Make POST request to edit profile endpoint
+            const response = await axios.post(`http://localhost:5000/user/editProfile/${userId}`, formData);
+            
+            // Handle successful signup
+            if (response.data.status === "SUCCESS") {
+              // Redirect user to verification page or any other appropriate page
+              navigate("/viewprofile")
+              
+              
+            } else {
+              // Display error message to the user
+              window.alert(response.data.message);
+            }
+        } catch (error) {
+            // Handle signup error
+            console.error('Edit profile error', error);
+            // Display error message to the user
+            window.alert(error);
+        }
 
             window.alert("Profile updated successfully.");
-            navigate('/viewprofile');
-        }
+            // navigate('/viewprofile');
+        
 
     }
 
@@ -85,31 +114,31 @@ function EditProfile() {
           <div className="card-body">
           <form action="" id="signUpForm" onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>First Name:</label>
+              <label>* First Name:</label>
               <input type="text" className="form-control" id="firstName" placeholder={userInfo.firstName}/>
             </div>
             <div className="form-group">
-              <label>Last Name:</label>
+              <label>* Last Name:</label>
               <input type="text" className="form-control" id="lastName" placeholder={userInfo.lastName}/>
             </div>
             <div className="form-group">
-              <label>Phone Number: (Format: 123-456-7890)</label>
+              <label>* Phone Number: (Format: 123-456-7890)</label>
               <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo.phoneNumber}/>
             </div>
-            {homeInfo && (
+            {userInfo && (
               <>
               <div  className="form-group">
               <label>Home Address:</label>
-              <input id="homeAddress" type="text" className="form-control" placeholder={homeInfo.homeAddr}/>
+              <input id="homeAddress" type="text" className="form-control" placeholder={homeInfo && homeInfo.homeAddr}/>
             </div>
             <div  className="form-group">
               <label>City:</label>
-              <input id="homeCity" type="text" className="form-control" placeholder={homeInfo.homeCity}/>
+              <input id="homeCity" type="text" className="form-control" placeholder={homeInfo && homeInfo.homeCity}/>
             </div>
             <div className="form-group">
               <label>State:</label>
-              <select id="homeState" className='form-control' placeholder={homeInfo.homeState}>
-                <option selected></option>
+              <select id="homeState" className='form-control' >
+                <option selected placeholder={homeInfo && homeInfo.homeState}></option>
                 <option value="AL">AL</option>
                 <option value="AK">AK</option>
                 <option value="AZ">AZ</option>
@@ -164,7 +193,7 @@ function EditProfile() {
             </div>
             <div className="form-group">
               <label>Zip:</label>
-              <input id="homeZip" type="number" min="0" className="form-control" placeholder={homeInfo.homeZip}/>
+              <input id="homeZip" type="number" min="0" className="form-control" placeholder={homeInfo && homeInfo.homeZip}/>
             </div>
             </>
             )}
@@ -180,7 +209,8 @@ function EditProfile() {
               </div>
             </div>
         
-            <button type="submit" className="btn btn-primary">Register</button>
+            <button type="submit" className="btn btn-primary">Submit</button>
+            <h5>* Required</h5>
           </form>
           
         </div>
