@@ -502,11 +502,26 @@ router.post("/editProfile/:userId", async (req, res) => {
     for(const attribute of attributes){
         if(attribute.value && typeof attribute.value === 'string'){
             attribute.value = attribute.value.trim(); //Trimming all the attributes
-        } else if (!attribute.value){
+        } else if (!attribute.value && attribute.name != "promo"){
             continue;
         }
+        console.log(attribute.name);
+        if(attribute.name == "promo"){
+            console.log("In promo");
+            const currentPromo = await User.findById({_id: userId}).then((result) => {
+                if(result.promo != promo){
+                    userUpdates[attribute.name] = attribute.value;
+                } 
+            })
+            .catch((err) => {
+                res.json({
+                    status: "FAILED",
+                    message: "User not found for promo"
+                })
+            });
+        }  //If promo is false and the name is promo
         //Checks if an attribute is empty
-        if(!attribute.value || attribute.value === undefined){
+        else if(!attribute.value || attribute.value === undefined){
             if(attribute.required){ //If required
                 return res.json({
                     status: "FAILED",
