@@ -8,7 +8,7 @@ function ViewProfile() {
 
   const [userInfo, setUserInfo] = useState(null); //Used for User's info
   const [homeInfo, setHomeInfo] = useState(null); //Home info
-  const [cardInfo, setCardInfo] = useState(null); //Card info, TODO: How to only store 3 cards
+  const [cardInfo, setCardInfo] = useState([]); //Card info, TODO: How to only store 3 cards
   const userId = localStorage.getItem('loggedInUserId');
 
   //Pulling data from our backend using a Use Effect block: User
@@ -53,14 +53,7 @@ function ViewProfile() {
         if (response.data.status === "FAILED") {
           // do nothing
         } else {
-          if (Array.isArray(response.data)) {
-            
-            setCardInfo(response.data); //Set user info to the response data
-            
-          } else {
-            
-            console.error('Invalid data format for cardInfo:', response.data);
-          }
+          setCardInfo(response.data.cards)
 
         }
       })
@@ -71,7 +64,7 @@ function ViewProfile() {
 /* eslint-disable no-restricted-globals */
   function handleDeleteButtonClick(event) {
     const cardId = event.target.value; // Get the ID of the card to be deleted
-    const isConfirmed = confirm("Are you sure you want to delete " + cardInfo.cardType + " ending in " + cardInfo.cardNumber.toString().slice(-4) + " ?");
+    const isConfirmed = confirm("Are you sure you want to delete this card?");
     
     if (isConfirmed) {
         // Perform the deletion operation (e.g., send a request to delete the card)
@@ -140,42 +133,37 @@ function deleteCard(cardId) {
           </>
         )}
         <hr />
+        
         {cardInfo && (
-    <>
-        <div>
-            {/* Cards Display */}
-            <strong>Saved Cards:</strong>
-        </div>
-        <div className="saved-cards">
-            {cardInfo.map(card => (
-                <div key={card._id} className="card-info">
-                    <p>{card.cardType} ****{card.cardNumber.toString().slice(-4)}</p>
-                    <button id={`deletebutton-${card._id}`} value={card._id} onClick={handleDeleteButtonClick}>- Delete Card</button>
-                </div>
-            ))}
-        </div>
-    </>
-)}
-
-        {/* 
-        {cardInfo && (
-          <>
-            <div>
-              
+        <>
+          <div>
+              {/* Cards Display */}
               <strong>Saved Cards:</strong>
-            </div>
-            <div className="saved-cards">
-              <p className='cardinfo'>{cardInfo.cardType} ****{cardInfo.cardNumber.toString().slice(-4)}</p>
-              <button id='deletebutton' value={cardInfo._id} onClick={handleDeleteButtonClick}> -Delete Card</button>
-            </div>
-          </>
+          </div>
+          
+          <div className="card-info">
+            
+              {cardInfo.map(card => (
+                  <div key={card._id} className="saved-cards">
+                      <p>{card.cardType} ****{card.cardNumber?.toString().slice(-4)}</p>
+                      <button id={`deletebutton-${card._id}`} value={card._id} onClick={handleDeleteButtonClick}>- Delete Card</button>
+                  </div>
+              ))}
+              
+          </div>
+        </>
         )}
-        */}
+
+      
         
-        
-        <div>
+        {cardInfo.length < 3 && (
+          <div>
           <Link to="/addcard" id="addcard"> + Add Card</Link>
         </div>
+        )
+        
+        }
+        
         {userInfo && (
           <>
             <div>

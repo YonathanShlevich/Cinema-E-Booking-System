@@ -61,12 +61,13 @@
   .saved-cards {
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
   
   .useractions {
 
     display:flex;
-    margin-top: 50%;
+    margin-top: 10%;
 
   }
 
