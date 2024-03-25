@@ -1,9 +1,10 @@
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ForgetPassword() {
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
 
         e.preventDefault();
 
@@ -14,14 +15,87 @@ function ForgetPassword() {
         // Basic validation
         if (email.value === "" || newPassword.value === "" || confirmPassword.value === "") {
             window.alert("Please fill in all fields.");
-        } else if (newPassword !== confirmPassword) {
+        } else if (newPassword.value !== confirmPassword.value) {
             window.alert("Passwords do not match.");
         } else {
 
-            window.alert("Password changed successfully.");
-            navigate('/login');
+            try {
+                const tempPassData = {
+                    email: document.getElementById("email").value,
+                    tempPassword: document.getElementById("tempPassword").value,
+                };
+                // Make POST request to verify temp password endpoint
+                const response = await axios.post(`http://localhost:5000/user/verifyTempPassword`, tempPassData);
+                
+                // Handle successful change password
+                if (response.data.status === "SUCCESS") {
+                  // Changes the password if SUCCESSFUL
+
+                  const formData = {
+                    email: document.getElementById("email").value,
+                    password: document.getElementById("newPassword").value
+                 };
+    
+                try {
+                    // Make POST request to forgetpassword endpoint
+                    const response = await axios.post(`http://localhost:5000/user/forgetpassword`, formData);
+                    
+                    // Handle successful change password
+                    if (response.data.status === "SUCCESS") {
+                      // Redirect user to verification page or any other appropriate page
+                      navigate('/');
+                      
+                    } else {
+                      // Display error message to the user
+                      window.alert(response.data.message);
+                    }
+                } catch (error) {
+                    // Handle signup error
+                    console.error('Change password failed:', error);
+                    // Display error message to the user
+                    window.alert(error);
+                }
+                  
+                } else {
+                  // Display error message to the user
+                  window.alert(response.data.message);
+                }
+            } catch (error) {
+                // Handle signup error
+                console.error('Temp password checking failed:', error);
+                // Display error message to the user
+                window.alert(error);
+            }
+
         }
     }
+
+    const sendPassword = async (e) => {
+
+        let email = document.getElementById("email").value;
+        if (email === "") {
+            window.alert("Please enter your email.");
+        } else {
+          try {
+            // Make POST request to send temporary password
+            const response = await axios.post(`http://localhost:5000/user/sendTempPassword`, { email });
+      
+            if (response.data.status === "SUCCESS") {
+              // Temporary password sent successfully
+              window.alert("Temporary password sent to your email.");
+            } else {
+              // Display error message
+              window.alert(response.data.message);
+            }
+          } catch (error) {
+            // Handle error
+            console.error('Sending temporary password failed:', error);
+            window.alert("Failed to send temporary password. Please try again later.");
+          }
+        }
+      };
+      
+    
 
     //Form for forget password
     return (
@@ -38,6 +112,15 @@ function ForgetPassword() {
                             <input
                                 type="email"
                                 id = "email"
+                                className="form-control"
+                            />
+                        </div>
+                        <button type="button" className="btn btn-primary" onClick={sendPassword}>Send Temporary Password</button>
+                        <div className="form-group">
+                            <label>Temporary Password:</label>
+                            <input
+                                type="password"
+                                id ="tempPassword"
                                 className="form-control"
                             />
                         </div>

@@ -534,7 +534,96 @@ router.post("/changePassword/:userId", async (req, res) => {
     }
 });
 
+router.post("/forgetpassword", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        // Checking if user exists
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            return res.json({ status: "FAILED", message: "User not found" });
+        }
 
+        // Hashing new password
+        const saltRounds = 10;
+        const newPasswordHashed = await bcrypt.hash(password, saltRounds);
+
+        // Updating password
+        await User.findOneAndUpdate({ email }, { password: newPasswordHashed});
+
+        res.json({ status: "SUCCESS", message: "Password changed successfully" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ status: "FAILED", message: "Internal server error" });
+    }
+});
+
+// Object to store temporary passwords
+const temporaryPasswords = {};
+
+// Function to generate and store a temporary password for an email
+function generateAndStoreTempPassword(email) {
+    const temporaryPassword = Math.random().toString(36).slice(-8);
+    temporaryPasswords[email] = temporaryPassword;
+}
+
+// Route for sending a temporary password
+router.post("/sendTempPassword", async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        // Generate a temporary password and store it
+        generateAndStoreTempPassword(email);
+
+        // Send email with temporary password
+        const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+                user: process.env.AUTH_EMAIL,
+                pass: process.env.AUTH_PASSWORD
+            }
+        });
+
+        // Mail options
+        const mailOptions = {
+            from: process.env.AUTH_EMAIL,
+            to: email,
+            subject: "Temporary Password for Password Reset",
+            html: `<p>Your temporary password is: ${temporaryPasswords[email]}</p><p>Please use this temporary password to reset your password.</p>`
+        };
+
+        // Send the email
+        await transporter.sendMail(mailOptions);
+        console.log(temporaryPasswords[email]);
+
+        res.json({ status: "SUCCESS", message: "Temporary Password sent successfully" });
+    } catch (error) {
+        console.error("Error sending temporary password:", error);
+        res.json({ status: "FAILED", message: "Temporary Password not sent successfully" });
+    }
+});
+
+// Route for verifying temporary password
+router.post("/verifyTempPassword", async (req, res) => {
+    try {
+        
+        const { email, tempPassword } = req.body;
+
+        // Retrieve the temporary password stored earlier
+        const storedTempPassword = temporaryPasswords[email];
+        console.log(storedTempPassword);
+
+        // Checking if the temp password the user inputs is the same as the one sent
+        if (tempPassword === storedTempPassword) {
+            res.json({ status: "SUCCESS", message: "Temporary Password verified successfully" });
+        } else {
+            res.json({ status: "FAILED", message: "Temporary Password is not correct" });
+        }
+    } catch (error) {
+        console.error("Error verifying temporary password:", error);
+        res.json({ status: "FAILED", message: "Temporary Password verification failed" });
+    }
+});
 
 //Verify email
 router.get("/verify/:userId/:uniqueString", (req, res) => {
