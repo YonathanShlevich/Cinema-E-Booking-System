@@ -14,7 +14,7 @@ function ViewProfile() {
   //Pulling data from our backend using a Use Effect block: User
   useEffect(() => {
     //Pulls the userID and sets response to second var
-    axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
+    axios.get(`http://localhost:4000/user/data/${userId}`) //Calls our data backend GET call
       .then(response => {
         if (response.data.status === "FAILED") {
           // do nothing
@@ -31,7 +31,7 @@ function ViewProfile() {
   //Pulling data from our backend using a Use Effect block: Home Address
   useEffect(() => {
     //Pulls the userID and sets response to second var
-    axios.get(`http://localhost:5000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
+    axios.get(`http://localhost:4000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
       .then(response => {
         if (response.data.status === "FAILED") {
           // do nothing
@@ -48,7 +48,7 @@ function ViewProfile() {
   //Same as previous 2 but for payment card info
   useEffect(() => {
     //Pulls the userID and sets response to second var
-    axios.get(`http://localhost:5000/user/data/paymentCard/${userId}`) //Calls our data backend GET call
+    axios.get(`http://localhost:4000/user/data/paymentCard/${userId}`) //Calls our data backend GET call
       .then(response => {
         if (response.data.status === "FAILED") {
           // do nothing
@@ -79,7 +79,7 @@ function deleteCard(cardId) {
     // Make an API call to delete the card
     // For example:
     // window.alert("delting a card");
-    axios.delete(`http://localhost:5000/user/card/${cardId}/${userId}`)
+    axios.delete(`http://localhost:4000/user/card/${cardId}/${userId}`)
           .then(response => {
             if (response.data.status === "SUCCESS") {
               window.location.reload();

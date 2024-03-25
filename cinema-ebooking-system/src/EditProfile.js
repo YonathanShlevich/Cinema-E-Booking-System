@@ -13,7 +13,7 @@ function EditProfile() {
     //Pulling data from our backend using a Use Effect block: User
   useEffect(() => {
     //Pulls the userID and sets response to second var
-    axios.get(`http://localhost:5000/user/data/${userId}`) //Calls our data backend GET call
+    axios.get(`http://localhost:4000/user/data/${userId}`) //Calls our data backend GET call
       .then(response => {
         if (response.data.status === "FAILED") {
           // do nothing
@@ -30,7 +30,7 @@ function EditProfile() {
   //Pulling data from our backend using a Use Effect block: Home Address
   useEffect(() => {
     //Pulls the userID and sets response to second var
-    axios.get(`http://localhost:5000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
+    axios.get(`http://localhost:4000/user/data/homeAddr/${userId}`) //Calls our data backend GET call
       .then(response => {
         if (response.data.status === "FAILED") {
           // do nothing
@@ -77,7 +77,7 @@ function EditProfile() {
           };
           try {
             // Make POST request to edit profile endpoint
-            const response = await axios.post(`http://localhost:5000/user/editProfile/${userId}`, formData);
+            const response = await axios.post(`http://localhost:4000/user/editProfile/${userId}`, formData);
             
             // Handle successful signup
             if (response.data.status === "FAILED") {

@@ -81,7 +81,7 @@ function SignUp() {
         };
         try {
           // Make POST request to signup endpoint
-          const response = await axios.post("http://localhost:5000/user/signup", formData);
+          const response = await axios.post("http://localhost:4000/user/signup", formData);
           
           // Handle successful signup
           console.log(response.data); // Log response from the API
