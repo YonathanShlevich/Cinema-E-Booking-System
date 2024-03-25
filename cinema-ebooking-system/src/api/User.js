@@ -506,28 +506,23 @@ router.post("/editProfile/:userId", async (req, res) => {
 
     let userUpdateCount = 0;
     for(let key in userUpdates){
-        console.log(key);
         if(userUpdates[key] === undefined){
-            console.log("undefined");
+            //Nothing
         } else {
             userUpdateCount++;
-            console.log(userUpdateCount);
         }
     }
     let homeUpdateCount = 0;
     for(let key in homeUpdates){
-        console.log(key);
         if(homeUpdates[key] === undefined){
-            console.log("undefined");
+            //Nothing
         } else {
             homeUpdateCount++;
-            console.log(homeUpdateCount);
         }
     }
-    console.log(userUpdateCount + " : " + homeUpdateCount);
     // 1 & 3) No HA and only updating User
     if(homeUpdateCount == 0 && userUpdateCount > 0){
-        console.log("1 & 3) No HA and only updating User");
+        // console.log("1 & 3) No HA and only updating User");
         await User.findOneAndUpdate(userFilter, 
             {$set: userUpdates}, //'$set' stops the command from wiping other fields
             {new: true} //returns updates info
@@ -546,7 +541,7 @@ router.post("/editProfile/:userId", async (req, res) => {
     //  2 + 4) If they don't have an HA and want to change it, create a HA schema + User updating
     //  2.5) Must have all values filled out!
     else if(homeUpdateCount > 0 && userUpdateCount > 0) {
-        console.log("2 + 4) If they don't have an HA and want to change it, create a HA schema + User updating");
+        //console.log("2 + 4) If they don't have an HA and want to change it, create a HA schema + User updating");
         if (await homeAddress.findOne(homeFilter)){ //If the homeAddress exists
             console.log("If home address exists...");
             await homeAddress.findOneAndUpdate(homeFilter, 
@@ -558,7 +553,7 @@ router.post("/editProfile/:userId", async (req, res) => {
                         message: "homeAddress schema not found",
                     });
                 });
-            console.log("Found home address...");
+            //console.log("Found home address...");
             await User.findOneAndUpdate(userFilter, {$set: userUpdates}, {new: true})
                 .catch((error) => {
                     return res.json({
@@ -566,13 +561,13 @@ router.post("/editProfile/:userId", async (req, res) => {
                     message: "homeAddress schema not found",
                 });
             });
-            console.log("Done!");
+            //console.log("Done!");
             return res.json({
                 status: "SUCCESSFUL",
                 message: "User profile and homeAddress were Updated!"
             });
         } else if (homeUpdateCount == 4){ //If we cannot find a HA and all options are filled out
-            console.log("If home address doesn't exist...");
+            //console.log("If home address doesn't exist...");
             const newHomeAddress= new homeAddress({
                 userId: userId,
                 homeCity: homeCity,
