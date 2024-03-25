@@ -779,5 +779,35 @@ router.get("/verified", (req, res) => {
     res.sendFile(path.join(__dirname, "./../views/verified.html"));
 })
 
+router.delete("/card/:cardId/:userId", (req, res) => {
+    console.log("deleting card");
+    const { cardId, userId } = req.params;
+
+    paymentCard.findOneAndDelete({ _id: cardId, userId: userId })
+        .then(result => {
+            if (!result) { // If the card doesn't exist or the user doesn't have permission
+                console.log("permission denied or no card");
+                return res.status(404).json({
+                    status: "FAILED",
+                    message: 'Card not found or you do not have permission to delete this card'
+                });
+            }
+            console.log("deletion successful");
+            // If the card was successfully deleted
+            return res.status(200).json({
+                status: "SUCCESS",
+                message: 'Card deleted successfully',
+                deletedCard: result // Optional: Return the deleted card if needed
+            });
+        }).catch(error => {
+            console.log(`Error: ${error}`);
+            return res.status(500).json({
+                status: "FAILED",
+                message: 'Error deleting card'
+            });
+        });
+});
+
+
 
 module.exports = router;
