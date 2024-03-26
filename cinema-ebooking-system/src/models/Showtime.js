@@ -5,7 +5,7 @@ const Showtime = require('./Showtime');
 
 //Attributes of a Showtime table
 const ShowtimeSchema = new Schema({
-    id: Number,
+    id: String, //pulled from booking
     movieId: Number,
     roomId: Number,
     period: Number,

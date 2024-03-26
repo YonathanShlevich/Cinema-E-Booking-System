@@ -4,8 +4,8 @@ const ShowPeriod = require('./Seat');
 
 //Attributes of a User table
 const SeatSchema = new Schema({
-    id: Number,
-    showId: Number,
+    id: String, 
+    showId: Number, //Pulled from showtime
     status: {
         type: String,
         enum: ['Available', 'Unavailable'],

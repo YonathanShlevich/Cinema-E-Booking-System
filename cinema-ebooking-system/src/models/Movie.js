@@ -4,7 +4,7 @@ const Movie = require('./Movie');
 
 //Attributes of a User table
 const MovieSchema = new Schema({
-    id: Number,
+    id: String,//reference from showtime
     Title: String,
     Cast: [{type: String}], //string arr
     Genre: String

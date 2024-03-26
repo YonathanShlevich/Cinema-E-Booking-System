@@ -4,7 +4,7 @@ const ShowPeriod = require('./ShowPeriod');
 
 //Attributes of a User table
 const ShowPeriodSchema = new Schema({
-    id: Number,
+    id: String, //pulled from showtime
     time: String //leaving this as string for now, will change based on requirements
 
 });

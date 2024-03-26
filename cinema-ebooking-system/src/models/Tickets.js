@@ -4,7 +4,7 @@ const Tickets = require('./Tickets');
 
 //Attributes of a User table
 const TicketsSchema = new Schema({
-    id: Number,
+    id: String, //Pulled from Seat
     bookingId: Number,
     seatId: Number
 

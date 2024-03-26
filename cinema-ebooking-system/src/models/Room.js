@@ -4,9 +4,9 @@ const ShowPeriod = require('./Room');
 
 //Attributes of a User table
 const RoomSchema = new Schema({
-    id: Number,
+    id: String, //Pulled from Room
     seatAvailability: Number, //# of seats
-    name: String // room name
+    name: String // from 
     
 });
 
