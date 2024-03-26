@@ -140,7 +140,8 @@ function EditProfile() {
             <div className="form-group">
               <label>State:</label>
               <select id="homeState" className='form-control' >
-                <option selected placeholder={homeInfo && homeInfo.homeState}></option>
+                <option value="" disabled selected>{homeInfo && homeInfo.homeState}</option>
+                
                 <option value="AL">AL</option>
                 <option value="AK">AK</option>
                 <option value="AZ">AZ</option>
