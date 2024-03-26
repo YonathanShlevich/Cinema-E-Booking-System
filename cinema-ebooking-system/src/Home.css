@@ -65,6 +65,10 @@ nav  {
     max-height: 500px; /* Adjust height as needed */
     overflow-y: auto;
   }
+
+  .homeHeader {
+    text-align: center;
+  }
   
   
   .movie-item {
