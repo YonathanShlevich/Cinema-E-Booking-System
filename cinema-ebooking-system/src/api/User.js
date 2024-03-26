@@ -932,6 +932,7 @@ router.delete("/card/:cardId/:userId", (req, res) => {
             }
             console.log("deletion successful");
             // If the card was successfully deleted
+            sendProfileUpdatedEmail(userId);
             return res.status(200).json({
                 status: "SUCCESS",
                 message: 'Card deleted successfully',
@@ -1020,6 +1021,7 @@ router.post("/addCard/:userId", async (req, res) => {
             billingZip
         });
         await newPaymentCard.save();
+        sendProfileUpdatedEmail(userId);
         res.json({
             status: "SUCCESS",
             message: "Card successfully added"
