@@ -86,6 +86,7 @@ function EditProfile() {
               
               
             } else {
+              window.alert("Profile updated successfully.");
               navigate("/viewprofile");
               
             }
@@ -96,7 +97,7 @@ function EditProfile() {
             window.alert(error);
         }
 
-            window.alert("Profile updated successfully.");
+            
             // navigate('/viewprofile');
         
 
