@@ -5,8 +5,11 @@ const Ticket = require('./Booking');
 //Attributes of a User table
 const BookingSchema = new Schema({
     bookingNumber: Number,
-    customerId: Number,
-    showTimeId: Number,
+    ticketNumber: Number,
+    movieTitle: {type: Schema.Types.ObjectId, ref: 'Movie'},
+    showDate: Date,
+    showTime: {type: Schema.Types.ObjectId, ref: 'Showtime'},
+    creditCard: {type: Schema.Types.ObjectId, ref: 'paymentCard'},
     promoId: Number,
     total: Number,
 });
