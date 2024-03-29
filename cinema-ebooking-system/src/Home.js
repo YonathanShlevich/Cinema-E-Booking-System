@@ -117,7 +117,7 @@ const Home = () => {
       </nav>
 
       {/* Section for Now Showing movies */}
-      <h1>Now Showing</h1>
+      <h1 className='homeHeader'>Now Showing</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Now Showing movies, 
         this should show all of them since the filter has nothing */}
@@ -153,7 +153,7 @@ const Home = () => {
       </div>
 
       {/* Section for Coming Soon movies */}
-      <h1>Coming Soon</h1>
+      <h1 className='homeHeader'>Coming Soon</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Coming Soon movies, 
         this should show all of them since the filter has nothing */}
