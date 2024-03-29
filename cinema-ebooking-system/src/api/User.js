@@ -387,7 +387,7 @@ const sendProfileUpdatedEmail = async (userId) => {
             from: process.env.AUTH_EMAIL,
             to: user.email,
             subject: "Your profile information has been updated",
-            html: `<p>You are recieving this email becuase your profile information has been updated.</p>`,
+            html: `<p>You are receiving this email becuase your profile information has been updated.</p>`,
         };
         transporter.sendMail(mailOptions).then(() => { //Sending the verifitcation email
         //Email has been sent
