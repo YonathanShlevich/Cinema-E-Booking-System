@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Tickets = require('./Tickets');
 
 //Attributes of a User table
 const TicketsSchema = new Schema({
