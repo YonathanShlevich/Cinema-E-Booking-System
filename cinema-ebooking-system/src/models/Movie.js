@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Movie = require('./Movie');
 
 //Attributes of a User table
 const MovieSchema = new Schema({
@@ -16,7 +15,7 @@ const MovieSchema = new Schema({
     trailerPictureLink: String, //Image will be stored differently, this is a placeholder
     filmRating: String,
     showTime: {type: Schema.Types.ObjectId, ref: 'ShowTime'}, //Reference to showtime schema
-    times: [{type: Date}]
+    times: String//[{type: Date}]
 });
 
 const Movie = mongoose.model('Movie', MovieSchema);

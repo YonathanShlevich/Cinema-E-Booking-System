@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Showtime = require('./Showtime');
 
 
 //Attributes of a Showtime table

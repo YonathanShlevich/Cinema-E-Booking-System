@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ShowPeriod = require('./ShowPeriod');
 
 //Attributes of a User table
 const ShowPeriodSchema = new Schema({

@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Promotion = require('./Promotion');
 
 //Attributes of a User table
 const PromotionSchema = new Schema({
