@@ -248,3 +248,22 @@ router.post("/deleteMovie/:movieTitle", async (req, res) => {
 
 
 module.exports = router;
+
+
+
+/*  Testing format for add/Update movie
+
+{
+    "title": "Star Trek",
+    "category": "Movie",
+    "cast": ["Picard", "Riker"],
+    "genre": "Sci-fi",
+    "director": "Frakes",
+    "producer": "Lee Ventura",
+    "synopsis": "Star Trek going crazy with the GM of the Athens Best Buy",
+    "trailerVideoLink": "videoLink",
+    "trailerPictureLink": "pictureLink",
+    "filmRating": "E"
+}
+
+*/

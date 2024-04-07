@@ -5,7 +5,6 @@ const Schema = mongoose.Schema;
 const RoomSchema = new Schema({
     seatAvailability: Number, //# of seats
     name: String
-    
 });
 
 const Room = mongoose.model('Room', RoomSchema);
