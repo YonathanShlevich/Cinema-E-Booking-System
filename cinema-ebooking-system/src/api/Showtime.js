@@ -5,49 +5,32 @@ const Booking = require('../models/Booking');
 /*
     THIS FILE SHOULD ONLY HOLD: ADDSHOWTIME, DELETESHOWTIME, AND UPDATESHOWTIME
 */
-
-
-
-function generateAttributes(title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
-    trailerPictureLink, filmRating, showTime, times) {
-    return [
-        { name: 'title', value: title, pattern: /^[0-9a-zA-Z-!]+$/, errMessage: 'Invalid title entered', required: true},
-        { name: 'category', value: category, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid category entered', required: true},
-        { name: 'cast', value: cast, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid cast entered',required: true},
-        { name: 'genre', value: genre, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid genre entered', required: true},
-        { name: 'director', value: director, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid director entered', required: true},
-        { name: 'producer', value: producer, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid producer', required: false},
-        { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!]+$/, errMessage: 'Invalid synopsis', required: true},
-        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^[^/?]+$/, errMessage: 'Invalid picture', required: true},
-        { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z- ]+$/, errMessage: 'Invalid film rating', required: true},
-        { name: 'times', value: times, pattern: /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, errMessage: 'Invalid time', required: true},
-        //Attributes left out: payment card and showTime as both are their own schemas
-    ];
-}
+/*
+    How this works: Showtime takes in 3 schemas and a date. 
+        Schema 1: Movie 
+        Schema 2: Room
+        Schema 3: ShowPeriod
+    These all have to be created before showTime is created.
+    ---------------------------------------------------------------------------------------------------------
+    ShowPeriods are - for some reason - forced to be their own schema. We will create a list of showPeriods 
+    from 12:00am -> 11:30pm, incrementing up everything 30 minutes.
+    ---------------------------------------------------------------------------------------------------------
+    Similarly, Room must also be created prior to Showtime being created. These will be static 
+        !!A good idea may be to add a third attribute in Room that has the # of available seats rather than!!
+        !!just the total number of seats. This will allow us to easily see if the room is full             !!
+    ---------------------------------------------------------------------------------------------------------    
+    Movie is also created prior to ShowTime.
+*/
 
 
 
 //API Route to add a movie:
-router.post("/addMovie", (req, res) => {
+router.post("/addShowtime", (req, res) => {
 
     //Bringing all movie attributes from formData
-    let {title, category, cast, genre, director, producer, synopsis, reviews, trailerVideoLink, 
-        trailerPictureLink, filmRating, showTime, times 
-    } = req.body; 
+    let {movieId, roomId, period, date} = req.body; 
  
-    //Gen attributes
+    
 
 
 });
-
-
-//API Route to Update a Movie
-
-router.post("/updateMovie", (req, res) => {
-    
-})
-
-
-
-
-//API Route to Delete a Movie

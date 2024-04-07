@@ -3,9 +3,8 @@ const Schema = mongoose.Schema;
 
 //Attributes of a User table
 const RoomSchema = new Schema({
-    id: String, //Pulled from Room
     seatAvailability: Number, //# of seats
-    name: String // from 
+    name: String
     
 });
 

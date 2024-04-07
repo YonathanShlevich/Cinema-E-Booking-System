@@ -14,7 +14,6 @@ const MovieSchema = new Schema({
     trailerVideoLink: String,
     trailerPictureLink: String, //Image will be stored differently, this is a placeholder
     filmRating: String,
-    showTime: {type: Schema.Types.ObjectId, ref: 'ShowTime'}, //Reference to showtime schema
     times: String//[{type: Date}]
 });
 

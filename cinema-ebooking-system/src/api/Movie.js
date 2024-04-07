@@ -2,28 +2,31 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const Movie = require('../models/Movie');
+
 /*
     THIS FILE SHOULD ONLY HOLD: ADDMOVIE, DELETEMOVIE, AND UPDATEMOVIE
 */
-
+/*
+    Reviews are not added initially to a movie, but are updated either within the Admin page or a user submits a review
+*/
 
 
 function generateAttributes(title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
-    trailerPictureLink, filmRating, times) {
+    trailerPictureLink, filmRating) {
     return [
         { name: 'title', value: title, pattern: /^[0-9a-zA-Z-!]+$/, errMessage: 'Invalid title entered'},
-        { name: 'category', value: category, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid category entered'},
-        { name: 'cast', value: cast, pattern: /^[a-zA-Z, ]+$/, errMessage: 'Invalid cast entered'},
+        { name: 'category', value: category, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid category entered'},
+        { name: 'cast', value: cast, pattern: /^[A-Za-z\s]+$/, errMessage: 'Invalid cast entered'},
         { name: 'genre', value: genre, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid genre entered'},
         { name: 'director', value: director, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid director entered'},
         { name: 'producer', value: producer, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid producer'},
-        { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-! ]+$/, errMessage: 'Invalid synopsis'},
+        { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!,.? ]+$/, errMessage: 'Invalid synopsis'},
         { name: 'trailerVideoLink', value: trailerVideoLink, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid video'}, //Real regex: [^/?]+
         { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid picture'},
         { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z- ]*$/, errMessage: 'Invalid film rating'},
-        { name: 'times', value: times, pattern: /^[0-9a-zA-z-,: ]+$/, errMessage: 'Invalid time' },
         //Attributes left out: payment card and showTime as both are their own schemas
         //TIME REGEX: (\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):([0-5]\d):([0-5]\d)
+        //!!!!Time has been removed. The movie does not hold it's own time, the showtime does
     ];
 }
 
@@ -62,13 +65,13 @@ router.post("/addMovie", (req, res) => {
 
 
     //Bringing all movie attributes from formData
-    let {title, category, cast, genre, director, producer, synopsis,  trailerVideoLink, 
-        trailerPictureLink, filmRating, times //This line requires showTime, reviews
+    let {title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
+        trailerPictureLink, filmRating 
     } = req.body; 
 
     //Calls genAttributes from top of file
     const movieAttributes = generateAttributes(title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
-        trailerPictureLink, filmRating, times);   //This line requires showTime, reviews
+        trailerPictureLink, filmRating);   
     //fault protection, trim all strings for clearance into dataset
     for(const attribute of movieAttributes ) {
         if(typeof attribute.value == 'string'){
@@ -78,15 +81,21 @@ router.post("/addMovie", (req, res) => {
 
         //if an attribute is empty and required, throw 500(FAILED)
         if((attribute.value === null || attribute.value === undefined)){
-            if(attribute.required) {
+            return res.json({
+                status: "FAILED",
+                message: 'Empty input fields, please enter ' + attribute.name ,
+            });
+                        
+        }else if(attribute.name == "cast"){ //String array regex checking for cast and 
+            console.log("Cast!");
+            const isValid = attribute.value.every(member => attribute.pattern.test(member)); //Checks if every portion of a string is valid
+            console.log(isValid);
+            if(!isValid){
                 return res.json({
-                    status: "FAILED",
-                    message: 'Empty input fields, please enter ' + attribute.name ,
+                    status: 'FAILED',
+                    message: attribute.errMessage,
                 });
-            } // still good to keepid
-            
-        
-            
+            }
         }else if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
             return res.json({
                 status: 'FAILED',
@@ -100,13 +109,17 @@ router.post("/addMovie", (req, res) => {
     //creates movie object
     const newMovie = new Movie ({
         title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
-        trailerPictureLink, filmRating, times //This line requires showTime, reviews
+        trailerPictureLink, filmRating
     });
-    //IN TESTING: SAVING MOVIE PROFILE IN DB
 
     
-     //This saves the new user with a success message
-    newMovie.save()
+    //This saves the new user with a success message
+    newMovie.save().then(result => {
+        return res.json({
+            status: "SUCCESS",
+            message: 'Movie created successfully',
+        });
+    })
     .catch(err => {
         //no need to verify email, so we just send a error message in case something doesn't go right:)
         res.json({
@@ -122,59 +135,81 @@ router.post("/addMovie", (req, res) => {
 
 //API Route to update a Movie
 
-router.post("/updateMovie/:movieId", async (req, res) => {
+router.post("/updateMovie/:movieTitle", async (req, res) => {
 
     //Admin check!
-    if(checkAdmin(getLoggedInUserId()) == false){ //Nested functions, great job!
-        return res.json({
-            status: 'FAILED',
-            message: 'User does not have permission to access this!'
-        })
-    }
+    // if(checkAdmin(getLoggedInUserId()) == false){ //Nested functions, great job!
+    //     return res.json({
+    //         status: 'FAILED',
+    //         message: 'User does not have permission to access this!'
+    //     })
+    // }
+    let { movieTitle } = req.params;    //finding movie based on title since _id isn't reasonable for admin to input
+    let {title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
+        trailerPictureLink, filmRating 
+    } = req.body;
+    const movieAttributes = generateAttributes(title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
+        trailerPictureLink, filmRating);
+    const movieUpdates = {};    //Set of updated movie attributes
 
 
-    let { movieId } = req.params; //save current movie parameters
-    //attributes available to change
-    let {title, category, cast, genre, director, producer, synopsis, reviews, trailerVideoLink, 
-        trailerPictureLink, filmRating, showTime, times 
-    } = req.body; 
+    for(const attribute of movieAttributes ) {
+        if(typeof attribute.value == 'string'){
+            attribute.value = attribute.value.trim();
+        }
 
-    const movieAttributes = [
-        { name: 'title', value: title, pattern: /^[0-9a-zA-Z-!]+$/, errMessage: 'Invalid title entered',  },
-        { name: 'category', value: category, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid category entered',  },
-        { name: 'cast', value: cast, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid cast entered', },
-        { name: 'genre', value: genre, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid genre entered',  },
-        { name: 'director', value: director, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid director entered',  },
-        { name: 'producer', value: producer, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid producer', required: false},
-        { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!]+$/, errMessage: 'Invalid synopsis',  },
-        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^[^/?]+$/, errMessage: 'Invalid picture',  },
-        { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z- ]+$/, errMessage: 'Invalid film rating',  },
-        { name: 'times', value: times, pattern: /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):([0-5]\d):([0-5]\d)$/, errMessage: 'Invalid time',  },
-        //Attributes left out: payment card and showTime as both are their own schemas
-    ];
-
-    const movieUpdates = {}; //home udpates not necessary since this is an administrative function
-
-    for(const attribute of attributes){
-        if(attribute.value && typeof attribute.value === 'string'){
-            attribute.value = attribute.value.trim(); //Trimming all the attributes
-        } else if (!attribute.value){ //attribute.name != "promo" - no need for this, may come up later
-            continue; //why????
-        }else if(!attribute.value || attribute.value === undefined){ //assuming undefined means empty here, failed status for empty responses
-            if(attribute.required){ //If required
+        //if an attribute is empty and required, throw 500(FAILED)
+        if((attribute.value === null || attribute.value === undefined)){
+            console.log(attribute.name + " is not being udpated");
+            continue; //If there is not a value for the attribute, continue to the next iteration of the loop
+                        
+        }else if(attribute.name == "cast"){ //String array regex checking for cast and 
+            console.log("Cast!");
+            const isValid = attribute.value.every(member => attribute.pattern.test(member)); //Checks if every portion of a string is valid
+            console.log(isValid);
+            if(!isValid){
                 return res.json({
-                    status: "FAILED",
-                    message: 'Empty input fields, please enter ' + attribute.name ,
+                    status: 'FAILED',
+                    message: attribute.errMessage,
                 });
             }
+        }else if (attribute.pattern && !attribute.pattern.test(attribute.value)) {
+            return res.json({
+                status: 'FAILED',
+                message: attribute.errMessage,
+            });
         }
-        console.log(attribute.name);
-
-        //validate empty fields
-        
-        
+        movieUpdates[attribute.name] = attribute.value;     //Addes attribute to list of changing attributes
     }
+    console.log(movieUpdates);
+    console.log("Title: " + movieTitle)
 
+    try { //Putting into a try loop because the other way was not working
+        //Checking if the movie exists
+        const movieExists = await Movie.exists({ title: movieTitle });
+        
+        if (movieExists) {
+            const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
+                { title: movieTitle },
+                { $set: movieUpdates },
+                { new: true }
+            );
+            return res.json({
+                status: "SUCCESS",
+                message: "Movie updated successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "Movie not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error updating movie: " + err.message
+        });
+    }
 })
 
 //API Route to Delete a Movie
