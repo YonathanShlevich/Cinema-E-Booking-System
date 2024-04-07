@@ -213,4 +213,30 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
 })
 
 //API Route to Delete a Movie
+router.post("/deleteMovie/:movieTitle", async (req, res) => {
+    let {movieTitle} = req.params;
+    try { //Putting into a try loop because the other way was not working
+        //Checking if the movie exists
+        const movieExists = await Movie.exists({ title: movieTitle });
+        if (movieExists) {
+            const deletedMovie = await Movie.findOneAndDelete({ title: movieTitle }); //Delete movie
+            return res.json({
+                status: "SUCCESS",
+                message: "Movie deleted successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "Movie not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error deleting movie: " + err.message
+        });
+    }
+})
+
+
 module.exports = router;
