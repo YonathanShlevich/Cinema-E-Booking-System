@@ -22,4 +22,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-*Wallet*
+node_modules/*
+cinema-ebooking-system/node_modules
