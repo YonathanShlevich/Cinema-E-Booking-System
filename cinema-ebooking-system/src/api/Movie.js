@@ -14,18 +14,16 @@ const Movie = require('../models/Movie');
 function generateAttributes(title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
     trailerPictureLink, filmRating) {
     return [
-        { name: 'title', value: title, pattern: /^[0-9a-zA-Z-!]+$/, errMessage: 'Invalid title entered'},
+        { name: 'title', value: title, pattern: /^[0-9a-zA-Z-! ]+$/, errMessage: 'Invalid title entered'},
         { name: 'category', value: category, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid category entered'},
         { name: 'cast', value: cast, pattern: /^[A-Za-z\s]+$/, errMessage: 'Invalid cast entered'},
-        { name: 'genre', value: genre, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid genre entered'},
+        { name: 'genre', value: genre, pattern: /^[a-zA-Z- ]+$/, errMessage: 'Invalid genre entered'},
         { name: 'director', value: director, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid director entered'},
         { name: 'producer', value: producer, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid producer'},
         { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!,.? ]+$/, errMessage: 'Invalid synopsis'},
         { name: 'trailerVideoLink', value: trailerVideoLink, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid video'}, //Real regex: [^/?]+
         { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid picture'},
         { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z- ]*$/, errMessage: 'Invalid film rating'},
-        //Attributes left out: payment card and showTime as both are their own schemas
-        //TIME REGEX: (\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]) (?:[01]\d|2[0-3]):([0-5]\d):([0-5]\d)
         //!!!!Time has been removed. The movie does not hold it's own time, the showtime does
     ];
 }
@@ -53,7 +51,7 @@ function getLoggedInUserId(){
 
 
 //API Route to add a movie:
-router.post("/addMovie", (req, res) => {
+router.post("/addMovie", async (req, res) => {
     
     //Admin check!
     // if(checkAdmin(getLoggedInUserId()) == false){ //Nested functions, great job!
@@ -63,7 +61,7 @@ router.post("/addMovie", (req, res) => {
     //     })
     // }
 
-
+    
     //Bringing all movie attributes from formData
     let {title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
         trailerPictureLink, filmRating 
@@ -72,6 +70,16 @@ router.post("/addMovie", (req, res) => {
     //Calls genAttributes from top of file
     const movieAttributes = generateAttributes(title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
         trailerPictureLink, filmRating);   
+    
+    //Checking if the movie exists using the title
+    const movieExists = await Movie.exists({ title: title }); 
+    if (movieExists){
+        return res.json({
+            status: "FAILED",
+            message: "Movie already exists, cannot create the movie"
+        })
+    }
+
     //fault protection, trim all strings for clearance into dataset
     for(const attribute of movieAttributes ) {
         if(typeof attribute.value == 'string'){
