@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 //Attributes of a User table
 const MovieSchema = new Schema({
     title: String,
-    category: String, 
+    category: String, //Now showing or coming soon
     cast: [{type: String}], //string array of all cast
     genre: String,
     director: String,
