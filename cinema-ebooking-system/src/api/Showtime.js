@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const ShowTime = require('../models/ShowTime');
 const Movie = require('../models/Movie');
 const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
+const ShowTime = require('../models/ShowTime');
 
 /*
     THIS FILE SHOULD ONLY HOLD: ADDSHOWTIME, DELETESHOWTIME, AND UPDATESHOWTIME
@@ -27,7 +27,7 @@ const ShowPeriod = require('../models/ShowPeriod');
 
 
 
-//API Route to add a movie:
+//API Route to add a showtime:
 router.post("/addShowtime", async (req, res) => {
 
     /* 
@@ -111,5 +111,28 @@ router.post("/addShowtime", async (req, res) => {
     })
 
 });
+
+
+/* 
+    There is no distict functional id for showtime, so we need to decide how pull the correct showtime
+        Ideas:
+            - We have to check all 4 attributes at once. The harder part of this is that the front end will 
+              have to compensate for this by only showing results for the rest of the inputs based on the
+              inital input.
+            - We will still check all 4 attributes, but we'll make it more annoying on a UX level. 
+              We could just ask the admin to properly input all the attributes without any list of 
+              possibilities. This is the easiest to implement but worse for UX
+    This is a blocker until we decide as a group how to do this.
+    Once we figure out how to do this, delete showtime will be unblocked as well.
+*/
+
+
+//API Route to udpate a showtime:
+router.post("/updateShowtime", async (req, res) => {
+
+
+
+
+})
 
 module.exports = router;
