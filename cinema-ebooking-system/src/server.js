@@ -9,6 +9,7 @@ const port = 4000;
 const UseRouter = require('./api/User');
 const MovieRouter = require('./api/Movie');
 const RoomRouter = require('./api/Room');
+const ShowPeriodRouter = require('./api/ShowPeriod');
 
 //Adding CORS
 let cors = require("cors");
@@ -21,6 +22,7 @@ app.use(bodyParser());
 app.use('/user', UseRouter);
 app.use('/movie', MovieRouter);
 app.use('/room', RoomRouter);
+app.use('/showperiod', ShowPeriodRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
