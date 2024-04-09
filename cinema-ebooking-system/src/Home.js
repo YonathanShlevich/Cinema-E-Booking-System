@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate} from "react-router-dom";
 import './Home.css';
+import axios from "axios";
 
 // Constructor for the movie class
+/*
 class Movie {
   constructor(title, poster, trailerId, status) {
     this.title = title;
@@ -11,6 +13,7 @@ class Movie {
     this.status = status;
   }
 }
+*/
 
 const Home = () => {
   const navigate = useNavigate();
@@ -42,7 +45,7 @@ const Home = () => {
     window.location.href = '/';
   };
 
-  // Fetching movies from JSON file on component mount
+  /*
   useEffect(() => {
     const fetchMovies = async () => {
       // Fetching JSON data from the file
@@ -60,18 +63,65 @@ const Home = () => {
     };
     fetchMovies();
   }, []);
+*/
 
-  // Function to play trailer
-  const playTrailer = (trailerId) => {
-    setSelectedMovie(trailerId);
-    setOpen(true);
-  };
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/movie/allMovies`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setMovies(response.data)
 
-  // Function to close trailer
-  const closeTrailer = () => {
-    setSelectedMovie(null);
-    setOpen(false);
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
+
+
+
+
+  // Function to open pop up
+  const openInfo = (movie) => {
+    
+    
+    const popupContent = `
+        <div>
+            <h2>${movie.title}</h2>
+            <p><strong>Category:</strong> ${movie.category}</p>
+            <p><strong>Cast:</strong> ${movie.cast.join(", ")}</p>
+            <p><strong>Genre:</strong> ${movie.genre}</p>
+            <p><strong>Director:</strong> ${movie.director}</p>
+            <p><strong>Producer:</strong> ${movie.producer}</p>
+            <p><strong>Synopsis:</strong> ${movie.synopsis}</p>
+            <p><strong>Film Rating:</strong> ${movie.filmRating}</p>
+            <img src="${movie.trailerPictureLink}" alt="Movie Poster" style="max-width: 300px;">
+        </div>
+    `;
+    
+    const modal = document.getElementById("myModal");
+    const popupContentContainer = document.getElementById("popupContent");
+    popupContentContainer.innerHTML = popupContent;
+    
+    modal.style.display = "block"; // Show the modal
+
+    // Close the modal when the close button is clicked
+    const closeButton = document.getElementsByClassName("close")[0];
+    closeButton.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Prevent clicks outside the modal from closing it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
   };
+  
 
   // Function to handle search input change
   const handleSearch = (event) => {
@@ -84,6 +134,7 @@ const Home = () => {
   );
 
   return (
+    
     <div className="home">
       <nav>
         {/* This is where the navbar and the elements inside is located */}
@@ -116,37 +167,27 @@ const Home = () => {
         )}
       </nav>
 
+      <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="popupContent"></div>
+      </div>
+      </div>
+
       {/* Section for Now Showing movies */}
       <h1>Now Showing</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Now Showing movies, 
         this should show all of them since the filter has nothing */}
         {filteredMovies.map((movie, index) => (
-          movie.status === 'nowShowing' && (
-            <div key={index + 1} className="movie-item">
-              {isOpen && selectedMovie === movie.trailerId ? (
-                // If trailer is open, show iframe where the trailer can be played
+          movie.category === 'Now Showing' && (
+            <div key={movie._id} className="movie-item">
+              
                 <>
-                  <iframe
-                    title={movie.title}
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${movie.trailerId}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    onClick={(e) => e.stopPropagation()} // Prevent click propagation to close the trailer
-                  />
-                  <div className="modal">
-                    <button onClick={closeTrailer}>Close</button>
-                  </div>
-                </>
-              ) : (
-                // If trailer is closed, show movie poster
-                <>
-                  <img src={movie.poster} alt={movie.title} onClick={() => playTrailer(movie.trailerId)} />
+                  <img src={movie.trailerPictureLink} alt={movie.title} onClick={() => openInfo(movie)} />
                   <h3>{movie.title}</h3>
                 </>
-              )}
+              
             </div>
           )
         ))}
@@ -157,32 +198,16 @@ const Home = () => {
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Coming Soon movies, 
         this should show all of them since the filter has nothing */}
+        
         {filteredMovies.map((movie, index) => (
-          movie.status === 'comingSoon' && (
-            <div key={index+1} className="movie-item">
-              {isOpen && selectedMovie === movie.trailerId ? (
-                // If trailer is open, show iframe where the trailer can be played
+          movie.category === 'Coming Soon' && (
+            <div key={movie._id} className="movie-item">
+              
                 <>
-                  <iframe
-                    title={movie.title}
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${movie.trailerId}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    onClick={(e) => e.stopPropagation()} // Prevent click propagation to close the trailer
-                  />
-                  <div className="modal">
-                    <button onClick={closeTrailer}>Close</button>
-                  </div>
-                </>
-              ) : (
-                // If trailer is closed, show movie poster
-                <>
-                  <img src={movie.poster} alt={movie.title} onClick={() => playTrailer(movie.trailerId)} />
+                  <img src={movie.trailerPictureLink} alt={movie.title} onClick={() => openInfo(movie)} />
                   <h3>{movie.title}</h3>
                 </>
-              )}
+              
             </div>
           )
         ))}
