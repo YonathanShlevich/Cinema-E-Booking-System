@@ -20,8 +20,8 @@ function generateAttributes(title, category, cast, genre, director, producer, sy
         { name: 'director', value: director, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid director entered'},
         { name: 'producer', value: producer, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid producer'},
         { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!,.? ]+$/, errMessage: 'Invalid synopsis'},
-        { name: 'trailerVideoLink', value: trailerVideoLink, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid video'}, //Real regex: [^/?]+
-        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^[a-zA-Z]+$/, errMessage: 'Invalid picture'},
+        { name: 'trailerVideoLink', value: trailerVideoLink, pattern: /^[a-zA-Z0-9_-]{11}(?:\?.*)?$/, errMessage: 'Invalid video'},
+        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^https?:\/\/(?:www\.)?[\w\-]+(?:\.[\w\-]+)+[/\w\-\.]*$/, errMessage: 'Invalid picture'},
         { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z- ]*$/, errMessage: 'Invalid film rating'},
         //!!!!Time has been removed. The movie does not hold it's own time, the showtime does
     ];
@@ -245,6 +245,26 @@ router.post("/deleteMovie/:movieTitle", async (req, res) => {
     }
 })
 
+//GET function to pull info from movie
+router.get("/pullMovie/:movieTitle", (req, res) =>{
+    const movieTitle = req.params.movieTitle; //Pulling userId from the URL parameters
+    Movie.findOne({title: movieTitle})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
 
 module.exports = router;
 
