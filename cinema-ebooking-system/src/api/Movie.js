@@ -269,11 +269,13 @@ router.get("/pullMovie/:movieTitle", (req, res) =>{
 module.exports = router;
 
 //GET function to pull info from movie
-router.get("/pullMovie/:allMovies", (req, res) =>{
+router.get("/allMovies", (req, res) =>{
     const movieTitle = req.params.movieTitle; //Pulling userId from the URL parameters
-    Movie.find({title: movieTitle})
+    Movie.find({})
         .then(result => {
+            
             if(!result){ //If the userID doesn't exist
+                console.log('empty req')
                 return res.json({
                     status: "FAILED",
                     message: 'Movie does not exist'
