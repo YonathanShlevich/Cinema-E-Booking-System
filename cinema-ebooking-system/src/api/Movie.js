@@ -268,6 +268,29 @@ router.get("/pullMovie/:movieTitle", (req, res) =>{
 
 module.exports = router;
 
+//GET function to pull info from movie
+router.get("/pullMovie/:allMovies", (req, res) =>{
+    const movieTitle = req.params.movieTitle; //Pulling userId from the URL parameters
+    Movie.find({title: movieTitle})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+module.exports = router;
+
 
 
 /*  Testing format for add/Update movie
