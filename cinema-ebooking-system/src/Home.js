@@ -3,17 +3,7 @@ import { Link, useNavigate} from "react-router-dom";
 import './Home.css';
 import axios from "axios";
 
-// Constructor for the movie class
-/*
-class Movie {
-  constructor(title, poster, trailerId, status) {
-    this.title = title;
-    this.poster = poster;
-    this.trailerId = trailerId;
-    this.status = status;
-  }
-}
-*/
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -45,25 +35,7 @@ const Home = () => {
     window.location.href = '/';
   };
 
-  /*
-  useEffect(() => {
-    const fetchMovies = async () => {
-      // Fetching JSON data from the file
-      const jsonData = require('./controllers/response.json');
-      // Mapping JSON data to Movie objects
-      const movieData = jsonData.map(movieArray => {
-        const title = movieArray[0];
-        const status = movieArray[7];
-        const trailerID = movieArray[3];
-        const poster = movieArray[8];
-        return new Movie(title, poster ,trailerID, status);
-      });
-      // Setting movies state
-      setMovies(movieData);
-    };
-    fetchMovies();
-  }, []);
-*/
+
 
   useEffect(() => {
     //Pulls the userID and sets response to second var
@@ -88,23 +60,32 @@ const Home = () => {
   const openInfo = (movie) => {
     
     
-    const popupContent = `
+    const popupText = `
         <div>
-            <h2>${movie.title}</h2>
-            <p><strong>Category:</strong> ${movie.category}</p>
+            <h2>${movie.title} --- ${movie.category}!</h2>
+            <button id='popup-button' >Book Tickets to ${movie.title}</button>
+            
             <p><strong>Cast:</strong> ${movie.cast.join(", ")}</p>
-            <p><strong>Genre:</strong> ${movie.genre}</p>
-            <p><strong>Director:</strong> ${movie.director}</p>
-            <p><strong>Producer:</strong> ${movie.producer}</p>
+            <p></p>
+            <p><strong>Director:</strong> ${movie.director}<strong> - Producer:</strong> ${movie.producer}
+            <strong> - Genre:</strong> ${movie.genre}<strong> - Film Rating:</strong> ${movie.filmRating}
+            </p>
+            
             <p><strong>Synopsis:</strong> ${movie.synopsis}</p>
-            <p><strong>Film Rating:</strong> ${movie.filmRating}</p>
-            <img src="${movie.trailerPictureLink}" alt="Movie Poster" style="max-width: 300px;">
+          
         </div>
+    `;
+
+    const popupImageAndTrailer = `
+        <img src="${movie.trailerPictureLink}" >
+        <iframe height="300px" width="600px" src="https://www.youtube.com/embed/${(movie.trailerVideoLink)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     `;
     
     const modal = document.getElementById("myModal");
-    const popupContentContainer = document.getElementById("popupContent");
-    popupContentContainer.innerHTML = popupContent;
+    const popupTextContainer = document.getElementById("popupText");
+    const popupImageContainer = document.getElementById("popupImage");
+    popupTextContainer.innerHTML = popupText;
+    popupImageContainer.innerHTML = popupImageAndTrailer;
     
     modal.style.display = "block"; // Show the modal
 
@@ -136,6 +117,17 @@ const Home = () => {
   return (
     
     <div className="home">
+      <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="popup-container">
+          <div id="popupText"></div>
+          <div id="popupImage"></div>
+        </div>
+      </div>
+      </div>
+
+
       <nav>
         {/* This is where the navbar and the elements inside is located */}
         {loggedInUserId ? (
@@ -167,12 +159,7 @@ const Home = () => {
         )}
       </nav>
 
-      <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <div id="popupContent"></div>
-      </div>
-      </div>
+      
 
       {/* Section for Now Showing movies */}
       <h1>Now Showing</h1>

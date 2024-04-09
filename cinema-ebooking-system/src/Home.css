@@ -86,12 +86,9 @@ nav  {
   
   /* CSS from HomeLoggedIn */
 
-  #btnbook {
+  #popup-button {
 
-    margin-top: 1%;
-    margin-bottom: 1%;
-    padding: 10px 24px;
-    margin-left: 15%;
+   margin:auto
 
 }
 
@@ -169,10 +166,31 @@ nav  {
 
 .modal-content {
   background-color: #fefefe;
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 2% auto; /* 15% from the top and centered */
   padding: 20px;
   border: 1px solid #888;
   width: 80%; /* Could be more or less, depending on screen size */
+}
+
+#popup-container {
+  display: block;
+}
+
+#popup-container > div {
+  
+  padding: 5px;
+}
+
+#popupText > div > p {
+  margin: 5px;
+}
+#popupText > div > h2 {
+  margin: 5px;
+}
+
+
+#popupImage img {
+  height: 300px;
 }
 
 .close {
