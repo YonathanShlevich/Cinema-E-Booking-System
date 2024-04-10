@@ -117,15 +117,7 @@ const Home = () => {
   return (
     
     <div className="home">
-      <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <div id="popup-container">
-          <div id="popupText"></div>
-          <div id="popupImage"></div>
-        </div>
-      </div>
-      </div>
+      
 
 
       <nav>
@@ -159,9 +151,18 @@ const Home = () => {
         )}
       </nav>
 
-      
+      <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="popup-container">
+          <div id="popupText"></div>
+          <div id="popupImage"></div>
+        </div>
+      </div>
+      </div>
 
       {/* Section for Now Showing movies */}
+
       <h1>Now Showing</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Now Showing movies, 
