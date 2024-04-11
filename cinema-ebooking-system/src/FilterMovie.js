@@ -17,9 +17,11 @@ const FilterMovie = () => {
   const [selectedGenre, setSelectedGenre] = useState(null);
 
     // Function to handle genre selection
-const handleGenreSelection = (genre) => {
-    setSelectedGenre(genre);
-};
+    const handleGenreSelection = (genre) => {
+        setSelectedGenre(genre);
+    };
+
+    const genres = [...new Set(movies.map(movie => movie.genre))];
 
   useEffect(() => {
     //Function to get user ID from localStorage
@@ -156,7 +158,7 @@ const handleGenreSelection = (genre) => {
         />
         <button id ="home-btn" onClick={() => navigate("/")}> Back to Home </button>
         {loggedInUserId && (
-          <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
+          <button id='btn_book' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
       </nav>
 
@@ -171,13 +173,20 @@ const handleGenreSelection = (genre) => {
       </div>
 
       {/* Section for Filtering Buttons */}
-      <ul class="genre_filter">
-        <li>
-            <button class="genre_click" onClick={() => handleGenreSelection('Action')}>Action</button>
-            <button class="genre_click" onClick={() => handleGenreSelection('Sci-Fi')}>Sci-Fi</button>
-            <button class="genre_click" onClick={() => handleGenreSelection('Exploitation Horror')}>Horror</button>
+      <ul className="genre_filter">
+      {/* Map over the genres array to dynamically render buttons */}
+        {genres.map((genre, index) => (
+        <li key={index}>
+          {/* Use genre as the button label */}
+          <button 
+            className={`genre_click ${selectedGenre === genre ? 'selected' : ''}`} 
+            onClick={() => handleGenreSelection(genre)}
+          >
+            {genre}
+          </button>
         </li>
-      </ul>
+      ))}
+    </ul>
 
       {/* Section for Now Showing movies */}
 
