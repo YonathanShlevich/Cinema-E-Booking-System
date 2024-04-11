@@ -404,11 +404,11 @@ const sendProfileUpdatedEmail = async (userId) => {
 }
 //Send email type beat
 const sendVerificationEmail = ({_id, email}, res) => {
-    //URL for the email, in our case currently it is localhost:5000
+    //URL for the email, in our case currently it is localhost:4000
     console.log("sendVerEmail email: " + email);
     console.log("sendVerEmail id: " + _id);
 
-    const currentURL = "http://localhost:5000/";
+    const currentURL = "http://localhost:4000/";
 
     const uuidString = uuidv4() + _id;
 

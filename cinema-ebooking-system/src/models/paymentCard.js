@@ -13,6 +13,6 @@ const paymentCardSchema = new Schema({
     billingZip: Number
 });
 
-const User = mongoose.model('paymentCard', paymentCardSchema);
+const paymentCard = mongoose.model('paymentCard', paymentCardSchema);
 
-module.exports = User;
+module.exports = paymentCard;

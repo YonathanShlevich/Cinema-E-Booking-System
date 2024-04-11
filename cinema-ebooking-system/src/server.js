@@ -1,20 +1,31 @@
 //requires our MongoDB
 require('./db_config/db');
 require('./api/User');
+require('./api/Movie');
+require('./api/Room');
+require('./api/ShowTime');
 const app = require('express')();
-const port = 5000;
+const port = 4000;
 
 const UseRouter = require('./api/User');
+const MovieRouter = require('./api/Movie');
+const RoomRouter = require('./api/Room');
+const ShowPeriodRouter = require('./api/ShowPeriod');
+const ShowTimeRouter = require('./api/ShowTime')
 
 //Adding CORS
 let cors = require("cors");
+//app.use(cors());
 app.use(cors());
-
 //Accepts post data
 const bodyParser = require('express').json;
 app.use(bodyParser());
 
 app.use('/user', UseRouter);
+app.use('/movie', MovieRouter);
+app.use('/room', RoomRouter);
+app.use('/showperiod', ShowPeriodRouter);
+app.use('/showtime', ShowTimeRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

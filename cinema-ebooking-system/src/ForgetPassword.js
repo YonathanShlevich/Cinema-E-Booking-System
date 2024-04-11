@@ -25,7 +25,7 @@ function ForgetPassword() {
                     tempPassword: document.getElementById("tempPassword").value,
                 };
                 // Make POST request to verify temp password endpoint
-                const response = await axios.post(`http://localhost:5000/user/verifyTempPassword`, tempPassData);
+                const response = await axios.post(`http://localhost:4000/user/verifyTempPassword`, tempPassData);
                 
                 // Handle successful change password
                 if (response.data.status === "SUCCESS") {
@@ -38,7 +38,7 @@ function ForgetPassword() {
     
                 try {
                     // Make POST request to forgetpassword endpoint
-                    const response = await axios.post(`http://localhost:5000/user/forgetpassword`, formData);
+                    const response = await axios.post(`http://localhost:4000/user/forgetpassword`, formData);
                     
                     // Handle successful change password
                     if (response.data.status === "SUCCESS") {
@@ -78,7 +78,7 @@ function ForgetPassword() {
         } else {
           try {
             // Make POST request to send temporary password
-            const response = await axios.post(`http://localhost:5000/user/sendTempPassword`, { email });
+            const response = await axios.post(`http://localhost:4000/user/sendTempPassword`, { email });
       
             if (response.data.status === "SUCCESS") {
               // Temporary password sent successfully

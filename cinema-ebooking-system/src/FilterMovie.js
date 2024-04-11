@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate} from "react-router-dom";
 import './Home.css';
 import axios from "axios";
+import './FilterMovie.css';
 
 
 
-const Home = () => {
+const FilterMovie = () => {
   const navigate = useNavigate();
   // State variables
   const [isOpen, setOpen] = useState(false);
@@ -13,6 +14,12 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState(null);
+
+    // Function to handle genre selection
+const handleGenreSelection = (genre) => {
+    setSelectedGenre(genre);
+};
 
   useEffect(() => {
     //Function to get user ID from localStorage
@@ -104,15 +111,17 @@ const Home = () => {
   };
   
 
-  // Function to handle search input change
-  const handleSearch = (event) => {
+  // Update handleSearch function to reset selectedGenre
+    const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-  };
+    setSelectedGenre(null); // Reset selected genre when searching
+};
 
-  // Filter movies based on search term
-  const filteredMovies = movies.filter(movie =>
+  // FilteredMovies can filter using search bar and has genre filtering
+    const filteredMovies = movies.filter(movie =>
+    (!selectedGenre || movie.genre.toLowerCase() === selectedGenre.toLowerCase()) &&
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+);
 
   return (
     
@@ -145,7 +154,7 @@ const Home = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button onClick={() => navigate("/filter")}> +Filter </button>
+        <button id ="home-btn" onClick={() => navigate("/")}> Back to Home </button>
         {loggedInUserId && (
           <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
@@ -160,6 +169,15 @@ const Home = () => {
         </div>
       </div>
       </div>
+
+      {/* Section for Filtering Buttons */}
+      <ul class="genre_filter">
+        <li>
+            <button class="genre_click" onClick={() => handleGenreSelection('Action')}>Action</button>
+            <button class="genre_click" onClick={() => handleGenreSelection('Sci-Fi')}>Sci-Fi</button>
+            <button class="genre_click" onClick={() => handleGenreSelection('Exploitation Horror')}>Horror</button>
+        </li>
+      </ul>
 
       {/* Section for Now Showing movies */}
 
@@ -204,4 +222,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default FilterMovie;
