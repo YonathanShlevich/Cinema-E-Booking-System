@@ -3,7 +3,6 @@ const router = express.Router();
 const Movie = require('../models/Movie');
 const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
-const Showtime = require('../models/ShowTime');
 const ShowTime = require('../models/ShowTime');
 
 /*
@@ -85,10 +84,23 @@ router.post("/addShowtime", async (req, res) => {
         });
     }
    
-   
+   /*
+        We need to find a way to check that no movie can run at the same period in the same room on the same day.
+        Just search for a showTime with all the same attributes; if it exists, then you know it's a duplicate.
+   */
 
-    
+    const existingShowtime = await ShowTime.findOne({
+        room: roomObject._id,           //Checking by _id
+        period: showPeriodObject._id,   //Checking by _id
+        date: valiDate                  //using previously created valiDate
+    });
 
+    if (existingShowtime) {
+        return res.json({
+            status: "FAILED",
+            message: "A showtime already exists during this period in this room on this date"
+        });
+    }
 
     // console.log(movieObject);
 
