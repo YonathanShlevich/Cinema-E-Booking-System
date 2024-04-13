@@ -19,9 +19,9 @@ function generateAttributes(title, category, cast, genre, director, producer, sy
         { name: 'genre', value: genre, pattern: /^[a-zA-Z- ]+$/, errMessage: 'Invalid genre entered'},
         { name: 'director', value: director, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid director entered'},
         { name: 'producer', value: producer, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid producer'},
-        { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!,.?' ]+$/, errMessage: 'Invalid synopsis'},
+        { name: 'synopsis', value: synopsis, pattern: /^[A-Za-z0-9,.?!'"()\-:;\s]+$/, errMessage: 'Invalid synopsis'},
         { name: 'trailerVideoLink', value: trailerVideoLink, pattern: /^[a-zA-Z0-9_-]{11}(?:\?.*)?$/, errMessage: 'Invalid video'},
-        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^https?:\/\/(?:www\.)?[\w\-]+(?:\.[\w\-]+)+[/\w\-\.]*$/, errMessage: 'Invalid picture'},
+        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^https?:\/\/(?:www\.)?[\w\-]+(?:\.[\w\-]+)+[/\w\-]*\.(?:png|jpg)$/i, errMessage: 'Invalid picture'},
         { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z-+ ]*$/, errMessage: 'Invalid film rating'},
         //!!!!Time has been removed. The movie does not hold it's own time, the showtime does
     ];

@@ -1,37 +1,40 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Admin.css';
+
 
 function AddMovie() {
 
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
         e.preventDefault();
 
-    
-        let title = document.getElementById("title");
-        let cast = document.getElementById("cast");
-        let producer = document.getElementById("producer");
-        let director = document.getElementById("director");
-        let syn = document.getElementById("syn");
+        const formData = {
+          title: document.getElementById("title").value,
+          category: document.getElementById("category").value,
+          cast: document.getElementById("cast").value.split(',').map(item => item.trim()), //Splits by ',', trims the item, then maps it back to cast
+          genre: document.getElementById("genre").value,
+          director: document.getElementById("director").value,
+          producer: document.getElementById("producer").value,
+          synopsis: document.getElementById("syn").value,
+          trailerVideoLink: document.getElementById("trailer").value,
+          trailerPictureLink: document.getElementById("image").value,
+          filmRating: document.getElementById("rating").value
+        }
+
         
-        //let reviews = document.getElementById("reviews");
-        let image = document.getElementById("image");
-        let trailer = document.getElementById("trailer");
-        let rating = document.getElementById("rating");
-        let genre = document.getElementById("genre");
-        let category = document.getElementById("category"); 
-        //let showDatesAndTimes = document.getElementById("showDatesAndTimes"); no booking of showtime, only adding movie
+        //  showDatesAndTimes = document.getElementById("showDatesAndTimes"); no booking of showtime, only adding movie
        
         //verify that cast is separated by commas, so we can convert it into an array later
         /*
-        let isCommaSeparated = true;
+          isCommaSeparated = true;
         if(cast.value.indexOf(',') === -1) isCommaSeparated =  false;
         console.log(isCommaSeparated);
-        let splitValue = cast.value.split(',');
+          splitValue = cast.value.split(',');
         if(splitValue.length > 1) {
           isCommaSeparated = true;
         }else {
@@ -39,14 +42,37 @@ function AddMovie() {
         }
         */
 
-     
-        if (title.value === "" || cast.value === "" || producer.value === "" 
-            || director.value === "" || syn.value === "" || trailer.value === "" 
-            || rating.value === "" || category.value === "" || genre.value === "" || image.value === "") { // reviews.value === "" || showdatesandtimes.value === "" removed 
-          window.alert("Ensure you input a value in all fields marked */try entering cast by commas");
+        
+        if(
+          formData.title === null || 
+          formData.category === "" || 
+          (!Array.isArray(formData.cast) || formData.cast.some(item => typeof item !== 'string' || item.trim() === "")) ||   //I couldn't get it work with a simple one, so it checks if cast is empty in 2 ways
+          formData.genre === "" ||
+          formData.director === "" || 
+          formData.producer === "" || 
+          formData.synopsis === "" || 
+          formData.trailerVideoLink === "" ||
+          formData.trailerPictureLink === "" ||
+          formData.filmRating === "") { // reviews.value === "" || showdatesandtimes.value === "" removed 
+          if(!Array.isArray(formData.cast) || formData.cast.some(item => typeof item !== 'string' || item.trim() === "")){
+            window.alert("Cast is incorrectly formatted, rememeber to separate them by commas!");
+          }
+          window.alert("Ensure you input a value in all fields marked");
         } else { // all is good
-            // submit to database
-            navigate('/admin/manage-movies');
+            /*
+              Post to 'addmovie' and send to database
+            */
+            try {
+              const response = await axios.post("http://localhost:4000/movie/addMovie", formData);
+
+              if (response.data.status === "FAILED"){
+                window.alert(response.data.message);
+              } else {
+                navigate('/admin/manage-movies');
+              }
+            } catch(error) {
+              window.alert(error);
+            }
             
         }
 
@@ -83,19 +109,19 @@ function AddMovie() {
                 <input id="syn" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
-                <label>*Image:</label>
+                <label>*Image Link:</label>
                 <input id="image" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
-                <label>*Trailer:</label>
+                <label>*Embedded Trailer Link:</label>
                 <input id="trailer" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
                 <label>*Category</label>
                     <select id="category" className="form-control">
                         <option value="" selected></option>
-                        <option value="Now-Showing">Now Showing</option>
-                        <option value="Coming-Soon">Coming Soon</option>
+                        <option value="Now Showing">Now Showing</option>
+                        <option value="Coming Soon">Coming Soon</option>
                         
                         
                     </select>
@@ -108,6 +134,7 @@ function AddMovie() {
                         <option value="Drama">Drama</option>
                         <option value="Action">Action</option>
                         <option value="Comedy">Comedy</option>
+                        <option value="Sci-fi">Sci-fi</option>
                         
                     </select>
                 </div>

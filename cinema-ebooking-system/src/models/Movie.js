@@ -12,9 +12,8 @@ const MovieSchema = new Schema({
     synopsis: String,
     reviews: [{type: String}], //Array of reviews
     trailerVideoLink: String,
-    trailerPictureLink: String, //Image will be stored differently, this is a placeholder
+    trailerPictureLink: String,
     filmRating: String,
-    times: String//[{type: Date}]
 });
 
 const Movie = mongoose.model('Movie', MovieSchema);
