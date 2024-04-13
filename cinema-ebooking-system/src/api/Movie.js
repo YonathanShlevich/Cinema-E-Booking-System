@@ -72,6 +72,7 @@ router.post("/addMovie", async (req, res) => {
     
     //Checking if the movie exists using the title
     const movieExists = await Movie.exists({ title: title }); 
+    
     if (movieExists){
         return res.json({
             status: "FAILED",

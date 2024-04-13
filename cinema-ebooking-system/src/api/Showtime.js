@@ -3,6 +3,7 @@ const router = express.Router();
 const Movie = require('../models/Movie');
 const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
+const Showtime = require('../models/ShowTime');
 const ShowTime = require('../models/ShowTime');
 
 /*
@@ -76,13 +77,18 @@ router.post("/addShowtime", async (req, res) => {
     const movieObject = await Movie.findOne({ title: movieTitle });
     const roomObject = await Room.findOne({name: roomName});
     const showPeriodObject = await ShowPeriod.findOne({time: periodTime});
-
+    console.log(movieObject);
     if(!movieObject || !roomObject || !showPeriodObject){
         return res.json({
             status: "FAILED",
             message: "Invalid movie, room, or showPeriod entered"
         });
     }
+   
+   
+
+    
+
 
     // console.log(movieObject);
 
@@ -96,6 +102,7 @@ router.post("/addShowtime", async (req, res) => {
         period: showPeriodObject,
         date: date
     })
+    
 
     await newShowTime.save().then(result => {
         return res.json({
