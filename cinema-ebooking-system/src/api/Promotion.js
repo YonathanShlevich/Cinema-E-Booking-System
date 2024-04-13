@@ -90,7 +90,7 @@ router.post("/addPromotion", async (req, res) => {
 });
 
 //Send email?
-const sendVerificationEmail = ({_id, email}, res) => {
+const sendVerificationEmail = ({code, email, discount}, res) => {
     //URL for the email, in our case currently it is localhost:4000
     console.log("sendVerEmail email: " + email);
     console.log("sendVerEmail id: " + _id);
@@ -104,7 +104,7 @@ const sendVerificationEmail = ({_id, email}, res) => {
         from: process.env.AUTH_EMAIL,
         to: email,
         subject: "Yessir! Promotion time",
-        html: `<p>Congratulations! You've been given a promotion code! Here is the information</p>`, //THIS NEEDS TO BE FILLED IN
+        html: `<p>Congratulations! You've been given a promotion code for ${discount}% off!<br><br> Promo Code: ${code}`, //THIS NEEDS TO BE FILLED IN
     };
 }
 
