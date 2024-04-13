@@ -13,6 +13,7 @@ const RoomRouter = require('./api/Room');
 const ShowPeriodRouter = require('./api/ShowPeriod');
 const ShowTimeRouter = require('./api/ShowTime');
 const SeatRouter = require('./api/Seat');
+const PromotionRouter = require('./api/Promotion');
 
 //Adding CORS
 let cors = require("cors");
@@ -28,6 +29,7 @@ app.use('/room', RoomRouter);
 app.use('/showperiod', ShowPeriodRouter);
 app.use('/showtime', ShowTimeRouter);
 app.use('/seat', SeatRouter);
+app.use('/promotion', PromotionRouter)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
