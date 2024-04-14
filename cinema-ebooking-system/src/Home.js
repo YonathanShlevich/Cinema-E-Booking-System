@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate} from "react-router-dom";
+import Carousel from 'react-bootstrap/Carousel';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import axios from "axios";
 
@@ -150,6 +152,29 @@ const Home = () => {
           <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
       </nav>
+
+      {/* This is where the carousel elements are located */}
+      <Carousel>
+        <Carousel.Item>
+          <img class ="carousel-img" src="./homelander.gif" alt="First slide" />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img class ="carousel-img" src="./theatre.jpg" alt="Second slide" />
+          <Carousel.Caption className="carousel-caption1">
+            <h1>Book Your Tickets Here!</h1>
+            <p>"Grab your popcorn and buckle up, because it's about to get reel!"</p>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img class ="carousel-img" src="./movielist.png" alt="First slide" />
+          <Carousel.Caption className="carousel-caption2">
+            <h1>We have cRaZy movies here!</h1>
+            <p>Have you heard of "A Serbian Film" to name one? </p>
+          </Carousel.Caption>
+        </Carousel.Item>
+      </Carousel>
+
+
 
       <div id="myModal" class="modal">
       <div class="modal-content">
