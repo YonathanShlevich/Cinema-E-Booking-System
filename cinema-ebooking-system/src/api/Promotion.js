@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Promotion = require('../models/Promotion');
+const User = require('../models/User');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 //UUID handling
 const {v4: uuidv4} = require("uuid"); //The 'v4' is the c4 model within uuid
@@ -25,7 +26,7 @@ router.post("/addPromotion", async (req, res) => {
 
 
     //setup request body - does promotion need an id??? CHECK THIS
-    let {id, code, start, end, discount} = req.body;
+    let {code, start, end, discount} = req.body;
 
     const validStartDate = new Date(start);
     const validEndDate = new Date(end); //unfortunately i couldn't use a cute pun(^_^)
@@ -44,20 +45,23 @@ router.post("/addPromotion", async (req, res) => {
         });
     }
     
-    //check if the code/id is not a duplicate
+    //check if the code/id is not a duplicate - removed
+    /*
     const dupId = await Promotion.findOne({
         id: id
     });
+    */
     const dupCode = await Promotion.findOne({
         code: code
     })
-
+    /*
     if(dupId){
         return res.json({
             status: "FAILED",
             message: "duplicate promotion id entered - please try another id"
         });
     }
+    */
     if(dupCode){
         return res.json({
             status: "FAILED",
@@ -66,7 +70,6 @@ router.post("/addPromotion", async (req, res) => {
     }
 
     const newPromo = new Promotion ({
-        id: id,
         code: code, 
         start: start,
         end: end,
@@ -78,6 +81,7 @@ router.post("/addPromotion", async (req, res) => {
             status: "SUCCESS",
             message: "New promotion was created!"
         });
+        
         //sendVerificationEmail(result, res);
     }).catch(err => {
         return res.json({
@@ -90,7 +94,9 @@ router.post("/addPromotion", async (req, res) => {
 });
 
 //Send email?
-const sendVerificationEmail = ({code, email, discount}, res) => {
+const sendVerificationEmail = async ({code, email, discount}, res) => {
+
+    const promoUsers = await User.find({promo: promotion});
     //URL for the email, in our case currently it is localhost:4000
     console.log("sendVerEmail email: " + email);
     console.log("sendVerEmail id: " + _id);
