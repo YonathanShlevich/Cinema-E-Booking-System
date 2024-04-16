@@ -4,7 +4,11 @@ require('./api/User');
 require('./api/Movie');
 require('./api/Room');
 require('./api/ShowTime');
+require('./api/Movie');
+require('./api/Room');
+require('./api/ShowTime');
 const app = require('express')();
+const port = 4000;
 const port = 4000;
 
 const UseRouter = require('./api/User');
@@ -17,6 +21,7 @@ const PromotionRouter = require('./api/Promotion');
 
 //Adding CORS
 let cors = require("cors");
+//app.use(cors());
 //app.use(cors());
 app.use(cors());
 //Accepts post data

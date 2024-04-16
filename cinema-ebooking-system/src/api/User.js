@@ -373,6 +373,35 @@ router.post('/signup', (req, res) => {
     });
 }); // /signup
 
+//send the user an email if profile has been updated
+const sendProfileUpdatedEmail = async (userId) => {
+    //URL for the email, in our case currently it is localhost:5000
+    const user =  await User.findOne({ _id: userId });
+    // console.log("Attempting to send profile update email");
+    // console.log(user);
+    
+    const currentURL = "http://localhost:5000/";
+    if(user) {
+        //Mail options
+        const mailOptions = {
+            from: process.env.AUTH_EMAIL,
+            to: user.email,
+            subject: "Your profile information has been updated",
+            html: `<p>You are receiving this email becuase your profile information has been updated.</p>`,
+        };
+        transporter.sendMail(mailOptions).then(() => { //Sending the verifitcation email
+        //Email has been sent
+        
+        }).catch((err) => {
+            console.log(err);
+            
+        });
+    }
+    
+    
+
+    
+}
 //Send email type beat
 const sendVerificationEmail = ({_id, email}, res) => {
     //URL for the email, in our case currently it is localhost:4000
@@ -585,6 +614,7 @@ router.post("/editProfile/:userId", async (req, res) => {
             });
         });
         console.log("Done!")
+        sendProfileUpdatedEmail(userId);
         return res.json({
             status: "SUCCESSFUL",
             message: "User profile Updated!"
@@ -614,6 +644,7 @@ router.post("/editProfile/:userId", async (req, res) => {
                 });
             });
             //console.log("Done!");
+            sendProfileUpdatedEmail(userId);
             return res.json({
                 status: "SUCCESSFUL",
                 message: "User profile and homeAddress were Updated!"
@@ -640,6 +671,7 @@ router.post("/editProfile/:userId", async (req, res) => {
                     message: "homeAddress schema not found",
                 });
             });
+            sendProfileUpdatedEmail(userId);
             return res.json({
                 status: "SUCCESSFUL",
                 message: "User profile was updated and a new homeAddress was created!"
@@ -900,6 +932,7 @@ router.delete("/card/:cardId/:userId", (req, res) => {
             }
             console.log("deletion successful");
             // If the card was successfully deleted
+            sendProfileUpdatedEmail(userId);
             return res.status(200).json({
                 status: "SUCCESS",
                 message: 'Card deleted successfully',
@@ -988,6 +1021,7 @@ router.post("/addCard/:userId", async (req, res) => {
             billingZip
         });
         await newPaymentCard.save();
+        sendProfileUpdatedEmail(userId);
         res.json({
             status: "SUCCESS",
             message: "Card successfully added"
