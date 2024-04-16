@@ -151,19 +151,27 @@ const Home = () => {
         {loggedInUserId && (
           <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
+        <Link to="/">
+          <img class ="sitelogo"  src = "./logo.png" alt = "OnlyFlix logo"/>
+        </Link>
+        
+
       </nav>
 
       {/* This is where the carousel elements are located */}
       <Carousel>
+        {/* Each Item is one of the slide */}
         <Carousel.Item>
           <img class ="carousel-img" src="./homelander.gif" alt="First slide" />
         </Carousel.Item>
+        {/* Second Slide */}
         <Carousel.Item>
           <img class ="carousel-img" src="./theatre.jpg" alt="Second slide" />
           <Carousel.Caption className="carousel-caption1">
             <h1>Book Your Tickets Here!</h1>
             <p>"Grab your popcorn and buckle up, because it's about to get reel!"</p>
           </Carousel.Caption>
+          {/* Third Slide */}
         </Carousel.Item>
         <Carousel.Item>
           <img class ="carousel-img" src="./movielist.png" alt="First slide" />

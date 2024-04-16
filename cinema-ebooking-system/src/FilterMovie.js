@@ -41,7 +41,7 @@ const FilterMovie = () => {
 
   const handleLogout = () => {
     clearLoggedInUserId();
-    window.location.href = '/';
+    window.location.href = '/filter';
   };
 
 
@@ -140,7 +140,7 @@ const FilterMovie = () => {
           <button className="dropbtn">Account</button>
           <div className="dropdown-content">
             <Link to="/viewprofile">View Profile</Link>
-            <Link to="/" onClick={handleLogout}>Logout</Link>
+            <Link to="/filter" onClick={handleLogout}>Logout</Link>
          </div>
         </div>
           </>
@@ -156,10 +156,12 @@ const FilterMovie = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button id ="home-btn" onClick={() => navigate("/")}> Back to Home </button>
         {loggedInUserId && (
           <button id='btn_book' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
+        <Link to="/">
+          <img class ="sitelogofilter"  src = "./logo.png" alt = "OnlyFlix logo"/>
+        </Link>
       </nav>
 
       <div id="myModal" class="modal">
