@@ -9,7 +9,6 @@ require('./api/Room');
 require('./api/ShowTime');
 const app = require('express')();
 const port = 4000;
-const port = 4000;
 
 const UseRouter = require('./api/User');
 const MovieRouter = require('./api/Movie');
