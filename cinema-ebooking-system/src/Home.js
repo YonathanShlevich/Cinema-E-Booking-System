@@ -80,7 +80,7 @@ const Home = () => {
     
     const popupText = `
         <div>
-            <h2>${movie.title} --- ${movie.category}!</h2>
+            <h2>${movie.title} --- ${movie.category === "Now Showing" ? `<button id='popup-button' >Book Tickets to ${movie.title}</button>` : `${movie.category}!`}</h2>
             <p>${showTimes.filter(showTime => movie._id.includes(showTime.movie)).length > 0 ? `<strong>Showing On: </strong>`: ``}</p>
             
               ${showTimes.filter(showTime =>
@@ -94,7 +94,7 @@ const Home = () => {
               )
             ).join("")}</p>
 
-            <button id='popup-button' >Book Tickets to ${movie.title}</button>
+            
             
             <p><strong>Cast:</strong> ${movie.cast.join(", ")}</p>
             <p></p>
@@ -135,10 +135,13 @@ const Home = () => {
 
     // Add event listener to the button
     const popupButton = document.getElementById("popup-button");
-    popupButton.addEventListener('click', function() {
+    if (popupButton != null) {
+      popupButton.addEventListener('click', function() {
       navigate("/bookticket")
       // Add your booking logic here
     });
+    }
+    
     
     modal.style.display = "block"; // Show the modal
 
