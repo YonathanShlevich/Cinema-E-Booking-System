@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation} from 'react-router-dom';
 import './BookTicket.css';
 import axios from "axios";
 
@@ -58,7 +58,7 @@ function BookTicket() {
     { id: 2, seat: "A2" },
     { id: 3, seat: "A3" }
   ]);
-
+  const location = useLocation();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -84,7 +84,7 @@ function BookTicket() {
             <div className="form-group">
               <label>Movie Title:</label>
               <select className='form-control' id="title" onChange={handleMovieChange}>
-                <option value="" selected></option>
+                <option selected value={new URLSearchParams(location.search).get('movieTitle')} ></option>
                 {movies
                 .filter(movie => (
                   movie.category === "Now Showing"
