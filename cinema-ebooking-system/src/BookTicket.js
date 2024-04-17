@@ -1,8 +1,45 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './BookTicket.css';
+import axios from "axios";
 
 function BookTicket() {
+  
+  // State variables
+  const [isOpen, setOpen] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  
+  const [movies, setMovies] = useState([]);
+  const [showTimes, setShowTimes] = useState([]);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
+
+  useEffect(() => {
+    //Function to get user ID from localStorage
+    const getLoggedInUserId = () => {
+     return localStorage.getItem('loggedInUserId');
+    };
+
+    //Set the initial value for loggedInUserId when the component mounts
+    setLoggedInUserId(getLoggedInUserId());
+  }, []);
+
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/movie/allMovies`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setMovies(response.data)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
+
+
     const [seats, setSeats] = useState([
         { id: 1, seat: "A1" },
         { id: 2, seat: "A2" },
@@ -37,9 +74,13 @@ function BookTicket() {
               <label>Movie Title:</label>
               <select className='form-control' id="title">
                 <option value="" selected></option>
-                <option value="0" >Breaking Bad: The Movie</option>
-                <option value="1" >Silence of the Lambs</option>
-                <option value="2" >Other Movie the Movie</option>
+
+                {movies.map(movie => (
+                  <option value={movie._id}>{movie.title}</option>
+                )
+                )}
+
+                
               </select>
             </div>
             <div className="form-group">
