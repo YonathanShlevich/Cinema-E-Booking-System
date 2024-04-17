@@ -81,8 +81,8 @@ const Home = () => {
     const popupText = `
         <div>
             <h2>${movie.title} --- ${movie.category}!</h2>
-
-            <p><strong>Showing On:</strong> 
+            <p>${showTimes.filter(showTime => movie._id.includes(showTime.movie)).length > 0 ? `<strong>Showing On: </strong>`: ``}</p>
+            
               ${showTimes.filter(showTime =>
                 movie._id.includes(showTime.movie)
               ).map((showTime) => (
