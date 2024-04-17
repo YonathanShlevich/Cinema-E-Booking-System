@@ -85,7 +85,11 @@ function BookTicket() {
               <label>Movie Title:</label>
               <select className='form-control' id="title" onChange={handleMovieChange}>
                 <option value="" selected></option>
-                {movies.map(movie => (
+                {movies
+                .filter(movie => (
+                  movie.category === "Now Showing"
+                ))
+                .map(movie => (
                   <option key={movie._id} value={movie._id}>{movie.title}</option>
                 ))}
               </select>
