@@ -82,12 +82,28 @@ const Home = () => {
         <img src="${movie.trailerPictureLink}" >
         <iframe height="300px" width="600px" src="https://www.youtube.com/embed/${(movie.trailerVideoLink)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     `;
-    
+    const popupReviews = `
+
+        <p>${movie.reviews.length > 0 ? `<strong>Reviews: </strong>`: `<strong>No Reviews Yet ...</strong>`}</p>
+        <div>
+          ${movie.reviews.map((review, index) => (
+
+            `
+              <p>"${review}"</p>
+              <p> - Anonymous Critic</p>
+            `
+          )
+          ).join("")}
+        </div>
+        `;
     const modal = document.getElementById("myModal");
     const popupTextContainer = document.getElementById("popupText");
     const popupImageContainer = document.getElementById("popupImage");
+    const popupReviewsContainer = document.getElementById("popupReviews");
     popupTextContainer.innerHTML = popupText;
     popupImageContainer.innerHTML = popupImageAndTrailer;
+    popupReviewsContainer.innerHTML = popupReviews;
+
     
     modal.style.display = "block"; // Show the modal
 
@@ -182,6 +198,7 @@ const Home = () => {
         <div id="popup-container">
           <div id="popupText"></div>
           <div id="popupImage"></div>
+          <div id="popupReviews"></div>
         </div>
       </div>
       </div>
