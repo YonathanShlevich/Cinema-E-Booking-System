@@ -133,6 +133,12 @@ const Home = () => {
     popupImageContainer.innerHTML = popupImageAndTrailer;
     popupReviewsContainer.innerHTML = popupReviews;
 
+    // Add event listener to the button
+    const popupButton = document.getElementById("popup-button");
+    popupButton.addEventListener('click', function() {
+      navigate("/bookticket")
+      // Add your booking logic here
+    });
     
     modal.style.display = "block"; // Show the modal
 
