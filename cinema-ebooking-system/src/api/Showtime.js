@@ -153,5 +153,48 @@ router.post("/updateShowtime", async (req, res) => {
 
 
 })
+//GET function to pull info from showtime by title
+router.get("/pullShowtime/:movieTitle", async (req, res) =>{
+    const movieTitle = req.params.movieTitle; //Pulling movie from params
+    const movieObject = await Movie.findOne({ title: movieTitle });
+    ShowTime.findOne({movie: movieObject._id})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+//GET function to pull info from showtime
+router.get("/allShowtimes", (req, res) =>{
+    //const movieTitle = req.params.movieTitle; 
+    ShowTime.find({})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
 
 module.exports = router;

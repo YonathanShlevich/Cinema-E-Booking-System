@@ -14,6 +14,7 @@ const Home = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
+  const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
 
   useEffect(() => {
@@ -55,6 +56,21 @@ const Home = () => {
       });
   }, []);
 
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/showtime/allShowtimes`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setShowTimes(response.data)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching showTime info:', error);
+      });
+  }, []);
 
 
 
