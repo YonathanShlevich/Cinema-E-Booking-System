@@ -76,6 +76,7 @@ const Home = () => {
 
   // Function to open pop up
   const openInfo = (movie) => {
+    setSelectedMovie(movie)
     
     
     const popupText = `
@@ -137,7 +138,9 @@ const Home = () => {
     const popupButton = document.getElementById("popup-button");
     if (popupButton != null) {
       popupButton.addEventListener('click', function() {
-      navigate("/bookticket")
+      
+        navigate(`/bookticket?movieTitle=${encodeURIComponent(movie.title)}`);
+      
       // Add your booking logic here
     });
     }
