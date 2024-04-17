@@ -81,6 +81,19 @@ const Home = () => {
     const popupText = `
         <div>
             <h2>${movie.title} --- ${movie.category}!</h2>
+
+            <p><strong>Showing On:</strong> 
+              ${showTimes.filter(showTime =>
+                movie._id.includes(showTime.movie)
+              ).map((showTime) => (
+
+                `
+                  <p>"${showTime.movie == movie._id ? `${new Date(showTime.date).toString().substring(0, 15)}` : ``}"</p>
+                  
+                `
+              )
+            ).join("")}</p>
+
             <button id='popup-button' >Book Tickets to ${movie.title}</button>
             
             <p><strong>Cast:</strong> ${movie.cast.join(", ")}</p>
