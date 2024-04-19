@@ -173,6 +173,7 @@ router.get("/pullShowtime/:movieTitle", async (req, res) =>{
 })
 //given an id, can we pull a showperiod
 router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
+    console.log("pulling show period info")
     const periodId = req.params.periodId;
     const periodObject = await ShowPeriod.findOne({_id: periodId}).then(result => {
         if(!result){ //If the userID doesn't exist

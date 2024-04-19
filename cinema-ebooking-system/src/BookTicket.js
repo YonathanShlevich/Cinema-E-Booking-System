@@ -33,22 +33,68 @@ function BookTicket() {
   }, []);
 
   useEffect(() => {
+    const fetchShowTimes = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/showtime/allShowtimes`);
+        if (response.data.status === "FAILED") {
+          // handle error if needed
+          return;
+        }
+        
+        const updatedShowTimes = await Promise.all(response.data.map(async showtime => {
+          try {
+            const periodResponse = await axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`);
+            if (periodResponse.data.status !== "FAILED") {
+              return {
+                ...showtime,
+                period: periodResponse.data.time
+              };
+            } else {
+              // Handle error if needed
+              console.error(`Error fetching period for showtime ID ${showtime._id}`);
+              return showtime;
+            }
+          } catch (error) {
+            console.error('Error fetching period info:', error);
+            return showtime;
+          }
+        }));
+  
+        setShowTimes(updatedShowTimes);
+      } catch (error) {
+        console.error('Error fetching showTime info:', error);
+      }
+    };
+  
+    fetchShowTimes();
+  }, []);
+  
+
+
+/*
+  useEffect(() => {
     axios.get(`http://localhost:4000/showtime/allShowtimes`)
       .then(response => {
         if (response.data.status === "FAILED") {
           // handle error if needed
         } else {
-          setShowTimes(response.data);
+          console.log(response.data)
+          setShowTimes(response.data)
+          //console.log(showTimes)
   
           // Iterate over each showtime and update period attribute
-          response.data.forEach(showtime => {
+          showTimes.forEach(showtime => {
             axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`)
               .then(periodResponse => {
                 if (periodResponse.data.status !== "FAILED") {
                   // Update the period attribute of the corresponding showtime
                   console.log(periodResponse.data.time)
-                  const updatedShowTimes = showTimes.map(item => {
-                    if (item.ID === showtime.ID) {
+                  console.log(showtime.period)
+                  const updatedShowTimes = response.data.map(item => {
+                    
+
+                    if (item.period === showtime.period) {
+                      console.log("made it here")
                       return {
                         ...item,
                         period: periodResponse.data.time
@@ -57,9 +103,10 @@ function BookTicket() {
                     return item;
                   });
                   setShowTimes(updatedShowTimes);
+                  
                 } else {
                   // Handle error if needed
-                  console.error(`Error fetching period for showtime ID ${showtime.ID}`);
+                  console.error(`Error fetching period for showtime ID ${showtime._id}`);
                 }
               })
               .catch(error => { 
@@ -72,6 +119,7 @@ function BookTicket() {
         console.error('Error fetching showTime info:', error);
       });
   }, []);
+  */
   
 
   const handleMovieChange = (e) => {
