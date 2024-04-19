@@ -36,15 +36,43 @@ function BookTicket() {
     axios.get(`http://localhost:4000/showtime/allShowtimes`)
       .then(response => {
         if (response.data.status === "FAILED") {
-          // do nothing
+          // handle error if needed
         } else {
-          setShowTimes(response.data)
+          setShowTimes(response.data);
+  
+          // Iterate over each showtime and update period attribute
+          response.data.forEach(showtime => {
+            axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`)
+              .then(periodResponse => {
+                if (periodResponse.data.status !== "FAILED") {
+                  // Update the period attribute of the corresponding showtime
+                  console.log(periodResponse.data.time)
+                  const updatedShowTimes = showTimes.map(item => {
+                    if (item.ID === showtime.ID) {
+                      return {
+                        ...item,
+                        period: periodResponse.data.time
+                      };
+                    }
+                    return item;
+                  });
+                  setShowTimes(updatedShowTimes);
+                } else {
+                  // Handle error if needed
+                  console.error(`Error fetching period for showtime ID ${showtime.ID}`);
+                }
+              })
+              .catch(error => { 
+                console.error('Error fetching period info:', error);
+              });
+          });
         }
       })
       .catch(error => { 
         console.error('Error fetching showTime info:', error);
       });
   }, []);
+  
 
   const handleMovieChange = (e) => {
     const selectedMovieId = e.target.value;
@@ -99,7 +127,7 @@ function BookTicket() {
               <select className='form-control' id="showtime">
                 <option value="" selected></option>
                 {selectedShowtimes.map(showtime => (
-                  <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toString().substring(0, 15)}</option>
+                  <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toString().substring(0, 15)} {showtime.period}</option>
                 ))}
               </select>
             </div>
