@@ -149,9 +149,6 @@ router.post("/addShowtime", async (req, res) => {
 //API Route to udpate a showtime:
 router.post("/updateShowtime", async (req, res) => {
 
-
-
-
 })
 //GET function to pull info from showtime by title
 router.get("/pullShowtime/:movieTitle", async (req, res) =>{
@@ -173,6 +170,26 @@ router.get("/pullShowtime/:movieTitle", async (req, res) =>{
                 message: 'Error with pulling data'
             });
         })
+})
+//given an id, can we pull a showperiod
+router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
+    const periodId = req.params.periodId;
+    const periodObject = await ShowPeriod.findOne({_id: periodId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'showperiod does not exist'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
 })
 //GET function to pull info from showtime
 router.get("/allShowtimes", (req, res) =>{
