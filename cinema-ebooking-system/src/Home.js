@@ -1,54 +1,167 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
+import Carousel from 'react-bootstrap/Carousel';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
+import axios from "axios";
 
-// Constructor for the movie class
-class Movie {
-  constructor(title, poster, trailerId, status) {
-    this.title = title;
-    this.poster = poster;
-    this.trailerId = trailerId;
-    this.status = status;
-  }
-}
+
 
 const Home = () => {
+  const navigate = useNavigate();
   // State variables
   const [isOpen, setOpen] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
+  const [showTimes, setShowTimes] = useState([]);
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
 
-  // Fetching movies from JSON file on component mount
   useEffect(() => {
-    const fetchMovies = async () => {
-      // Fetching JSON data from the file
-      const jsonData = require('./controllers/response.json');
-      // Mapping JSON data to Movie objects
-      const movieData = jsonData.map(movieArray => {
-        const title = movieArray[0];
-        const status = movieArray[7];
-        const trailerID = movieArray[3];
-        const poster = movieArray[8];
-        return new Movie(title, poster ,trailerID, status);
-      });
-      // Setting movies state
-      setMovies(movieData);
+    //Function to get user ID from localStorage
+    const getLoggedInUserId = () => {
+     return localStorage.getItem('loggedInUserId');
     };
-    fetchMovies();
+
+    //Set the initial value for loggedInUserId when the component mounts
+    setLoggedInUserId(getLoggedInUserId());
   }, []);
 
-  // Function to play trailer
-  const playTrailer = (trailerId) => {
-    setSelectedMovie(trailerId);
-    setOpen(true);
+  // Function to clear user ID from localStorage (logout)
+  const clearLoggedInUserId = () => {
+    localStorage.removeItem('loggedInUserId');
+    setLoggedInUserId(null);
   };
 
-  // Function to close trailer
-  const closeTrailer = () => {
-    setSelectedMovie(null);
-    setOpen(false);
+  const handleLogout = () => {
+    clearLoggedInUserId();
+    window.location.href = '/';
   };
+
+
+
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/movie/allMovies`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setMovies(response.data)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching user info:', error);
+      });
+  }, []);
+
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/showtime/allShowtimes`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setShowTimes(response.data)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching showTime info:', error);
+      });
+  }, []);
+
+
+
+  // Function to open pop up
+  const openInfo = (movie) => {
+    setSelectedMovie(movie)
+    
+    
+    const popupText = `
+        <div>
+            <h2>${movie.title} --- ${movie.category === "Now Showing" ? `<button id='popup-button' >Book Tickets to ${movie.title}</button>` : `${movie.category}!`}</h2>
+            <p>${showTimes.filter(showTime => movie._id.includes(showTime.movie)).length > 0 ? `<strong>Showing On: </strong>`: ``}</p>
+            
+              ${showTimes.filter(showTime =>
+                movie._id.includes(showTime.movie)
+              ).map((showTime) => (
+
+                `
+                  <p>${showTime.movie == movie._id ? `${new Date(showTime.date).toString().substring(0, 15)}` : ``}</p>
+                  
+                `
+              )
+            ).join("")}</p>
+
+            
+            
+            <p><strong>Cast:</strong> ${movie.cast.join(", ")}</p>
+            <p></p>
+            <p><strong>Director:</strong> ${movie.director}<strong> - Producer:</strong> ${movie.producer}
+            <strong> - Genre:</strong> ${movie.genre}<strong> - Film Rating:</strong> ${movie.filmRating}
+            </p>
+            
+            <p><strong>Synopsis:</strong> ${movie.synopsis}</p>
+          
+        </div>
+    `;
+
+    const popupImageAndTrailer = `
+        <img src="${movie.trailerPictureLink}" >
+        <iframe height="300px" width="600px" src="https://www.youtube.com/embed/${(movie.trailerVideoLink)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    `;
+    const popupReviews = `
+
+        <p>${movie.reviews.length > 0 ? `<strong>Reviews: </strong>`: `<strong>No Reviews Yet ...</strong>`}</p>
+        <div>
+          ${movie.reviews.map((review, index) => (
+
+            `
+              <p>"${review}"</p>
+              <p> - Anonymous Critic</p>
+            `
+          )
+          ).join("")}
+        </div>
+        `;
+    const modal = document.getElementById("myModal");
+    const popupTextContainer = document.getElementById("popupText");
+    const popupImageContainer = document.getElementById("popupImage");
+    const popupReviewsContainer = document.getElementById("popupReviews");
+    popupTextContainer.innerHTML = popupText;
+    popupImageContainer.innerHTML = popupImageAndTrailer;
+    popupReviewsContainer.innerHTML = popupReviews;
+
+    // Add event listener to the button
+    const popupButton = document.getElementById("popup-button");
+    if (popupButton != null) {
+      popupButton.addEventListener('click', function() {
+      
+        navigate(`/bookticket?movieTitle=${encodeURIComponent(movie.title)}`);
+      
+      // Add your booking logic here
+    });
+    }
+    
+    
+    modal.style.display = "block"; // Show the modal
+
+    // Close the modal when the close button is clicked
+    const closeButton = document.getElementsByClassName("close")[0];
+    closeButton.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Prevent clicks outside the modal from closing it
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+  };
+  
 
   // Function to handle search input change
   const handleSearch = (event) => {
@@ -61,10 +174,28 @@ const Home = () => {
   );
 
   return (
+    
     <div className="home">
+      
+
+
       <nav>
         {/* This is where the navbar and the elements inside is located */}
-        <button id="btnlogin"> <Link to="/login"> Login/Sign Up </Link></button>
+        {loggedInUserId ? (
+          // If user is logged in, display account-related buttons
+          <>
+      <div className="dropdown">
+          <button className="dropbtn">Account</button>
+          <div className="dropdown-content">
+            <Link to="/viewprofile">View Profile</Link>
+            <Link to="/" onClick={handleLogout}>Logout</Link>
+         </div>
+        </div>
+          </>
+        ) : (
+          // If user is not logged in, display login/signup button
+          <button id="btnlogin" onClick={() => navigate("/login")}>  Login/Sign Up </button>
+        )}
         {/* Search bar */}
         <input
           type="text"
@@ -73,76 +204,81 @@ const Home = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button> +Filter </button>
+        <button onClick={() => navigate("/filter")}> +Filter </button>
+        {loggedInUserId && (
+          <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
+        )}
       </nav>
 
+      {/* This is where the carousel elements are located */}
+      <Carousel>
+        <Carousel.Item>
+          <img class ="carousel-img" src="./homelander.gif" alt="First slide" />
+        </Carousel.Item>
+        <Carousel.Item>
+          <img class ="carousel-img" src="./theatre.jpg" alt="Second slide" />
+          <Carousel.Caption className="carousel-caption1">
+            <h1>Book Your Tickets Here!</h1>
+            <p>"Grab your popcorn and buckle up, because it's about to get reel!"</p>
+          </Carousel.Caption>
+        </Carousel.Item>
+        <Carousel.Item>
+          <img class ="carousel-img" src="./movielist.png" alt="First slide" />
+          <Carousel.Caption className="carousel-caption2">
+            <h1>We have cRaZy movies here!</h1>
+            <p>Have you heard of "A Serbian Film" to name one? </p>
+          </Carousel.Caption>
+        </Carousel.Item>
+      </Carousel>
+
+
+
+      <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div id="popup-container">
+          <div id="popupText"></div>
+          <div id="popupImage"></div>
+          <div id="popupReviews"></div>
+        </div>
+      </div>
+      </div>
+
       {/* Section for Now Showing movies */}
-      <h1>Now Showing</h1>
+
+      <h1 className='homeHeader'> Now Showing</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Now Showing movies, 
         this should show all of them since the filter has nothing */}
         {filteredMovies.map((movie, index) => (
-          movie.status === 'nowShowing' && (
-            <div key={index + 1} className="movie-item">
-              {isOpen && selectedMovie === movie.trailerId ? (
-                // If trailer is open, show iframe where the trailer can be played
+          movie.category === 'Now Showing' && (
+            <div key={movie._id} className="movie-item">
+              
                 <>
-                  <iframe
-                    title={movie.title}
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${movie.trailerId}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    onClick={(e) => e.stopPropagation()} // Prevent click propagation to close the trailer
-                  />
-                  <div className="modal">
-                    <button onClick={closeTrailer}>Close</button>
-                  </div>
-                </>
-              ) : (
-                // If trailer is closed, show movie poster
-                <>
-                  <img src={movie.poster} alt={movie.title} onClick={() => playTrailer(movie.trailerId)} />
+                  <img src={movie.trailerPictureLink} alt={movie.title} onClick={() => openInfo(movie)} />
                   <h3>{movie.title}</h3>
                 </>
-              )}
+              
             </div>
           )
         ))}
       </div>
 
       {/* Section for Coming Soon movies */}
-      <h1>Coming Soon</h1>
+      <h1 className='homeHeader'>Coming Soon</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Coming Soon movies, 
         this should show all of them since the filter has nothing */}
+        
         {filteredMovies.map((movie, index) => (
-          movie.status === 'comingSoon' && (
-            <div key={index+1} className="movie-item">
-              {isOpen && selectedMovie === movie.trailerId ? (
-                // If trailer is open, show iframe where the trailer can be played
+          movie.category === 'Coming Soon' && (
+            <div key={movie._id} className="movie-item">
+              
                 <>
-                  <iframe
-                    title={movie.title}
-                    width="560"
-                    height="315"
-                    src={`https://www.youtube.com/embed/${movie.trailerId}`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    onClick={(e) => e.stopPropagation()} // Prevent click propagation to close the trailer
-                  />
-                  <div className="modal">
-                    <button onClick={closeTrailer}>Close</button>
-                  </div>
-                </>
-              ) : (
-                // If trailer is closed, show movie poster
-                <>
-                  <img src={movie.poster} alt={movie.title} onClick={() => playTrailer(movie.trailerId)} />
+                  <img src={movie.trailerPictureLink} alt={movie.title} onClick={() => openInfo(movie)} />
                   <h3>{movie.title}</h3>
                 </>
-              )}
+              
             </div>
           )
         ))}
