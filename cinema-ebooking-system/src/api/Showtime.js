@@ -76,11 +76,29 @@ router.post("/addShowtime", async (req, res) => {
     const movieObject = await Movie.findOne({ title: movieTitle });
     const roomObject = await Room.findOne({name: roomName});
     const showPeriodObject = await ShowPeriod.findOne({time: periodTime});
-
+    console.log(movieObject);
     if(!movieObject || !roomObject || !showPeriodObject){
         return res.json({
             status: "FAILED",
             message: "Invalid movie, room, or showPeriod entered"
+        });
+    }
+   
+   /*
+        We need to find a way to check that no movie can run at the same period in the same room on the same day.
+        Just search for a showTime with all the same attributes; if it exists, then you know it's a duplicate.
+   */
+
+    const existingShowtime = await ShowTime.findOne({
+        room: roomObject._id,           //Checking by _id
+        period: showPeriodObject._id,   //Checking by _id
+        date: valiDate                  //using previously created valiDate
+    });
+
+    if (existingShowtime) {
+        return res.json({
+            status: "FAILED",
+            message: "A showtime already exists during this period in this room on this date"
         });
     }
 
@@ -96,6 +114,7 @@ router.post("/addShowtime", async (req, res) => {
         period: showPeriodObject,
         date: date
     })
+    
 
     await newShowTime.save().then(result => {
         return res.json({
@@ -130,9 +149,70 @@ router.post("/addShowtime", async (req, res) => {
 //API Route to udpate a showtime:
 router.post("/updateShowtime", async (req, res) => {
 
+})
+//GET function to pull info from showtime by title
+router.get("/pullShowtime/:movieTitle", async (req, res) =>{
+    const movieTitle = req.params.movieTitle; //Pulling movie from params
+    const movieObject = await Movie.findOne({ title: movieTitle });
+    ShowTime.findOne({movie: movieObject._id})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+//given an id, can we pull a showperiod
+router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
+    console.log("pulling show period info")
+    const periodId = req.params.periodId;
+    const periodObject = await ShowPeriod.findOne({_id: periodId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'showperiod does not exist'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
 
-
-
+})
+//GET function to pull info from showtime
+router.get("/allShowtimes", (req, res) =>{
+    //const movieTitle = req.params.movieTitle; 
+    ShowTime.find({})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
 })
 
 module.exports = router;

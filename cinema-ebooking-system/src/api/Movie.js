@@ -19,10 +19,10 @@ function generateAttributes(title, category, cast, genre, director, producer, sy
         { name: 'genre', value: genre, pattern: /^[a-zA-Z- ]+$/, errMessage: 'Invalid genre entered'},
         { name: 'director', value: director, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid director entered'},
         { name: 'producer', value: producer, pattern: /^[a-zA-Z ]+$/, errMessage: 'Invalid producer'},
-        { name: 'synopsis', value: synopsis, pattern: /^[0-9a-zA-Z-!,.? ]+$/, errMessage: 'Invalid synopsis'},
+        { name: 'synopsis', value: synopsis, pattern: /^[A-Za-z0-9,.?!'"()\-:;\s ]+$/, errMessage: 'Invalid synopsis'},
         { name: 'trailerVideoLink', value: trailerVideoLink, pattern: /^[a-zA-Z0-9_-]{11}(?:\?.*)?$/, errMessage: 'Invalid video'},
-        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^https?:\/\/(?:www\.)?[\w\-]+(?:\.[\w\-]+)+[/\w\-\.]*$/, errMessage: 'Invalid picture'},
-        { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z- ]*$/, errMessage: 'Invalid film rating'},
+        { name: 'trailerPictureLink', value: trailerPictureLink, pattern: /^https?:\/\/(?:www\.)?[\w\-]+(?:\.[\w\-]+)+[/\w\-]*\.(?:png|jpg)$/i, errMessage: 'Invalid picture'},
+        { name: 'filmRating', value: filmRating, pattern: /^[0-9a-zA-z-+ ]*$/, errMessage: 'Invalid film rating'},
         //!!!!Time has been removed. The movie does not hold it's own time, the showtime does
     ];
 }
@@ -72,6 +72,7 @@ router.post("/addMovie", async (req, res) => {
     
     //Checking if the movie exists using the title
     const movieExists = await Movie.exists({ title: title }); 
+    
     if (movieExists){
         return res.json({
             status: "FAILED",
@@ -84,7 +85,7 @@ router.post("/addMovie", async (req, res) => {
         if(typeof attribute.value == 'string'){
             attribute.value = attribute.value.trim();
         }
-        console.log(attribute.name + ' : ' + attribute.value + ' : ' + attribute.pattern); //Kept for debugging
+        //console.log(attribute.name + ' : ' + attribute.value + ' : ' + attribute.pattern); //Kept for debugging
 
         //if an attribute is empty and required, throw 500(FAILED)
         if((attribute.value === null || attribute.value === undefined)){
@@ -94,9 +95,9 @@ router.post("/addMovie", async (req, res) => {
             });
                         
         }else if(attribute.name == "cast"){ //String array regex checking for cast and 
-            console.log("Cast!");
+            //console.log("Cast!");
             const isValid = attribute.value.every(member => attribute.pattern.test(member)); //Checks if every portion of a string is valid
-            console.log(isValid);
+            //console.log(isValid);
             if(!isValid){
                 return res.json({
                     status: 'FAILED',
@@ -171,9 +172,9 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
             continue; //If there is not a value for the attribute, continue to the next iteration of the loop
                         
         }else if(attribute.name == "cast"){ //String array regex checking for cast and 
-            console.log("Cast!");
+            //console.log("Cast!");
             const isValid = attribute.value.every(member => attribute.pattern.test(member)); //Checks if every portion of a string is valid
-            console.log(isValid);
+            //console.log(isValid);
             if(!isValid){
                 return res.json({
                     status: 'FAILED',
@@ -188,8 +189,8 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
         }
         movieUpdates[attribute.name] = attribute.value;     //Addes attribute to list of changing attributes
     }
-    console.log(movieUpdates);
-    console.log("Title: " + movieTitle)
+    //console.log(movieUpdates);
+    //console.log("Title: " + movieTitle)
 
     try { //Putting into a try loop because the other way was not working
         //Checking if the movie exists
@@ -258,7 +259,7 @@ router.get("/pullMovie/:movieTitle", (req, res) =>{
             }   
             return res.json(result); //This just returns the full json of the items in the User
         }).catch(error =>{
-            console.log(`Error: ${error}`);
+            //console.log(`Error: ${error}`);
             return res.json({
                 status: "FAILED",
                 message: 'Error with pulling data'
@@ -275,7 +276,7 @@ router.get("/allMovies", (req, res) =>{
         .then(result => {
             
             if(!result){ //If the userID doesn't exist
-                console.log('empty req')
+                //console.log('empty req')
                 return res.json({
                     status: "FAILED",
                     message: 'Movie does not exist'
@@ -283,7 +284,7 @@ router.get("/allMovies", (req, res) =>{
             }   
             return res.json(result); //This just returns the full json of the items in the User
         }).catch(error =>{
-            console.log(`Error: ${error}`);
+            //console.log(`Error: ${error}`);
             return res.json({
                 status: "FAILED",
                 message: 'Error with pulling data'

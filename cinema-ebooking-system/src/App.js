@@ -20,7 +20,6 @@ import Checkout from "./Checkout";
 import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
 import AddCard from "./AddCard"
-import FilterMovie from "./FilterMovie";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -29,7 +28,6 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/filter" element ={<FilterMovie />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signup" element={<SignUp />} />

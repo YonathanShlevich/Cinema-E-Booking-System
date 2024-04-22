@@ -14,7 +14,11 @@ const Home = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
+  const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [carouselVisible, setCarouselVisible] = useState(true);
+  const [filterClicked, setFilterClicked] = useState(false);
 
   useEffect(() => {
     //Function to get user ID from localStorage
@@ -32,11 +36,29 @@ const Home = () => {
     setLoggedInUserId(null);
   };
 
+  //setting the carousel to be visible or not when filter is clicked
+  const handleFilterClick = () => {
+    setCarouselVisible(false); // Hide the carousel
+    setFilterClicked(true);
+  };
+
   const handleLogout = () => {
     clearLoggedInUserId();
     window.location.href = '/';
   };
+  
+  const handleLogoClick = () => {
 
+    window.location.href = '/';
+    setCarouselVisible(true);
+
+  };
+    // Function to handle genre selection
+      const handleGenreSelection = (genre) => {
+        setSelectedGenre(genre);
+    };
+
+    const genres = [...new Set(movies.map(movie => movie.genre))];
 
 
   useEffect(() => {
@@ -55,17 +77,46 @@ const Home = () => {
       });
   }, []);
 
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/showtime/allShowtimes`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setShowTimes(response.data)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching showTime info:', error);
+      });
+  }, []);
 
 
 
   // Function to open pop up
   const openInfo = (movie) => {
+    setSelectedMovie(movie)
     
     
     const popupText = `
         <div>
-            <h2>${movie.title} --- ${movie.category}!</h2>
-            <button id='popup-button' >Book Tickets to ${movie.title}</button>
+            <h2>${movie.title} --- ${movie.category === "Now Showing" ? `<button id='popup-button' >Book Tickets to ${movie.title}</button>` : `${movie.category}!`}</h2>
+            <p>${showTimes.filter(showTime => movie._id.includes(showTime.movie)).length > 0 ? `<strong>Showing On: </strong>`: ``}</p>
+            
+              ${showTimes.filter(showTime =>
+                movie._id.includes(showTime.movie)
+              ).map((showTime) => (
+
+                `
+                  <p>${showTime.movie == movie._id ? `${new Date(showTime.date).toString().substring(0, 15)}` : ``}</p>
+                  
+                `
+              )
+            ).join("")}</p>
+
+            
             
             <p><strong>Cast:</strong> ${movie.cast.join(", ")}</p>
             <p></p>
@@ -82,12 +133,39 @@ const Home = () => {
         <img src="${movie.trailerPictureLink}" >
         <iframe height="300px" width="600px" src="https://www.youtube.com/embed/${(movie.trailerVideoLink)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     `;
-    
+    const popupReviews = `
+
+        <p>${movie.reviews.length > 0 ? `<strong>Reviews: </strong>`: `<strong>No Reviews Yet ...</strong>`}</p>
+        <div>
+          ${movie.reviews.map((review, index) => (
+
+            `
+              <p>"${review}"</p>
+              <p> - Anonymous Critic</p>
+            `
+          )
+          ).join("")}
+        </div>
+        `;
     const modal = document.getElementById("myModal");
     const popupTextContainer = document.getElementById("popupText");
     const popupImageContainer = document.getElementById("popupImage");
+    const popupReviewsContainer = document.getElementById("popupReviews");
     popupTextContainer.innerHTML = popupText;
     popupImageContainer.innerHTML = popupImageAndTrailer;
+    popupReviewsContainer.innerHTML = popupReviews;
+
+    // Add event listener to the button
+    const popupButton = document.getElementById("popup-button");
+    if (popupButton != null) {
+      popupButton.addEventListener('click', function() {
+      
+        navigate(`/bookticket?movieTitle=${encodeURIComponent(movie.title)}`);
+      
+      // Add your booking logic here
+    });
+    }
+    
     
     modal.style.display = "block"; // Show the modal
 
@@ -109,12 +187,14 @@ const Home = () => {
   // Function to handle search input change
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setSelectedGenre(null); // Reset selected genre when searching
   };
 
   // Filter movies based on search term
   const filteredMovies = movies.filter(movie =>
+    (!selectedGenre || movie.genre.toLowerCase() === selectedGenre.toLowerCase()) &&
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+);
 
   return (
     
@@ -147,11 +227,11 @@ const Home = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button onClick={() => navigate("/filter")}> +Filter </button>
+        <button onClick={handleFilterClick}> +Filter </button>
         {loggedInUserId && (
           <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
-        <Link to="/">
+        <Link to="/" onClick={handleLogoClick}>
           <img class ="sitelogo"  src = "./logo.png" alt = "OnlyFlix logo"/>
         </Link>
         
@@ -159,6 +239,7 @@ const Home = () => {
       </nav>
 
       {/* This is where the carousel elements are located */}
+      {carouselVisible && (
       <Carousel>
         {/* Each Item is one of the slide */}
         <Carousel.Item>
@@ -181,7 +262,25 @@ const Home = () => {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-
+      )}
+      
+      {/* Section for Filtering Buttons */}
+      {filterClicked && (
+      <ul className="genre_filter">
+      {/* Map over the genres array to dynamically render buttons */}
+        {genres.map((genre, index) => (
+        <li key={index}>
+          {/* Use genre as the button label */}
+          <button 
+            className={`genre_click ${selectedGenre === genre ? 'selected' : ''}`} 
+            onClick={() => handleGenreSelection(genre)}
+          >
+            {genre}
+          </button>
+        </li>
+      ))}
+    </ul>
+      )}
 
 
       <div id="myModal" class="modal">
@@ -190,13 +289,14 @@ const Home = () => {
         <div id="popup-container">
           <div id="popupText"></div>
           <div id="popupImage"></div>
+          <div id="popupReviews"></div>
         </div>
       </div>
       </div>
 
       {/* Section for Now Showing movies */}
 
-      <h1>Now Showing</h1>
+      <h1 className='homeHeader'> Now Showing</h1>
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Now Showing movies, 
         this should show all of them since the filter has nothing */}

@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 
 //Attributes of a User table
 const PromotionSchema = new Schema({
-    id: Number,
     code: Number, //promo code
     start: Date, //start of coupon
     end: Date,  //end of coupon

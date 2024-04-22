@@ -1,38 +1,78 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Admin.css';
+
 
 function AddMovie() {
 
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
         e.preventDefault();
 
-    
-        let title = document.getElementById("title");
-        let cast = document.getElementById("cast");
-        let producer = document.getElementById("producer");
-        let director = document.getElementById("director");
-        let syn = document.getElementById("syn");
+        const formData = {
+          title: document.getElementById("title").value,
+          category: document.getElementById("category").value,
+          cast: document.getElementById("cast").value.split(',').map(item => item.trim()), //Splits by ',', trims the item, then maps it back to cast
+          genre: document.getElementById("genre").value,
+          director: document.getElementById("director").value,
+          producer: document.getElementById("producer").value,
+          synopsis: document.getElementById("syn").value,
+          trailerVideoLink: document.getElementById("trailer").value,
+          trailerPictureLink: document.getElementById("image").value,
+          filmRating: document.getElementById("rating").value
+        }
 
-        let reviews = document.getElementById("reviews");
-        let trailer = document.getElementById("trailer");
-        let rating = document.getElementById("rating");
-        let category = document.getElementById("category");
-        let showDatesAndTimes = document.getElementById("showDatesAndTimes");
+        
+        //  showDatesAndTimes = document.getElementById("showDatesAndTimes"); no booking of showtime, only adding movie
        
+        //verify that cast is separated by commas, so we can convert it into an array later
+        /*
+          isCommaSeparated = true;
+        if(cast.value.indexOf(',') === -1) isCommaSeparated =  false;
+        console.log(isCommaSeparated);
+          splitValue = cast.value.split(',');
+        if(splitValue.length > 1) {
+          isCommaSeparated = true;
+        }else {
+          isCommaSeparated = false;
+        }
+        */
 
-     
-        if (title.value === "" || cast.value === "" || producer.value === "" 
-            || director.value === "" || syn.value === "" || reviews.value === "" || trailer.value === "" 
-            || rating.value === "" || category.value === "" || showDatesAndTimes.value === "") {
-          window.alert("Ensure you input a value in all fields marked *");
+        
+        if(
+          formData.title === null || 
+          formData.category === "" || 
+          (!Array.isArray(formData.cast) || formData.cast.some(item => typeof item !== 'string' || item.trim() === "")) ||   //I couldn't get it work with a simple one, so it checks if cast is empty in 2 ways
+          formData.genre === "" ||
+          formData.director === "" || 
+          formData.producer === "" || 
+          formData.synopsis === "" || 
+          formData.trailerVideoLink === "" ||
+          formData.trailerPictureLink === "" ||
+          formData.filmRating === "") { // reviews.value === "" || showdatesandtimes.value === "" removed 
+          if(!Array.isArray(formData.cast) || formData.cast.some(item => typeof item !== 'string' || item.trim() === "")){
+            window.alert("Cast is incorrectly formatted, rememeber to separate them by commas!");
+          }
+          window.alert("Ensure you input a value in all fields marked");
         } else { // all is good
-            // submit to database
-            navigate('/admin/manage-movies');
+            /*
+              Post to 'addmovie' and send to database
+            */
+            try {
+              const response = await axios.post("http://localhost:4000/movie/addMovie", formData);
+
+              if (response.data.status === "FAILED"){
+                window.alert(response.data.message);
+              } else {
+                navigate('/admin/manage-movies');
+              }
+            } catch(error) {
+              window.alert(error);
+            }
             
         }
 
@@ -53,7 +93,7 @@ function AddMovie() {
                 <input id="title" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
-                <label>*Cast:</label>
+                <label>*Cast(Separated By Commas):</label>
                 <input id="cast" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
@@ -68,42 +108,48 @@ function AddMovie() {
                 <label>*Synopsis:</label>
                 <input id="syn" type="text" className="form-control" />
                 </div>
-                
                 <div className="form-group">
-                <label>*Reviews:</label>
-                <input id="reviews" type="text" className="form-control" />
+                <label>*Image Link:</label>
+                <input id="image" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
-                <label>*Trailer:</label>
+                <label>*Embedded Trailer Link:</label>
                 <input id="trailer" type="text" className="form-control" />
                 </div>
                 <div className="form-group">
-                <label>*Rating:</label>
-                    <select id="rating" className="form-control">
+                <label>*Category</label>
+                    <select id="category" className="form-control">
                         <option value="" selected></option>
-                        <option value="Horror">R</option>
-                        <option value="Drama">PG-13</option>
-                        <option value="Action">PG</option>
-                        <option value="Comedy">G</option>
+                        <option value="Now Showing">Now Showing</option>
+                        <option value="Coming Soon">Coming Soon</option>
+                        
                         
                     </select>
                 </div>
                 <div className="form-group">
-                <label>*Category:</label>
-                    <select id="category" className="form-control">
+                <label>*Genre</label>
+                    <select id="genre" className="form-control">
                         <option value="" selected></option>
                         <option value="Horror">Horror</option>
                         <option value="Drama">Drama</option>
                         <option value="Action">Action</option>
                         <option value="Comedy">Comedy</option>
-                        <option value="Romance">Romance</option>
-                        <option value="Family">Family</option>
+                        <option value="Sci-fi">Sci-fi</option>
+                        
                     </select>
                 </div>
                 <div className="form-group">
-                <label>*Show Dates and Times:</label>
-                <input id="showDatesAndTimes" type="datetime-local" className="form-control" />
+                <label>*Rating:</label>
+                <select id="rating" className="form-control">
+                        <option value="" selected></option>
+                        <option value="R">R</option>
+                        <option value="PG-13">PG-13</option>
+                        <option value="PG">PG</option>
+                        <option value="G">G</option>
+                        
+                    </select>
                 </div>
+                
 
                 <button type="submit" className="btn btn-primary">Submit</button>
                 <p>* Required</p>

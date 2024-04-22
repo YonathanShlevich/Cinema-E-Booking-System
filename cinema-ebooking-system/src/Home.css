@@ -162,7 +162,6 @@ nav  {
   button:hover {
     background-color: lightgray;
   }
-
   /* Modal styles */
 .modal {
   display: none; /* Hidden by default */
@@ -258,11 +257,42 @@ nav  {
 
 }
 
+
 .sitelogo {
 
   margin-left: 10%;
   width: 5%;
   height: auto;
   position: absolute;
+
+}
+
+.sitelogofilter {
+
+    margin-left: 12%;
+    width: 5%;
+    height: auto;
+    position: absolute;
+  
+  }
+
+  .genre_click.selected {
+    background-color: #2c3e50; /* Change to the desired color for selected button */
+}
+
+.genre_click {
+
+    padding: 10px 24px;
+    margin-left: 3px;
+    background-color: #3498db;
+    color: white;
+
+}
+
+.genre_filter {
+
+    display: flex;
+    list-style: none;
+    margin-top: 1%;
 
 }
