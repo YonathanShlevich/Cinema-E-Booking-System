@@ -71,55 +71,6 @@ function BookTicket() {
   
 
 
-/*
-  useEffect(() => {
-    axios.get(`http://localhost:4000/showtime/allShowtimes`)
-      .then(response => {
-        if (response.data.status === "FAILED") {
-          // handle error if needed
-        } else {
-          console.log(response.data)
-          setShowTimes(response.data)
-          //console.log(showTimes)
-  
-          // Iterate over each showtime and update period attribute
-          showTimes.forEach(showtime => {
-            axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`)
-              .then(periodResponse => {
-                if (periodResponse.data.status !== "FAILED") {
-                  // Update the period attribute of the corresponding showtime
-                  console.log(periodResponse.data.time)
-                  console.log(showtime.period)
-                  const updatedShowTimes = response.data.map(item => {
-                    
-
-                    if (item.period === showtime.period) {
-                      console.log("made it here")
-                      return {
-                        ...item,
-                        period: periodResponse.data.time
-                      };
-                    }
-                    return item;
-                  });
-                  setShowTimes(updatedShowTimes);
-                  
-                } else {
-                  // Handle error if needed
-                  console.error(`Error fetching period for showtime ID ${showtime._id}`);
-                }
-              })
-              .catch(error => { 
-                console.error('Error fetching period info:', error);
-              });
-          });
-        }
-      })
-      .catch(error => { 
-        console.error('Error fetching showTime info:', error);
-      });
-  }, []);
-  */
   
 
   const handleMovieChange = (e) => {
