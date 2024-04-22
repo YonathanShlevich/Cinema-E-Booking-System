@@ -4,12 +4,16 @@ import './BookTicket.css';
 import axios from "axios";
 
 function BookTicket() {
+
+  const location = useLocation();
+  const navigate = useNavigate();
   const [selectedMovieId, setSelectedMovieId] = useState("");
   const [selectedShowtimes, setSelectedShowtimes] = useState([]);
-
+  const [movieFromURl, setMovieFromURL] = useState("");
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  
 
   useEffect(() => {
     const getLoggedInUserId = () => {
@@ -17,6 +21,19 @@ function BookTicket() {
     };
     setLoggedInUserId(getLoggedInUserId());
   }, []);
+
+  useEffect(() => {
+    const getMovieFromURL = () => {
+      const params = new URLSearchParams(location.search);
+      return params.get('movieTitle');
+    };
+    const movieTitle = getMovieFromURL();
+    if (movieTitle) {
+      setMovieFromURL(movieTitle);
+      setSelectedMovieId(movieTitle); // Set selected movie from URL
+    }
+  }, [location.search]);
+  
 
   useEffect(() => {
     axios.get(`http://localhost:4000/movie/allMovies`)
@@ -74,6 +91,7 @@ function BookTicket() {
   
 
   const handleMovieChange = (e) => {
+    
     const selectedMovieId = e.target.value;
     setSelectedMovieId(selectedMovieId);
     const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
@@ -85,8 +103,7 @@ function BookTicket() {
     { id: 2, seat: "A2" },
     { id: 3, seat: "A3" }
   ]);
-  const location = useLocation();
-  const navigate = useNavigate();
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -111,13 +128,15 @@ function BookTicket() {
             <div className="form-group">
               <label>Movie Title:</label>
               <select className='form-control' id="title" onChange={handleMovieChange}>
-                <option selected value={new URLSearchParams(location.search).get('movieTitle')} ></option>
+                
+                <option></option>
                 {movies
                 .filter(movie => (
                   movie.category === "Now Showing"
                 ))
                 .map(movie => (
-                  <option key={movie._id} value={movie._id}>{movie.title}</option>
+                  
+                  <option  key={movie._id} value={movie._id}>{movie.title}</option>
                 ))}
               </select>
             </div>
