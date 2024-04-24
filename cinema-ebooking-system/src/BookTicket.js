@@ -78,6 +78,9 @@ function BookTicket() {
         }));
   
         setShowTimes(updatedShowTimes);
+
+        console.log("Showtimes:", updatedShowTimes); // Check the contents of showTimes
+
       } catch (error) {
         console.error('Error fetching showTime info:', error);
       }
@@ -88,6 +91,13 @@ function BookTicket() {
   
 
 
+  const handleMovieChangeFromURL = () => {
+    
+    const selectedMovieId = movieFromURl;
+    setSelectedMovieId(selectedMovieId);
+    const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
+    setSelectedShowtimes(filteredShowtimes);
+  };
   
 
   const handleMovieChange = (e) => {
@@ -115,6 +125,10 @@ function BookTicket() {
     e.preventDefault();
     navigate('/bookticket/select-seats');
   }
+  useEffect(() => {
+    // Call handleMovieChange function when component mounts
+    handleMovieChange({ target: { value: selectedMovieId } });
+  }, []); // Empty dependency array means this effect runs only once after initial render
 
   return (
     <div>
@@ -129,7 +143,7 @@ function BookTicket() {
               <label>Movie Title:</label>
               <select className='form-control' id="title" onChange={handleMovieChange}>
                 
-                <option></option>
+              <option value="" disabled selected>{movieFromURl && movieFromURl}</option>
                 {movies
                 .filter(movie => (
                   movie.category === "Now Showing"
