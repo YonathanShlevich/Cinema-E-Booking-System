@@ -20,8 +20,6 @@ import Checkout from "./Checkout";
 import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
 import AddCard from "./AddCard"
-
-import FilterMovie from "./FilterMovie";
 import AddShowtime from "./AddShowtime";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
