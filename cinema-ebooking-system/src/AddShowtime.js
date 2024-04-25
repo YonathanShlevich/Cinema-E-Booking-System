@@ -117,7 +117,7 @@ function AddShowtime() {
                 </div>
                 <div className="form-group">
                 <label>*Date</label>
-                <input id="date" type="month" className="form-control" />
+                <input id="date" type="date" className="form-control" />
                 </div>
                 <div className="form-group">
                 <label>*Show Period:</label>

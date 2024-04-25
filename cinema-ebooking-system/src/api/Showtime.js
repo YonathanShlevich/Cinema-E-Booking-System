@@ -3,7 +3,7 @@ const router = express.Router();
 const Movie = require('../models/Movie');
 const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
-const ShowTime = require('../models/ShowTime');
+const ShowTime = require('../models/Showtime');
 
 /*
     THIS FILE SHOULD ONLY HOLD: ADDSHOWTIME, DELETESHOWTIME, AND UPDATESHOWTIME
