@@ -154,6 +154,29 @@ router.post("/decrementRoomSeat/:roomName", async (req, res) => {
 
 })
 
+//Daniel edits:
+//GET function to pull all rooms
+router.get("/allRooms", (req, res) =>{
+    
+    Room.find({})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Room does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
 
 
 

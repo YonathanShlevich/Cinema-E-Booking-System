@@ -8,7 +8,7 @@ function AddShowtime() {
 
     const [movies, setMovies] = useState([]);
     const [showPeriods, setShowPeriods] = useState([]);
-    const [showTimes, setShowTimes] = useState([]);
+    const [rooms, setRooms] = useState([]);
 
 
     const navigate = useNavigate();
@@ -42,44 +42,19 @@ function AddShowtime() {
       }, []);
 
       useEffect(() => {
-        const fetchShowTimes = async () => {
-          try {
-            const response = await axios.get(`http://localhost:4000/showtime/allShowtimes`);
+        axios.get(`http://localhost:4000/room/allRooms`)
+          .then(response => {
             if (response.data.status === "FAILED") {
-              // handle error if needed
-              return;
+              // do nothing
+            } else {
+              setRooms(response.data)
             }
-            
-            const updatedShowTimes = await Promise.all(response.data.map(async showtime => {
-              try {
-                const periodResponse = await axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`);
-                if (periodResponse.data.status !== "FAILED") {
-                  return {
-                    ...showtime,
-                    period: periodResponse.data.time
-                  };
-                } else {
-                  // Handle error if needed
-                  console.error(`Error fetching period for showtime ID ${showtime._id}`);
-                  return showtime;
-                }
-              } catch (error) {
-                console.error('Error fetching period info:', error);
-                return showtime;
-              }
-            }));
-      
-            setShowTimes(updatedShowTimes);
-            
-            console.log("Showtimes:", updatedShowTimes); // Check the contents of showTimes
-    
-          } catch (error) {
-            console.error('Error fetching showTime info:', error);
-          }
-        };
-      
-        fetchShowTimes();
+          })
+          .catch(error => { 
+            console.error('Error fetching user info:', error);
+          });
       }, []);
+      
 
     const handleSubmit = async (e) => {
         
@@ -87,7 +62,7 @@ function AddShowtime() {
         
         const formData = {
           movieTitle: document.getElementById("title").value,
-          roomName: "Theatre1",
+          roomName: document.getElementById("room").value,
           periodTime: document.getElementById("showPeriod").value,
           date: document.getElementById("date").value
         }
@@ -146,6 +121,21 @@ function AddShowtime() {
                     ))}
                 </select>
                 </div>
+
+                <div className="form-group">
+                <label>*Show Room:</label>
+                <select id="room" type="text" className="form-control" >
+                    <option selected value=""></option>
+                    
+                    {rooms
+                    .map(room => (
+                    
+                    <option  key={room._id} value={room.name}>{room.name}</option>
+                    ))}
+                </select>
+                </div>
+
+
                 <div className="form-group">
                 <label>*Date</label>
                 <input id="date" type="date" className="form-control" />
