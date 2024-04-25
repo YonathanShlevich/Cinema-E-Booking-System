@@ -3,8 +3,7 @@ const router = express.Router();
 const Promotion = require('../models/Promotion');
 const User = require('../models/User');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
-//UUID handling
-const {v4: uuidv4} = require("uuid"); //The 'v4' is the c4 model within uuid
+
 //Env variables
 require("dotenv").config(); //TAKE A SECOND LOOK AT THIS
 
@@ -77,12 +76,12 @@ router.post("/addPromotion", async (req, res) => {
     }) //setup object - can you call it like this? time to find out!!!
 
     await newPromo.save().then(result => {
+        sendVerificationEmail({ code, end, discount }, res);
         return res.json({
             status: "SUCCESS",
             message: "New promotion was created!"
         });
         
-        //sendVerificationEmail(result, res);
     }).catch(err => {
         return res.json({
             status: "FAILED",
@@ -92,26 +91,57 @@ router.post("/addPromotion", async (req, res) => {
     })
 
 });
+router.get("/allPromos", (req, res) =>{
+    //const movieTitle = req.params.movieTitle; 
+    Promotion.find({})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Promotion does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
 
 //Send email?
-const sendVerificationEmail = async ({code, email, discount}, res) => {
+/*
+    1) Find all users with promotion being true
+    2) Send email out to each user
+        -> We are doing in probably the worst way possible, with a for loop
+*/
 
-    const promoUsers = await User.find({promo: promotion});
-    //URL for the email, in our case currently it is localhost:4000
-    console.log("sendVerEmail email: " + email);
-    console.log("sendVerEmail id: " + _id);
+const sendVerificationEmail = async ({code, end, discount}, res) => {
 
-    const currentURL = "http://localhost:4000/";
+    try {
+        const promoUsers = await User.find({ promo: false });
+        //console.log(promoUsers); //Debugging only
 
-    const uuidString = uuidv4() + _id;
+        for (const user of promoUsers) { //For loop to go through all users found
+            const mailOptions = {
+                from: process.env.AUTH_EMAIL,
+                to: user.email, // Use the user's email address
+                subject: "Yessir! Promotion time",
+                html: `<p>Congratulations! You've been given a promotion code for ${discount}% off! Promo lasts until ${end}!<br><br> Promo Code: ${code}</p>`, // Fill in the email content
+            };
 
-    //Mail options
-    const mailOptions = {
-        from: process.env.AUTH_EMAIL,
-        to: email,
-        subject: "Yessir! Promotion time",
-        html: `<p>Congratulations! You've been given a promotion code for ${discount}% off!<br><br> Promo Code: ${code}`, //THIS NEEDS TO BE FILLED IN
-    };
+            // Send email
+            transporter.sendMail(mailOptions); // You need to implement this function to send the email
+        }
+
+        console.log("Emails sent successfully to all users.");
+    } catch (error) {
+        console.error("Error sending emails:", error);
+    }
 }
 
 module.exports = router;

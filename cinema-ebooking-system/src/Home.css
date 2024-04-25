@@ -1,9 +1,10 @@
 nav  {
   
-    background-color: #3c3c3c;
+    background-color: lightgoldenrodyellow;
     padding-bottom: 0.5px;
     margin-bottom: 0;
-  
+    position: relative;
+
   }
 
 #btnlogin {
@@ -96,7 +97,7 @@ nav  {
     margin-top: 1%;
     margin-bottom: 1%;
     padding: 10px 24px;
-    margin-left: 15%;
+    margin-left: 3%;
 
 }
 
@@ -257,4 +258,33 @@ nav  {
 }
 
 
-  
+.sitelogo {
+
+  margin-left: 8%;
+  width: 5%;
+  height: auto;
+  margin-top: 5px;
+  position: absolute;
+
+}
+
+  .genre_click.selected {
+    background-color: #2c3e50; /* Change to the desired color for selected button */
+}
+
+.genre_click {
+
+    padding: 10px 24px;
+    margin-left: 3px;
+    background-color: #3498db;
+    color: white;
+
+}
+
+.genre_filter {
+
+    display: flex;
+    list-style: none;
+    margin-top: 1%;
+
+}

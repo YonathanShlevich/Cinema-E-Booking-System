@@ -16,6 +16,9 @@ const Home = () => {
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [carouselVisible, setCarouselVisible] = useState(true);
+  const [filterClicked, setFilterClicked] = useState(false);
 
   useEffect(() => {
     //Function to get user ID from localStorage
@@ -33,11 +36,29 @@ const Home = () => {
     setLoggedInUserId(null);
   };
 
+  //setting the carousel to be visible or not when filter is clicked
+  const handleFilterClick = () => {
+    setCarouselVisible(false); // Hide the carousel
+    setFilterClicked(true);
+  };
+
   const handleLogout = () => {
     clearLoggedInUserId();
     window.location.href = '/';
   };
+  
+  const handleLogoClick = () => {
 
+    window.location.href = '/';
+    setCarouselVisible(true);
+
+  };
+    // Function to handle genre selection
+      const handleGenreSelection = (genre) => {
+        setSelectedGenre(genre);
+    };
+
+    const genres = [...new Set(movies.map(movie => movie.genre))];
 
 
   useEffect(() => {
@@ -166,12 +187,14 @@ const Home = () => {
   // Function to handle search input change
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+    setSelectedGenre(null); // Reset selected genre when searching
   };
 
   // Filter movies based on search term
   const filteredMovies = movies.filter(movie =>
+    (!selectedGenre || movie.genre.toLowerCase() === selectedGenre.toLowerCase()) &&
     movie.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+);
 
   return (
     
@@ -204,23 +227,32 @@ const Home = () => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button onClick={() => navigate("/filter")}> +Filter </button>
+        <button onClick={handleFilterClick}> +Filter </button>
         {loggedInUserId && (
           <button id='btnbook' onClick={() => navigate("/bookticket")}>Book Ticket</button>
         )}
+        <Link to="/" onClick={handleLogoClick}>
+          <img class ="sitelogo"  src = "./logo.png" alt = "OnlyFlix logo"/>
+        </Link>
+        
+
       </nav>
 
       {/* This is where the carousel elements are located */}
+      {carouselVisible && (
       <Carousel>
+        {/* Each Item is one of the slide */}
         <Carousel.Item>
           <img class ="carousel-img" src="./homelander.gif" alt="First slide" />
         </Carousel.Item>
+        {/* Second Slide */}
         <Carousel.Item>
           <img class ="carousel-img" src="./theatre.jpg" alt="Second slide" />
           <Carousel.Caption className="carousel-caption1">
             <h1>Book Your Tickets Here!</h1>
             <p>"Grab your popcorn and buckle up, because it's about to get reel!"</p>
           </Carousel.Caption>
+          {/* Third Slide */}
         </Carousel.Item>
         <Carousel.Item>
           <img class ="carousel-img" src="./movielist.png" alt="First slide" />
@@ -230,7 +262,25 @@ const Home = () => {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-
+      )}
+      
+      {/* Section for Filtering Buttons */}
+      {filterClicked && (
+      <ul className="genre_filter">
+      {/* Map over the genres array to dynamically render buttons */}
+        {genres.map((genre, index) => (
+        <li key={index}>
+          {/* Use genre as the button label */}
+          <button 
+            className={`genre_click ${selectedGenre === genre ? 'selected' : ''}`} 
+            onClick={() => handleGenreSelection(genre)}
+          >
+            {genre}
+          </button>
+        </li>
+      ))}
+    </ul>
+      )}
 
 
       <div id="myModal" class="modal">
