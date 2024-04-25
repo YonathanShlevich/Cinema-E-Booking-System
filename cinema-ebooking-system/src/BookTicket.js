@@ -78,7 +78,7 @@ function BookTicket() {
         }));
   
         setShowTimes(updatedShowTimes);
-
+        handleMovieChange({ target: { value: selectedMovieId } });
         console.log("Showtimes:", updatedShowTimes); // Check the contents of showTimes
 
       } catch (error) {
@@ -88,16 +88,6 @@ function BookTicket() {
   
     fetchShowTimes();
   }, []);
-  
-
-
-  const handleMovieChangeFromURL = () => {
-    
-    const selectedMovieId = movieFromURl;
-    setSelectedMovieId(selectedMovieId);
-    const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
-    setSelectedShowtimes(filteredShowtimes);
-  };
   
 
   const handleMovieChange = (e) => {
@@ -130,6 +120,9 @@ function BookTicket() {
     handleMovieChange({ target: { value: selectedMovieId } });
   }, []); // Empty dependency array means this effect runs only once after initial render
 
+ 
+  
+
   return (
     <div>
       <Link to="/" className="backbutton">Cancel</Link>
@@ -141,7 +134,7 @@ function BookTicket() {
           <form id="loginForm">
             <div className="form-group">
               <label>Movie Title:</label>
-              <select className='form-control' id="title" onChange={handleMovieChange}>
+              <select className='form-control' id="title" onChange={handleMovieChange} >
                 
               <option value="" disabled selected>{movieFromURl && movieFromURl}</option>
                 {movies
@@ -158,7 +151,7 @@ function BookTicket() {
               <label>Showtime:</label>
               <select className='form-control' id="showtime">
                 <option value="" selected></option>
-                {selectedShowtimes.map(showtime => (
+                {selectedShowtimes && selectedShowtimes.map(showtime => (
                   <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toString().substring(0, 15)} {showtime.period}</option>
                 ))}
               </select>
