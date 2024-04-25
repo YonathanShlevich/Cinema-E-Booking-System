@@ -8,6 +8,7 @@ function AddShowtime() {
 
     const [movies, setMovies] = useState([]);
     const [showPeriods, setShowPeriods] = useState([]);
+    const [showTimes, setShowTimes] = useState([]);
 
 
     const navigate = useNavigate();
@@ -38,6 +39,46 @@ function AddShowtime() {
           .catch(error => { 
             console.error('Error fetching user info:', error);
           });
+      }, []);
+
+      useEffect(() => {
+        const fetchShowTimes = async () => {
+          try {
+            const response = await axios.get(`http://localhost:4000/showtime/allShowtimes`);
+            if (response.data.status === "FAILED") {
+              // handle error if needed
+              return;
+            }
+            
+            const updatedShowTimes = await Promise.all(response.data.map(async showtime => {
+              try {
+                const periodResponse = await axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`);
+                if (periodResponse.data.status !== "FAILED") {
+                  return {
+                    ...showtime,
+                    period: periodResponse.data.time
+                  };
+                } else {
+                  // Handle error if needed
+                  console.error(`Error fetching period for showtime ID ${showtime._id}`);
+                  return showtime;
+                }
+              } catch (error) {
+                console.error('Error fetching period info:', error);
+                return showtime;
+              }
+            }));
+      
+            setShowTimes(updatedShowTimes);
+            
+            console.log("Showtimes:", updatedShowTimes); // Check the contents of showTimes
+    
+          } catch (error) {
+            console.error('Error fetching showTime info:', error);
+          }
+        };
+      
+        fetchShowTimes();
       }, []);
 
     const handleSubmit = async (e) => {
