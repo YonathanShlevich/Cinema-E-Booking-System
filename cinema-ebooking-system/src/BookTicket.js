@@ -4,12 +4,16 @@ import './BookTicket.css';
 import axios from "axios";
 
 function BookTicket() {
+
+  const location = useLocation();
+  const navigate = useNavigate();
   const [selectedMovieId, setSelectedMovieId] = useState("");
   const [selectedShowtimes, setSelectedShowtimes] = useState([]);
-
+  const [movieFromURl, setMovieFromURL] = useState("");
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  
 
   useEffect(() => {
     const getLoggedInUserId = () => {
@@ -17,6 +21,19 @@ function BookTicket() {
     };
     setLoggedInUserId(getLoggedInUserId());
   }, []);
+
+  useEffect(() => {
+    const getMovieFromURL = () => {
+      const params = new URLSearchParams(location.search);
+      return params.get('movieTitle');
+    };
+    const movieTitle = getMovieFromURL();
+    if (movieTitle) {
+      setMovieFromURL(movieTitle);
+      setSelectedMovieId(movieTitle); // Set selected movie from URL
+    }
+  }, [location.search]);
+  
 
   useEffect(() => {
     axios.get(`http://localhost:4000/movie/allMovies`)
@@ -61,6 +78,9 @@ function BookTicket() {
         }));
   
         setShowTimes(updatedShowTimes);
+        handleMovieChange({ target: { value: selectedMovieId } });
+        console.log("Showtimes:", updatedShowTimes); // Check the contents of showTimes
+
       } catch (error) {
         console.error('Error fetching showTime info:', error);
       }
@@ -70,59 +90,8 @@ function BookTicket() {
   }, []);
   
 
-
-/*
-  useEffect(() => {
-    axios.get(`http://localhost:4000/showtime/allShowtimes`)
-      .then(response => {
-        if (response.data.status === "FAILED") {
-          // handle error if needed
-        } else {
-          console.log(response.data)
-          setShowTimes(response.data)
-          //console.log(showTimes)
-  
-          // Iterate over each showtime and update period attribute
-          showTimes.forEach(showtime => {
-            axios.get(`http://localhost:4000/Showtime/pullShowPeriodfromId/${showtime.period}`)
-              .then(periodResponse => {
-                if (periodResponse.data.status !== "FAILED") {
-                  // Update the period attribute of the corresponding showtime
-                  console.log(periodResponse.data.time)
-                  console.log(showtime.period)
-                  const updatedShowTimes = response.data.map(item => {
-                    
-
-                    if (item.period === showtime.period) {
-                      console.log("made it here")
-                      return {
-                        ...item,
-                        period: periodResponse.data.time
-                      };
-                    }
-                    return item;
-                  });
-                  setShowTimes(updatedShowTimes);
-                  
-                } else {
-                  // Handle error if needed
-                  console.error(`Error fetching period for showtime ID ${showtime._id}`);
-                }
-              })
-              .catch(error => { 
-                console.error('Error fetching period info:', error);
-              });
-          });
-        }
-      })
-      .catch(error => { 
-        console.error('Error fetching showTime info:', error);
-      });
-  }, []);
-  */
-  
-
   const handleMovieChange = (e) => {
+    
     const selectedMovieId = e.target.value;
     setSelectedMovieId(selectedMovieId);
     const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
@@ -134,8 +103,7 @@ function BookTicket() {
     { id: 2, seat: "A2" },
     { id: 3, seat: "A3" }
   ]);
-  const location = useLocation();
-  const navigate = useNavigate();
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -147,6 +115,13 @@ function BookTicket() {
     e.preventDefault();
     navigate('/bookticket/select-seats');
   }
+  useEffect(() => {
+    // Call handleMovieChange function when component mounts
+    handleMovieChange({ target: { value: selectedMovieId } });
+  }, []); // Empty dependency array means this effect runs only once after initial render
+
+ 
+  
 
   return (
     <div>
@@ -159,14 +134,16 @@ function BookTicket() {
           <form id="loginForm">
             <div className="form-group">
               <label>Movie Title:</label>
-              <select className='form-control' id="title" onChange={handleMovieChange}>
-                <option selected value={new URLSearchParams(location.search).get('movieTitle')} ></option>
+              <select className='form-control' id="title" onChange={handleMovieChange} >
+                
+              <option value="" disabled selected>{movieFromURl && movieFromURl}</option>
                 {movies
                 .filter(movie => (
                   movie.category === "Now Showing"
                 ))
                 .map(movie => (
-                  <option key={movie._id} value={movie._id}>{movie.title}</option>
+                  
+                  <option  key={movie._id} value={movie._id}>{movie.title}</option>
                 ))}
               </select>
             </div>
@@ -174,7 +151,7 @@ function BookTicket() {
               <label>Showtime:</label>
               <select className='form-control' id="showtime">
                 <option value="" selected></option>
-                {selectedShowtimes.map(showtime => (
+                {selectedShowtimes && selectedShowtimes.map(showtime => (
                   <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toString().substring(0, 15)} {showtime.period}</option>
                 ))}
               </select>

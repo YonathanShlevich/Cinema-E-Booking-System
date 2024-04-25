@@ -13,6 +13,7 @@ function ManageMovies() {
         </div>
         <div className="card-body">
         <Link to="/admin/manage-movies/manage-existing-movies" className="mainButton">Manage Existing Movies</Link>
+        <Link to="/admin/manage-movies/add-showtime" className="mainButton">+ Add Showtime</Link>
         <Link to="/admin/manage-movies/add-movie" className="mainButton">+ Add Movie</Link>
 
         </div>

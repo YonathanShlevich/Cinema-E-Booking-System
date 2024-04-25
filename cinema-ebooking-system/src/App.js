@@ -20,6 +20,10 @@ import Checkout from "./Checkout";
 import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
 import AddCard from "./AddCard"
+
+import FilterMovie from "./FilterMovie";
+import AddShowtime from "./AddShowtime";
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -45,6 +49,8 @@ function App() {
         <Route path="/admin/manage-movies/add-movie" element={<AddMovie />} />
         <Route path="/admin/manage-movies/manage-existing-movies" element={<ManageExistingMovies />} />
         <Route path="/admin/manage-promos/add-promo" element={<AddPromo />} />
+        <Route path="/admin/manage-movies/add-showtime" element={<AddShowtime />} />
+
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/bookticket" element={<BookTicket />} />
         <Route path="/bookticket/order-summary" element={<OrderSummary />} />
