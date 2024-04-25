@@ -152,7 +152,7 @@ function BookTicket() {
               <select className='form-control' id="showtime">
                 <option value="" selected></option>
                 {selectedShowtimes && selectedShowtimes.map(showtime => (
-                  <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toString().substring(0, 15)} {showtime.period}</option>
+                  <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toISOString().substring(0, 10)} {showtime.period}</option>
                 ))}
               </select>
             </div>

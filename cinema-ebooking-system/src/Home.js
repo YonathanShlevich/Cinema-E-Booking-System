@@ -110,7 +110,7 @@ const Home = () => {
               ).map((showTime) => (
 
                 `
-                  <p>${showTime.movie == movie._id ? `${new Date(showTime.date).toString().substring(0, 15)}` : ``}</p>
+                  <p>${showTime.movie == movie._id ? `${new Date(showTime.date).toISOString().substring(0, 10)}` : ``}</p>
                   
                 `
               )
