@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./Home";
 import Login from "./Login";
 import SignUp from "./SignUp";
@@ -24,8 +24,16 @@ import AddShowtime from "./AddShowtime";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+// Function to check if user is admin
+const isAdmin = () => {
+
+  const userType = localStorage.getItem('loggedInUserType');
+  return userType === '2';
+
+};
 
 function App() {
+
   return (
     <BrowserRouter>
       <Routes>
@@ -40,7 +48,12 @@ function App() {
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/addcard" element={<AddCard />} />
 
-        <Route path="/admin" element={<Admin />} />
+        {/* Route for admin page with condition to check if user is admin */}
+        <Route
+          path="/admin"
+          element={isAdmin() ? <Admin /> : <Navigate to="/"
+          state={{ message: "Thou shalt not pass to the admin page." }} />}
+        />
         <Route path="/admin/manage-movies" element={<ManageMovies />} />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
         <Route path="/admin/manage-promos" element={<ManagePromos />} />

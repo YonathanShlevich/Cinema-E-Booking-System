@@ -145,6 +145,3 @@ const sendVerificationEmail = async ({code, end, discount}, res) => {
 }
 
 module.exports = router;
-
-
-
