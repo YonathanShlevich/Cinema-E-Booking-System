@@ -135,6 +135,7 @@ const Home = () => {
                 movie._id.includes(showTime.movie)
               )
               .sort((a, b) => a.date.localeCompare(b.date))
+              .filter((showTime, index, array) => index === array.findIndex(t => t.date.substring(0, 10) === showTime.date.substring(0, 10))) // Filter out duplicates
               .map((showTime) => (
 
                 `
