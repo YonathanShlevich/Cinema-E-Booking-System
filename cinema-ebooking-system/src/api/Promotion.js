@@ -27,6 +27,11 @@ router.post("/addPromotion", async (req, res) => {
     //setup request body - does promotion need an id??? CHECK THIS
     let {code, start, end, discount} = req.body;
 
+    console.log(code);
+    console.log(discount);
+    console.log(start);
+    console.log(end);
+
     const validStartDate = new Date(start);
     const validEndDate = new Date(end); //unfortunately i couldn't use a cute pun(^_^)
     if((isNaN(validStartDate.getTime())) || (isNaN(validEndDate.getTime()))){ //return false start date or end date to promo   
@@ -91,27 +96,6 @@ router.post("/addPromotion", async (req, res) => {
     })
 
 });
-router.get("/allPromos", (req, res) =>{
-    //const movieTitle = req.params.movieTitle; 
-    Promotion.find({})
-        .then(result => {
-            
-            if(!result){ //If the userID doesn't exist
-                //console.log('empty req')
-                return res.json({
-                    status: "FAILED",
-                    message: 'Promotion does not exist'
-                });
-            }   
-            return res.json(result); //This just returns the full json of the items in the User
-        }).catch(error =>{
-            //console.log(`Error: ${error}`);
-            return res.json({
-                status: "FAILED",
-                message: 'Error with pulling data'
-            });
-        })
-})
 
 //Send email?
 /*

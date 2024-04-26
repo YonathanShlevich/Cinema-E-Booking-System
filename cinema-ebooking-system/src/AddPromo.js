@@ -1,23 +1,44 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Admin.css';
 
 function AddPromo() {
 
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         
         e.preventDefault();
-    
-        let code = document.getElementById("code");
-        let discount = document.getElementById("discount");
 
-        if (discount.value === "" || code.value === "") {
-          window.alert("Ensure code and discount are input");
+        const formData = {
+
+          code: document.getElementById("code").value,
+          start: document.getElementById("startdate").value,
+          end: document.getElementById("enddate").value,
+          discount: document.getElementById("discount").value
+
+        }
+
+        console.log(formData.start);
+
+        if (formData.code === "" || formData.discount === "" || formData.start === "" || formData.end === "") {
+          window.alert("Ensure code, discount, start date, and end date are inputted");
+          
         } else { // all is good
-            // submit to database
-            navigate('/admin/manage-promos');
+
+          try {
+            const response = await axios.post("http://localhost:4000/promotion/addPromotion", formData);
+
+            if (response.data.status === "FAILED"){
+              window.alert(response.data.message);
+            } else {
+              window.alert("Success!");
+              navigate('/admin/manage-promos');
+            }
+          } catch(error) {
+            window.alert(error);
+          }
             
         }
 
@@ -37,8 +58,16 @@ function AddPromo() {
               <input id="code" type="text" className="form-control" />
             </div>
             <div className="form-group">
-              <label>Discout (%):</label>
+              <label>Discount (%):</label>
               <input id="discount" type="number" min="1" max="100" className="form-control" />
+            </div>
+            <div className="form-group">
+              <label>Start Date:</label>
+              <input id = "startdate" type= "date" className="form-control"/>
+            </div>
+            <div className="form-group">
+              <label>End Date:</label>
+              <input id = "enddate" type= "date" className="form-control"/>
             </div>
             <button type="submit">Submit</button>
             </form>

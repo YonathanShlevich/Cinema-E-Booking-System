@@ -5,8 +5,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import axios from "axios";
 
-
-
 const Home = () => {
   const navigate = useNavigate();
   // State variables
@@ -16,6 +14,7 @@ const Home = () => {
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const [loggedInUserType, setLoggedInUserType] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [carouselVisible, setCarouselVisible] = useState(true);
   const [filterClicked, setFilterClicked] = useState(false);
@@ -30,10 +29,32 @@ const Home = () => {
     setLoggedInUserId(getLoggedInUserId());
   }, []);
 
+  useEffect(() => {
+    //Function to get user type from localStorage // Fix typo here
+    const getLoggedInUserType = () => {
+      return localStorage.getItem('loggedInUserType');
+    };
+
+    //Set the initial value for loggedInUserType when the component mounts
+    setLoggedInUserType(getLoggedInUserType());
+  }, []);
+
+  const isAdmin = () => {
+
+    return loggedInUserType === '2'; // Assuming user ID '2' corresponds to admin
+
+  };
+
   // Function to clear user ID from localStorage (logout)
   const clearLoggedInUserId = () => {
     localStorage.removeItem('loggedInUserId');
     setLoggedInUserId(null);
+  };
+
+  // Function to clear user ID from localStorage (logout)
+  const clearLoggedInUserType = () => {
+    localStorage.removeItem('loggedInUserType');
+    setLoggedInUserType(null);
   };
 
   //setting the carousel to be visible or not when filter is clicked
@@ -44,7 +65,12 @@ const Home = () => {
 
   const handleLogout = () => {
     clearLoggedInUserId();
+    clearLoggedInUserType();
     window.location.href = '/';
+  };
+
+  const handleAdmin = () => {
+    window.location.href = '/admin';
   };
   
   const handleLogoClick = () => {
@@ -210,6 +236,7 @@ const Home = () => {
       <div className="dropdown">
           <button className="dropbtn">Account</button>
           <div className="dropdown-content">
+            {isAdmin() && <Link to="/admin" onClick={handleAdmin}>Admin Page</Link>}
             <Link to="/viewprofile">View Profile</Link>
             <Link to="/" onClick={handleLogout}>Logout</Link>
          </div>

@@ -12,6 +12,11 @@ function Login() {
     localStorage.setItem('loggedInUserId', userId);
   };
 
+  // Function to set user Type in localStorage
+  const setLoggedInUserType = (userType) => {
+    localStorage.setItem('loggedInUserType', userType);
+  };
+
   const handleSubmit = async (e) => {
       e.preventDefault();
       
@@ -29,6 +34,7 @@ function Login() {
           if (response.data.status === "SUCCESS") {
             // Redirect user to verification page or any other appropriate page
             setLoggedInUserId(response.data.data[0]._id);
+            setLoggedInUserType(response.data.data[0].type);
             if (response.data.data[0].type === 2) {
               navigate('/admin');
             }
