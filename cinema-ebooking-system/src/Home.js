@@ -107,10 +107,12 @@ const Home = () => {
             
               ${showTimes.filter(showTime =>
                 movie._id.includes(showTime.movie)
-              ).map((showTime) => (
+              )
+              .sort((a, b) => a.date.localeCompare(b.date))
+              .map((showTime) => (
 
                 `
-                  <p>${showTime.movie == movie._id ? `${new Date(showTime.date).toString().substring(0, 15)}` : ``}</p>
+                  <p>${showTime.movie == movie._id ? `${showTime.date.substring(0, 10)}` : ``}</p>
                   
                 `
               )

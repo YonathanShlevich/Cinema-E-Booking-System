@@ -151,8 +151,10 @@ function BookTicket() {
               <label>Showtime:</label>
               <select className='form-control' id="showtime">
                 <option value="" selected></option>
-                {selectedShowtimes && selectedShowtimes.map(showtime => (
-                  <option key={showtime._id} value={showtime._id}>{new Date(showtime.date).toString().substring(0, 15)} {showtime.period}</option>
+                {selectedShowtimes && selectedShowtimes
+                .sort((a, b) => a.date.localeCompare(b.date))
+                .map(showtime => (
+                  <option key={showtime._id} value={showtime._id}>{showtime.date.substring(0, 10)} {showtime.period}</option>
                 ))}
               </select>
             </div>
