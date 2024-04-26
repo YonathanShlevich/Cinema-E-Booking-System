@@ -14,8 +14,8 @@ function AddPromo() {
         const formData = {
 
           code: document.getElementById("code").value,
-          start: document.getElementById("startdate").value,
-          end: document.getElementById("enddate").value,
+          startdate: document.getElementById("startdate").value,
+          enddate: document.getElementById("enddate").value,
           discount: document.getElementById("discount").value
 
         }
@@ -33,7 +33,7 @@ function AddPromo() {
             if (response.data.status === "FAILED"){
               window.alert(response.data.message);
             } else {
-              window.alert("Success!");
+              window.alert("Promo added succesfully!");
               navigate('/admin/manage-promos');
             }
           } catch(error) {
