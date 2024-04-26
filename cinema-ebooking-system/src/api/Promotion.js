@@ -91,7 +91,6 @@ router.post("/addPromotion", async (req, res) => {
     })
 
 });
-
 router.get("/allPromos", (req, res) =>{
     //const movieTitle = req.params.movieTitle; 
     Promotion.find({})
@@ -146,6 +145,3 @@ const sendVerificationEmail = async ({code, end, discount}, res) => {
 }
 
 module.exports = router;
-
-
-

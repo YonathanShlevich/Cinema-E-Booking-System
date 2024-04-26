@@ -14,8 +14,8 @@ function AddPromo() {
         const formData = {
 
           code: document.getElementById("code").value,
-          startdate: document.getElementById("startdate").value,
-          enddate: document.getElementById("enddate").value,
+          start: document.getElementById("startdate").value,
+          end: document.getElementById("enddate").value,
           discount: document.getElementById("discount").value
 
         }
