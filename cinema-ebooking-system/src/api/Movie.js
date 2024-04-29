@@ -30,39 +30,10 @@ function generateAttributes(title, category, cast, genre, director, producer, sy
 }
 
 
-/*
-    Function that checks if user is admin, if not, kick back to homepage
-*/
-async function checkAdmin(userId){
-    await User.findbyId({_id, userId})
-        .then(result => {
-            if(result.type == 1) { //If non-admin
-                result.redirect('/'); // send to home
-                return false
-            }
-        });
-}   
-
-/*
-    Grabs userId from localStorage
-*/
-function getLoggedInUserId(){
-    return localStorage.getItem('loggedInUserId');
-}
-
-
 //API Route to add a movie:
 router.post("/addMovie", async (req, res) => {
     
-    //Admin check!
-    // if(checkAdmin(getLoggedInUserId()) == false){ //Nested functions, great job!
-    //     return res.json({
-    //         status: 'FAILED',
-    //         message: 'User does not have permission to access this!'
-    //     })
-    // }
 
-    
     //Bringing all movie attributes from formData
     let {title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
         trailerPictureLink, filmRating 
@@ -147,13 +118,6 @@ router.post("/addMovie", async (req, res) => {
 
 router.post("/updateMovie/:movieTitle", async (req, res) => {
 
-    //Admin check!
-    // if(checkAdmin(getLoggedInUserId()) == false){ //Nested functions, great job!
-    //     return res.json({
-    //         status: 'FAILED',
-    //         message: 'User does not have permission to access this!'
-    //     })
-    // }
     let { movieTitle } = req.params;    //finding movie based on title since _id isn't reasonable for admin to input
     let {title, category, cast, genre, director, producer, synopsis, trailerVideoLink, 
         trailerPictureLink, filmRating 
@@ -220,6 +184,44 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
             message: "Error updating movie: " + err.message
         });
     }
+})
+
+/* 
+    API Route to only update reviews. It's just a much smaller updateMovie function made to only update reviews
+*/
+router.post("/updateReview/:movieTitle", async (req, res) => {
+    let { movieTitle } = req.params;
+    let { reviews } = req.body;
+    console.log(movieTitle + " : " + reviews)
+    const reviewUpdates = {}; //
+    reviewUpdates["reviews"] = reviews;
+    // Finding movie and updating
+    try { 
+        const movieExists = await Movie.exists({ title: movieTitle });
+        
+        if (movieExists) {
+            const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
+                { title: movieTitle },
+                { $set: reviewUpdates },
+                { new: true }
+            );
+            return res.json({
+                status: "SUCCESS",
+                message: "Movie updated successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "Movie not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error updating movie: " + err.message
+        });
+    }
+
 })
 
 //API Route to Delete a Movie
