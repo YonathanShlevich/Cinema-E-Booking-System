@@ -202,7 +202,7 @@ router.post("/updateReview/:movieTitle", async (req, res) => {
         if (movieExists) {
             const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
                 { title: movieTitle },
-                { $set: reviewUpdates },
+                { $push: reviewUpdates },
                 { new: true }
             );
             return res.json({
