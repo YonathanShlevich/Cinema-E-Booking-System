@@ -10,6 +10,7 @@ const SeatSchema = new Schema({
         enum: ['Available', 'Unavailable'],
         default: 'Available'
     },
+    seatNumber: String              //Row letter + number i.e. A5 or Z8
     
 });
 
