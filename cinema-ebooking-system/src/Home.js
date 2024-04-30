@@ -120,10 +120,39 @@ const Home = () => {
   }, []);
 
 
+  
 
   // Function to open pop up
   const openInfo = (movie) => {
     setSelectedMovie(movie)
+
+    const handleReviewSubmit = e => {
+      e.preventDefault();
+    
+
+    const formData = {
+      reviews: document.getElementById("review").value,
+      
+    }
+    
+
+    axios.post(`http://localhost:4000/movie/updateReview/${encodeURIComponent(movie.title)}`, formData) //Calls our data backend GET call
+    .then(response => {
+      if (response.data.status === "FAILED") {
+        window.alert("This failed")
+        // do nothing
+      } else {
+        window.location.reload();
+      }
+    })
+    .catch(error => { 
+      console.error('Error fetching user info:', error);
+    });
+    // Call any function or perform any action you want with the submitted data
+    // For example, you can send the review data to a server, display it on the page, etc.
+    
+  }
+    
     
     
     const popupText = `
@@ -176,13 +205,29 @@ const Home = () => {
           ).join("")}
         </div>
         `;
+
+      const popupReviewMaker = `
+
+        <div>
+          <form id="reviewForm">
+            <label for="review">Add a Review: (Max 150 characters)</label><br>
+            <textarea id="review" name="review" rows="4" cols="50" maxlength="150"></textarea><br>
+            <input id="popup-button" type="submit" value="Submit">
+          </form>
+        </div>
+        `;
     const modal = document.getElementById("myModal");
     const popupTextContainer = document.getElementById("popupText");
     const popupImageContainer = document.getElementById("popupImage");
     const popupReviewsContainer = document.getElementById("popupReviews");
+    const popupReviewMakerContainer = document.getElementById("popupReviewMaker");
     popupTextContainer.innerHTML = popupText;
     popupImageContainer.innerHTML = popupImageAndTrailer;
     popupReviewsContainer.innerHTML = popupReviews;
+    popupReviewMakerContainer.innerHTML = popupReviewMaker;
+
+    document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
+
 
     // Add event listener to the button
     const popupButton = document.getElementById("popup-button");
@@ -320,6 +365,7 @@ const Home = () => {
           <div id="popupText"></div>
           <div id="popupImage"></div>
           <div id="popupReviews"></div>
+          <div id="popupReviewMaker"></div>
         </div>
       </div>
       </div>
