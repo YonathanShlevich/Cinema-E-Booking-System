@@ -1,0 +1,114 @@
+const express = require('express');
+const router = express.Router();
+const Booking = require('../models/Booking');
+const Movie = require('../models/Movie');
+const ShowTime = require('../models/ShowTime');
+const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
+const paymentCard = require('../models/paymentCard');
+
+
+//require("dotenv").config();
+
+//add booking
+router.post("/addBooking", async(req, res) => {
+
+
+    let {bookingNumber, ticketNumber, movieTitle, showDate, showTime, creditCard, promoId, total} = req.body;
+    //validate our movie, showtime, and payment cards are the real deal :P
+    const movieObject = await Movie.findOne({ title: movieTitle });
+    const showTimeObject = await ShowTime.findOne({_id: showTime});
+    const paymentCardObject = await paymentCard.findOne({_id: creditCard});
+    if(!movieObject || !showTimeObject || !paymentCardObject){
+        return res.json({
+            status: "FAILED",
+            message: "Invalid movie, showtime, or creditcard entered"
+        });
+    }
+    //check that the booking, promoId and ticket number don't already exist
+    validateBn = await Booking.findOne({bookingNumber: bookingNumber});
+    validateTn = await Booking.findOne({ticketNumber: ticketNumber});
+    validatePr = await Booking.findOne({promoId: promoId});
+    if(validateBn || validateTn|| validatePr) {
+        return res.json({
+            status: "FAILED",
+            message: "duplicate booking number, ticket number, or promo id entered- please try another number/id"
+        });
+    }
+    //validate date
+    const valiDate = new Date(showDate); //valiDATE, get it, I'm funny
+    if(isNaN(valiDate.getTime())){ //If the date is valid, then it will return false, otherwise it'll return NaN   
+        return res.json({
+            status: "FAILED",
+            message: "invalid date"
+        });
+    }
+    //object calling:
+    const newBooking = new Booking ({
+        bookingNumber: bookingNumber,
+        ticketNumber: ticketNumber, 
+        movieTitle: movieObject, 
+        showDate: showDate,
+        showTime: showTimeObject, 
+        creditCard: paymentCardObject,
+        promoId: promoId,
+        total: total
+    })
+    await newBooking.save().then(result => {
+        return res.json({
+            status: "SUCCESS",
+            message: "New movie Booking was created!"
+        });
+    }).catch(err => {
+        return res.json({
+            status: "FAILED",
+            message: "Booking could not be created: ",
+            error: err.message
+        });
+    })
+})
+
+//given an title, can we pull a showperiod
+router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
+    console.log("pulling show period info")
+    const periodId = req.params.periodId;
+    const periodObject = await ShowPeriod.findOne({_id: periodId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'showperiod does not exist'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
+})
+
+router.get("/allBookings", (req, res) =>{
+    //const movieTitle = req.params.movieTitle; 
+    Booking.find({})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Booking does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+module.exports = router;
