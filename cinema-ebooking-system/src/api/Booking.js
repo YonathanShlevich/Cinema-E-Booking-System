@@ -67,11 +67,32 @@ router.post("/addBooking", async(req, res) => {
     })
 })
 
-//given an title, can we pull a showperiod
-router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
-    console.log("pulling show period info")
-    const periodId = req.params.periodId;
-    const periodObject = await ShowPeriod.findOne({_id: periodId}).then(result => {
+//given an title, can we pull a showtime
+router.get("/pullShowTimefromId/:showId", async(req, res) =>{
+    console.log("pulling show time info")
+    const stId = req.params.showId;
+    const stObject = await ShowTime.findOne({_id: stId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'showperiod does not exist'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
+})
+//given an title, can we pull a showtime
+router.get("/pullCCfromId/:ccId", async(req, res) =>{
+    console.log("pulling show time info")
+    const ccId = req.params.ccId;
+    const ccObject = await PaymentCard.findOne({_id: ccId}).then(result => {
         if(!result){ //If the userID doesn't exist
             return res.json({
                 status: "FAILED",
