@@ -71,6 +71,11 @@ nav  {
   .homeHeader {
     text-align: center;
   }
+
+  .homeHeaderWarning {
+    text-align: center;
+    padding: 10%;
+  }
   
   
   .movie-item {

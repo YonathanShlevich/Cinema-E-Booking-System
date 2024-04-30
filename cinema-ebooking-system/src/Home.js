@@ -324,9 +324,15 @@ const Home = () => {
       </div>
       </div>
 
+      {filteredMovies.length === 0 && (
+        <h1 className='homeHeaderWarning'>Sorry, no movies match the search parameters</h1>
+)     }
+
       {/* Section for Now Showing movies */}
 
-      <h1 className='homeHeader'> Now Showing</h1>
+      {filteredMovies.some(movie => movie.category === 'Now Showing') && (
+        <h1 className='homeHeader'>Now Showing</h1>
+)     }
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Now Showing movies, 
         this should show all of them since the filter has nothing */}
@@ -345,7 +351,10 @@ const Home = () => {
       </div>
 
       {/* Section for Coming Soon movies */}
-      <h1 className='homeHeader'>Coming Soon</h1>
+      {filteredMovies.some(movie => movie.category === 'Coming Soon') && (
+        <h1 className='homeHeader'>Coming Soon</h1>
+)     }
+      
       <div className="movie-gallery">
         {/* Mapping through filteredMovies array to display Coming Soon movies, 
         this should show all of them since the filter has nothing */}
