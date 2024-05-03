@@ -126,6 +126,8 @@ const Home = () => {
   const openInfo = (movie) => {
     setSelectedMovie(movie)
 
+    
+
     const handleReviewSubmit = e => {
       e.preventDefault();
     
@@ -210,6 +212,7 @@ const Home = () => {
       const popupReviewMaker = `
 
         <div>
+        
           <form id="reviewForm">
             <label for="review">Add a Review: (Max 150 characters)</label><br>
             <textarea id="review" name="review" rows="4" cols="50" maxlength="150"></textarea><br>
@@ -217,18 +220,21 @@ const Home = () => {
           </form>
         </div>
         `;
+      
     const modal = document.getElementById("myModal");
     const popupTextContainer = document.getElementById("popupText");
     const popupImageContainer = document.getElementById("popupImage");
     const popupReviewsContainer = document.getElementById("popupReviews");
     const popupReviewMakerContainer = document.getElementById("popupReviewMaker");
+    
     popupTextContainer.innerHTML = popupText;
     popupImageContainer.innerHTML = popupImageAndTrailer;
     popupReviewsContainer.innerHTML = popupReviews;
     popupReviewMakerContainer.innerHTML = popupReviewMaker;
+    
 
     document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
-
+    
 
     // Add event listener to the button
     const popupButton = document.getElementById("popup-button");
@@ -367,6 +373,8 @@ const Home = () => {
           <div id="popupImage"></div>
           <div id="popupReviews"></div>
           <div id="popupReviewMaker"></div>
+          
+
         </div>
       </div>
       </div>
