@@ -193,6 +193,7 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
 router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
     let { movieTitle, userID } = req.params;
     let { reviews } = req.body;
+
     const reviewUpdates = {}; //
     reviewUpdates["reviews"] = reviews
     if (userID !== "null") {
@@ -230,24 +231,53 @@ router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
                 { $push: reviewUpdates },
                 { new: true }
             );
+
             return res.json({
-                status: "SUCCESS",
-                message: "Movie updated successfully",
+                status: "FAILED",
+                message: 'You are not logged in'
             });
-        } else {
+        }
+
+        // Check if the user exists
+        const userExists = await User.exists({ _id: userID });
+        if (!userExists) {
+            return res.json({
+                status: "FAILED",
+                message: 'You do not have permission to add a review'
+            });
+        }
+
+        // Check if the movie exists
+        const movieExists = await Movie.exists({ title: movieTitle });
+        if (!movieExists) {
             return res.json({
                 status: "FAILED",
                 message: "Movie not found"
             });
         }
+
+        // Update the movie with the review
+        const updatedMovie = await Movie.findOneAndUpdate(
+            { title: movieTitle },
+            { $push: reviewUpdates },
+            { new: true }
+        );
+
+        return res.json({
+            status: "SUCCESS",
+            message: "Movie updated successfully",
+            updatedMovie: updatedMovie // Optional: Include updated movie data in response
+        });
+
     } catch (err) {
+        console.error("Error updating movie:", err);
         return res.json({
             status: "FAILED",
             message: "Error updating movie: " + err.message
         });
     }
+});
 
-})
 
 //API Route to Delete a Movie
 router.post("/deleteMovie/:movieTitle", async (req, res) => {

@@ -144,7 +144,8 @@ const Home = () => {
     axios.post(`http://localhost:4000/movie/updateReview/${encodeURIComponent(movie.title)}/${encodeURIComponent(loggedInUserId)}`, formData) //Calls our data backend GET call
     .then(response => {
       if (response.data.status === "FAILED") {
-        window.alert("You do not have permission to add reviews")
+        window.alert(response.data.message)
+
         // do nothing
       } else {
         window.location.reload();
