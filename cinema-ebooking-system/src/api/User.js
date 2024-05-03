@@ -1089,6 +1089,31 @@ router.post("/editTypeStatus/:userId", async (req, res) => {
 
 });
 
+//Delete promos
+router.post("/deleteUser/:email", async (req, res) => {
+    let { email } = req.params;
+    
+    try {
+        const userExists = await User.exists({ email: email });
+        if (userExists) {
+            const deleteUser = await User.findOneAndDelete({ email: email }); //Delete promo
+            return res.json({
+                status: "SUCCESS",
+                message: "User deleted successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "User not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error deleting User: " + err.message
+        });
+    }
+});
 
 
 
