@@ -29,11 +29,11 @@ function EditStatusType() {
     const navigate = useNavigate();
 
     //Handling submission
-    const handleSubmitEditProfile = async (e) => {
+    const handleSubmitEditStatusType = async (e) => {
         
         e.preventDefault();
     
-        let type = document.getElementById("type") ? document.getElementById("firstName").value : undefined;
+        let type = document.getElementById("type") ? document.getElementById("type").value : undefined;
         let status = document.getElementById("status") ? document.getElementById("status").value : undefined;
         
           const formData = {
@@ -77,7 +77,7 @@ function EditStatusType() {
         </div>
         {userInfo && (
           <div className="card-body">
-          <form action="" id="signUpForm" onSubmit={handleSubmitEditProfile}>
+          <form action="" id="signUpForm" onSubmit={handleSubmitEditStatusType}>
             <div className="form-group">
               <label>* User Type:</label>
               <input type="text" className="form-control" id="type" placeholder={userInfo.type}/>

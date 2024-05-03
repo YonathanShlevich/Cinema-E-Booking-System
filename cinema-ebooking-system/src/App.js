@@ -23,6 +23,7 @@ import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
 import AddCard from "./AddCard"
 import AddShowtime from "./AddShowtime";
+import Suspended from "./Suspended";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -43,6 +44,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/suspended" element={<Suspended />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/viewprofile" element={<ViewProfile />} />

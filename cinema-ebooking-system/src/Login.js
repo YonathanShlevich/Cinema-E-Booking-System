@@ -35,6 +35,9 @@ function Login() {
             // Redirect user to verification page or any other appropriate page
             setLoggedInUserId(response.data.data[0]._id);
             setLoggedInUserType(response.data.data[0].type);
+            if (response.data.data[0].status === 3) {
+              navigate('/suspended');
+            }
             if (response.data.data[0].type === 2) {
               navigate('/admin');
             }
