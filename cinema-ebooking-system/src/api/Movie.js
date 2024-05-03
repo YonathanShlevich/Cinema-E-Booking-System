@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Movie = require('../models/Movie');
+const User = require('./../models/User');
 
 /*
     THIS FILE SHOULD ONLY HOLD: ADDMOVIE, DELETEMOVIE, AND UPDATEMOVIE
@@ -189,12 +190,36 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
 /* 
     API Route to only update reviews. It's just a much smaller updateMovie function made to only update reviews
 */
-router.post("/updateReview/:movieTitle", async (req, res) => {
-    let { movieTitle } = req.params;
+router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
+    let { movieTitle, userID } = req.params;
     let { reviews } = req.body;
-    console.log(movieTitle + " : " + reviews)
     const reviewUpdates = {}; //
     reviewUpdates["reviews"] = reviews;
+    if (userID !== "null") {
+      
+       User.findOne({_id: userID})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'You do not have permission to add a review'
+                });
+            }   
+            
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        }) 
+    } else {
+        return res.json({
+            status: "FAILED",
+            message: 'You are not logged in'
+        });
+    }
+    
     // Finding movie and updating
     try { 
         const movieExists = await Movie.exists({ title: movieTitle });

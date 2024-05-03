@@ -136,10 +136,10 @@ const Home = () => {
     }
     
 
-    axios.post(`http://localhost:4000/movie/updateReview/${encodeURIComponent(movie.title)}`, formData) //Calls our data backend GET call
+    axios.post(`http://localhost:4000/movie/updateReview/${encodeURIComponent(movie.title)}/${encodeURIComponent(loggedInUserId)}`, formData) //Calls our data backend GET call
     .then(response => {
       if (response.data.status === "FAILED") {
-        window.alert("This failed")
+        window.alert("You do not have permission to add reviews")
         // do nothing
       } else {
         window.location.reload();
@@ -147,6 +147,7 @@ const Home = () => {
     })
     .catch(error => { 
       console.error('Error fetching user info:', error);
+      window.alert(error)
     });
     // Call any function or perform any action you want with the submitted data
     // For example, you can send the review data to a server, display it on the page, etc.
@@ -212,7 +213,7 @@ const Home = () => {
           <form id="reviewForm">
             <label for="review">Add a Review: (Max 150 characters)</label><br>
             <textarea id="review" name="review" rows="4" cols="50" maxlength="150"></textarea><br>
-            <input id="popup-button" type="submit" value="Submit">
+            <input id="popup-review-button" type="submit" value="Submit">
           </form>
         </div>
         `;
