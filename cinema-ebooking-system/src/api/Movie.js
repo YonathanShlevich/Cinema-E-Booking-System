@@ -194,7 +194,7 @@ router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
     let { movieTitle, userID } = req.params;
     let { reviews } = req.body;
     const reviewUpdates = {}; //
-    reviewUpdates["reviews"] = reviews;
+    reviewUpdates["reviews"] = reviews
     if (userID !== "null") {
       
        User.findOne({_id: userID})

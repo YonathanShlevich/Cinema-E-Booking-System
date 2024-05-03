@@ -12,6 +12,7 @@ const Home = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [movies, setMovies] = useState([]);
+  const [randomMovieTitle, setRandomMovie] = useState("");
   const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [loggedInUserType, setLoggedInUserType] = useState(null);
@@ -95,6 +96,8 @@ const Home = () => {
           // do nothing
         } else {
           setMovies(response.data)
+
+          setRandomMovie(response.data[Math.floor(Math.random() * response.data.length)].title)
 
         }
       })
@@ -340,7 +343,7 @@ const Home = () => {
           <img class ="carousel-img" src="./movielist.png" alt="First slide" />
           <Carousel.Caption className="carousel-caption2">
             <h1>We have cRaZy movies here!</h1>
-            <p>Have you heard of "A Serbian Film" to name one? </p>
+            <p>Have you heard of "{randomMovieTitle}" to name one? </p>
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
