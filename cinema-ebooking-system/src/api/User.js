@@ -215,6 +215,7 @@ router.post('/signin', (req, res) => {
                         message: "Email has not yet been verified, check your email inbox"
                     });
                 } else {
+                    
                     //Comparing passwords
                     const hashedPW = data[0].password;
                     //Debugging passwords: console.log(data[0].password + " : " + hashedPW);
