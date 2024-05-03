@@ -87,7 +87,7 @@ function EditProfileAdmin() {
               
             } else {
               window.alert("Profile updated successfully.");
-              navigate("/viewprofile");
+              navigate("/admin/manage-users");
               
             }
         } catch (error) {

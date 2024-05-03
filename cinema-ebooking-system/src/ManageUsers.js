@@ -61,6 +61,10 @@ function ManageUsers() {
       {selectedUser && (
         <Link to={`/admin/manage-users/editprofile/${selectedUser._id}`} className="edit-button">Edit Profile</Link>
       )}
+      <div className="button-space"></div>
+      {selectedUser && (
+        <Link to={`/admin/manage-users/editstatustype/${selectedUser._id}`} className="edit-button">Edit Status & Type</Link>
+      )}
     </div>
   );
 }

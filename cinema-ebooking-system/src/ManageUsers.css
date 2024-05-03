@@ -38,4 +38,8 @@
   .id-column {
     width: 50px; /* Adjust the width as needed */
   }
+
+  .button-space {
+    margin-left: 10px; /* Adjust this value as needed to create the desired spacing */
+  }
   
