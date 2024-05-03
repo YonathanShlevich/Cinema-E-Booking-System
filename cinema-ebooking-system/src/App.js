@@ -23,6 +23,7 @@ import AddCard from "./AddCard"
 import AddShowtime from "./AddShowtime";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import EditProfileAdmin from "./EditProfileAdmin";
 
 // Function to check if user is admin
 const isAdmin = () => {
@@ -56,6 +57,7 @@ function App() {
         />
         <Route path="/admin/manage-movies" element={<ManageMovies />} />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
+        <Route path="/admin/manage-users/editprofile/:userId" element={<EditProfileAdmin />} />
         <Route path="/admin/manage-promos" element={<ManagePromos />} />
         <Route path="/admin/manage-movies/add-movie" element={<AddMovie />} />
         <Route path="/admin/manage-movies/manage-existing-movies" element={<ManageExistingMovies />} />

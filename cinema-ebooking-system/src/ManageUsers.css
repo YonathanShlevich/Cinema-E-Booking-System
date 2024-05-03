@@ -1,0 +1,41 @@
+.manage-users-container {
+    margin: 20px;
+  }
+  
+  .backbutton {
+    display: block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .user-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .user-card-header {
+    background-color: #f0f0f0;
+    padding: 10px;
+  }
+  
+  .user-card-body {
+    padding: 20px;
+  }
+  
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .user-table th, .user-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+
+  .id-column {
+    width: 50px; /* Adjust the width as needed */
+  }
+  
