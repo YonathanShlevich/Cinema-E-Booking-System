@@ -1062,4 +1062,44 @@ router.post("/addCard/:userId", async (req, res) => {
 
 
 
+
+//API to update status and type 
+router.post("/editTypeStatus/:userId", async (req, res) => {
+    let { userId } = req.params;
+    let { status, type } = req.body; 
+    const userUpdates = {};
+
+    if (status !== null || type !== undefined || status == 1 || status == 2 || status == 3 )
+        { userUpdates["status"] = status; }   //If status is being changed
+    if (type !== null || type !== undefined || type == 1 || type == 2)
+        { userUpdates["type"] = type; }   //If type is being changed
+
+    const userFilter = {_id: userId};
+
+    await User.findOneAndUpdate(userFilter, {$set: userUpdates}, {new: true})
+                .catch((error) => {
+                    return res.json({
+                    status: 'FAILED',
+                    message: "User not found",
+                });
+            });
+    return res.json({
+        status: "SUCCESSFUL",
+        message: "User status/type updated!"
+    });
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
 module.exports = router;
