@@ -145,6 +145,7 @@ const Home = () => {
     .then(response => {
       if (response.data.status === "FAILED") {
         window.alert(response.data.message)
+
         // do nothing
       } else {
         window.location.reload();
