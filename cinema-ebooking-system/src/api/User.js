@@ -1060,10 +1060,6 @@ router.post("/addCard/:userId", async (req, res) => {
     }
 });
 
-
-
-
-
 //API to update status and type 
 router.post("/editTypeStatus/:userId", async (req, res) => {
     let { userId } = req.params;
