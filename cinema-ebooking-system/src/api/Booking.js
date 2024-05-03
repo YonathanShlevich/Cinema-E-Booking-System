@@ -3,6 +3,7 @@ const router = express.Router();
 const Booking = require('../models/Booking');
 const Movie = require('../models/Movie');
 const ShowTime = require('../models/ShowTime');
+const ShowPeriod = require('../models/ShowPeriod');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 const paymentCard = require('../models/paymentCard');
 
@@ -15,14 +16,38 @@ router.post("/addBooking", async(req, res) => {
 
     let {bookingNumber, ticketNumber, movieTitle, showDate, showTime, creditCard, promoId, total} = req.body;
     //validate our movie, showtime, and payment cards are the real deal :P
+    const valiDate = new Date(showDate); //valiDATE, get it, I'm funny
+    if(isNaN(valiDate.getTime())){ //If the date is valid, then it will return false, otherwise it'll return NaN   
+        return res.json({
+            status: "FAILED",
+            message: "invalid date"
+        });
+    }
+
     const movieObject = await Movie.findOne({ title: movieTitle });
-    const showTimeObject = await ShowTime.findOne({_id: showTime});
+
+    //get showperiod
+    const convertShowPeriodtoTime = await ShowPeriod.findOne({time: showTime});
+    //if the time is valid, get the id, which will be used soon
+    if(convertShowPeriodtoTime){
+        const showPeriodId = convertShowPeriodtoTime._id;
+    }else {
+        console.log("invalid showperiod");
+    }
+
+    const showTimeObject = await ShowTime.findOne({
+        period: showPeriodId,
+        date: valiDate
+    });
     const paymentCardObject = await paymentCard.findOne({_id: creditCard});
     if(!movieObject || !showTimeObject || !paymentCardObject){
         return res.json({
             status: "FAILED",
             message: "Invalid movie, showtime, or creditcard entered"
         });
+    }
+    if(showTimeObject){
+        const showTimePeriod = showTimeObject.period;
     }
     //check that the booking, promoId and ticket number don't already exist
     validateBn = await Booking.findOne({bookingNumber: bookingNumber});
@@ -34,14 +59,7 @@ router.post("/addBooking", async(req, res) => {
             message: "duplicate booking number, ticket number, or promo id entered- please try another number/id"
         });
     }
-    //validate date
-    const valiDate = new Date(showDate); //valiDATE, get it, I'm funny
-    if(isNaN(valiDate.getTime())){ //If the date is valid, then it will return false, otherwise it'll return NaN   
-        return res.json({
-            status: "FAILED",
-            message: "invalid date"
-        });
-    }
+    
     //object calling:
     const newBooking = new Booking ({
         bookingNumber: bookingNumber,
