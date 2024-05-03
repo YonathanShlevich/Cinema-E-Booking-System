@@ -47,28 +47,6 @@ function EditStatusType() {
     }
   };
 
-  const handleDeleteUser = async () => {
-
-    // Ask for confirmation before deleting user
-    const isConfirmed = window.confirm("Are you sure you want to delete this user?");
-    if (!isConfirmed) return; // If not confirmed, do nothing
-
-    try {
-      const response = await axios.post(`http://localhost:4000/user/deleteUser/${userInfo.email}`);
-
-      
-      if (response.data.status === "FAILED") {
-        window.alert(response.data.message);
-      } else {
-        window.alert("User deleted successfully.");
-        navigate("/admin/manage-users");
-      }
-    } catch (error) {
-      console.error('Delete user error', error);
-      window.alert(error);
-    }
-  };
-
   return (
     <div>
       <Link to="/admin/manage-users" className="backbutton"> Back to Manage User</Link>
@@ -88,7 +66,6 @@ function EditStatusType() {
                 <input type="number" className="form-control" id="status" placeholder={userInfo.status} min={1} max={3} required />
               </div>
               <button type="submit" className="btn btn-primary" style={{ marginRight: '8px' }}>Submit</button>
-              <button type="button" onClick={handleDeleteUser} className="btn btn-danger">Delete User</button>
               <div className="button-space"></div>
               <label>User Type: 1 - User, 2 - Admin</label>
               <label>User Status: 1 - Active, 2 - Inactive, 3 - Suspended</label>

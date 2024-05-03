@@ -26,6 +26,28 @@ function ManageUsers() {
     ));
   };
 
+  const handleDeleteUser = async () => {
+
+    // Ask for confirmation before deleting user
+    const isConfirmed = window.confirm("Are you sure you want to delete this user?");
+    if (!isConfirmed) return; // If not confirmed, do nothing
+
+    try {
+      const response = await axios.post(`http://localhost:4000/user/deleteUser/${selectedUser.email}`);
+
+      
+      if (response.data.status === "FAILED") {
+        window.alert(response.data.message);
+      } else {
+        window.alert("User deleted successfully.");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Delete user error', error);
+      window.alert(error);
+    }
+  };
+
   return (
     <div className="manage-users-container">
       <Link to="/admin" className="backbutton">Back</Link>
@@ -65,6 +87,11 @@ function ManageUsers() {
       {selectedUser && (
         <Link to={`/admin/manage-users/editstatustype/${selectedUser._id}`} className="edit-button">Edit Status & Type</Link>
       )}
+      <div>
+      {selectedUser && (
+        <button type="button" onClick={handleDeleteUser} className="btn btn-danger" style={{ marginTop: '8px' }}>Delete User</button>
+      )}
+      </div>
     </div>
   );
 }
