@@ -209,7 +209,7 @@ router.post('/signin', (req, res) => {
         User.find({email}).then(data => {
             if(data.length){
                 //Checking if the user is verified
-                if(data[0].status != 1 || data[0].status != 3){ 
+                if(data[0].status == 2){ 
                     res.json({
                         status: "FAILED",
                         message: "Email has not yet been verified, check your email inbox"

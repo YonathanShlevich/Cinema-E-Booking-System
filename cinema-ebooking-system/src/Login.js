@@ -38,7 +38,7 @@ function Login() {
             if (response.data.data[0].status === 3) {
               navigate('/suspended');
             }
-            if (response.data.data[0].type === 2) {
+            else if (response.data.data[0].type === 2) {
               navigate('/admin');
             }
             else {
