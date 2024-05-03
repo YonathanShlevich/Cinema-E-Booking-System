@@ -119,7 +119,7 @@ function BookTicket() {
 
   const handleSeats = (e) => {
     e.preventDefault();
-    navigate('/bookticket/select-seats');
+    navigate(`/bookticket/select-seats?showtime=${encodeURIComponent(selectedShowtime)}`);
   }
   useEffect(() => {
     // Call handleMovieChange function when component mounts
