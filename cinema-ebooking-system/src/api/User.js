@@ -1089,7 +1089,7 @@ router.post("/editTypeStatus/:userId", async (req, res) => {
 
 });
 
-//Delete promos
+//Delete user
 router.post("/deleteUser/:email", async (req, res) => {
     let { email } = req.params;
     
