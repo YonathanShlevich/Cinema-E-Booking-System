@@ -74,6 +74,30 @@ function generateAttributes(firstName, lastName, email, password, phoneNumber, c
 }
 
 
+//Return all users
+router.get("/allUsers", (req, res) =>{
+    User.find({})
+        .then(result => {
+            
+            if(!result){
+                return res.json({
+                    status: "FAILED",
+                    message: 'Users do not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+
+
+
 //GET function to pull info into View Profile
 router.get("/data/:userID", (req, res) =>{
     const userID = req.params.userID; //Pulling userId from the URL parameters
