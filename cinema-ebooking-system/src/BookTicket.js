@@ -9,6 +9,7 @@ function BookTicket() {
   const navigate = useNavigate();
   const [selectedMovieId, setSelectedMovieId] = useState("");
   const [selectedShowtimes, setSelectedShowtimes] = useState([]);
+  const [selectedShowtime, setSelectedShowtime] = useState("");
   const [movieFromURl, setMovieFromURL] = useState("");
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
@@ -96,6 +97,11 @@ function BookTicket() {
     setSelectedMovieId(selectedMovieId);
     const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
     setSelectedShowtimes(filteredShowtimes);
+    setSelectedShowtime("");
+  };
+
+  const handleShowtimeChange = (e) => {
+    setSelectedShowtime(e.target.value);
   };
 
   const [seats, setSeats] = useState([
@@ -149,7 +155,7 @@ function BookTicket() {
             </div>
             <div className="form-group">
               <label>Showtime:</label>
-              <select className='form-control' id="showtime">
+              <select className='form-control' id="showtime" value={selectedShowtime} onChange={handleShowtimeChange}>
                 <option value="" selected></option>
                 {selectedShowtimes && selectedShowtimes
                 .sort((a, b) => a.date.localeCompare(b.date))
@@ -158,7 +164,10 @@ function BookTicket() {
                 ))}
               </select>
             </div>
-            <button className='btn btn-primary' onClick={handleSeats}>Select Seats</button>
+            {selectedShowtime && 
+              <button className='btn btn-primary' onClick={handleSeats}>Select Seats</button>
+            }
+            
             <div className="form-group">
               <label>Selected Seats:</label>
               <ul>
