@@ -10,11 +10,24 @@ function BookTicket() {
   const [selectedMovieId, setSelectedMovieId] = useState("");
   const [selectedShowtimes, setSelectedShowtimes] = useState([]);
   const [selectedShowtime, setSelectedShowtime] = useState("");
+  const [seats, setSeats] = useState([]);
+
   const [movieFromURl, setMovieFromURL] = useState("");
+  const [showtimeFromURL, setShowtimeFromURL] = useState("");
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   
+
+  useEffect(() => {
+    // Clear seats when the selected movie changes
+    setSeats([]);
+  }, [selectedMovieId]); // Dependency on selectedMovieId, selectedShowtime
+
+  useEffect(() => {
+    // Clear seats when the selected movie changes
+    setSelectedShowtime("");
+  }, [selectedMovieId]); // Dependency on selectedMovieId
 
   useEffect(() => {
     const getLoggedInUserId = () => {
@@ -34,6 +47,49 @@ function BookTicket() {
       setSelectedMovieId(movieTitle); // Set selected movie from URL
     }
   }, [location.search]);
+
+  useEffect(() => {
+    const getShowtimeFromURL = () => {
+      const params = new URLSearchParams(location.search);
+      return params.get('showtime');
+    };
+    const showtime = getShowtimeFromURL();
+    if (showtime) {
+      setShowtimeFromURL(showtime);
+      axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${showtime}`)
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+          console.log(response.data.message)
+        } else {
+
+          setShowtimeFromURL(response.data)
+          console.log("set the selected showtime")
+          console.log(response.data)
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching showtime info:', error);
+      });
+
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    const getSeatsFromURL = () => {
+      const params = new URLSearchParams(location.search);
+      return params.get('seats');
+    };
+    const encodedSeats = getSeatsFromURL();
+    if (encodedSeats) {
+      // Decode the URL-encoded string
+      const decodedSeatsString = decodeURIComponent(encodedSeats);
+
+      // Parse the JSON string into a JavaScript array
+      const selectedSeats = JSON.parse(decodedSeatsString);
+      setSeats(selectedSeats);
+    }
+  }, [location.search]);
   
 
   useEffect(() => {
@@ -49,6 +105,8 @@ function BookTicket() {
         console.error('Error fetching user info:', error);
       });
   }, []);
+
+
 
   useEffect(() => {
     const fetchShowTimes = async () => {
@@ -97,29 +155,25 @@ function BookTicket() {
     setSelectedMovieId(selectedMovieId);
     const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
     setSelectedShowtimes(filteredShowtimes);
-    setSelectedShowtime("");
+    
   };
 
   const handleShowtimeChange = (e) => {
     setSelectedShowtime(e.target.value);
+    
   };
 
-  const [seats, setSeats] = useState([
-    { id: 1, seat: "A1" },
-    { id: 2, seat: "A2" },
-    { id: 3, seat: "A3" }
-  ]);
   
 
   const handleSubmit = (e) => {
     e.preventDefault();
     //do stuff to save data
-    navigate('/bookticket/order-summary');
+    navigate(`/bookticket/order-summary?movieTitle=${movieFromURl}&showtime=${encodeURIComponent(selectedShowtime)}`);
   }
 
   const handleSeats = (e) => {
     e.preventDefault();
-    navigate(`/bookticket/select-seats?showtime=${encodeURIComponent(selectedShowtime)}`);
+    navigate(`/bookticket/select-seats?movieTitle=${movieFromURl}&showtime=${encodeURIComponent(selectedShowtime)}`);
   }
   useEffect(() => {
     // Call handleMovieChange function when component mounts
@@ -156,7 +210,7 @@ function BookTicket() {
             <div className="form-group">
               <label>Showtime:</label>
               <select className='form-control' id="showtime" value={selectedShowtime} onChange={handleShowtimeChange}>
-                <option value="" selected></option>
+                <option value="" disabled selected>{showtimeFromURL.date && showtimeFromURL.date.substring(0,10)} {showtimeFromURL && showtimeFromURL.period} </option>
                 {selectedShowtimes && selectedShowtimes
                 .sort((a, b) => a.date.localeCompare(b.date))
                 .map(showtime => (
@@ -173,7 +227,7 @@ function BookTicket() {
               <ul>
                 {seats.map(seat => (
                   <li key={seat.id}>
-                    {seat.seat}
+                    {seat.seatNumber}
                     <div className="form-group">
                       <select className='form-control' id={seat.id} >
                         <option value="" selected></option>
@@ -186,7 +240,9 @@ function BookTicket() {
                 ))}
               </ul>
             </div>
+            {seats.length !== 0 && 
             <button className="btn btn-primary" onClick={handleSubmit}>Continue</button>
+          }
           </form>
         </div>
       </div>

@@ -1,18 +1,47 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './SelectSeats.css';
 
 function SelectSeats() {
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const [seats, setSeats] = useState(generateSeats());
+    const [showtime, setShowtime] = useState(null);
+    const [selectedSeats, setSelectedSeats] = useState([]);
+    const [movieFromURl, setMovieFromURL] = useState("");
+
+
+    useEffect(() => {
+      const showtimeFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('showtime');
+      };
+      const showtime = showtimeFromURL();
+      if (showtime) {
+        setShowtime(showtime)
+      }
+    }, [location.search]);
+
+    useEffect(() => {
+      const getMovieFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('movieTitle');
+      };
+      const movieTitle = getMovieFromURL();
+      if (movieTitle) {
+        setMovieFromURL(movieTitle);
+      }
+    }, [location.search]);
 
     const handleConfirmSeats = (e) => {
         e.preventDefault();
         //update chosen seats
-        navigate("/bookticket");
+        navigate(`/bookticket?movieTitle=${movieFromURl}&showtime=${encodeURIComponent(showtime)}&seats=${encodeURIComponent(JSON.stringify(selectedSeats))}`);
     }
   // Define seats array with initial state
-  const [seats, setSeats] = useState(generateSeats());
+  
 
   // Function to generate seats
   function generateSeats() {
@@ -25,7 +54,7 @@ function SelectSeats() {
       for (let i = 1; i <= seatsPerRow; i++) {
         generatedSeats.push({
           id: seatId++,
-          name: `${row}${i}`,
+          seatNumber: `${row}${i}`,
           selected: false
         });
       }
@@ -37,9 +66,16 @@ function SelectSeats() {
   // Function to handle seat selection
   const handleSeatClick = (seatId) => {
     // Update the state to toggle seat selection status
-    setSeats(seats.map(seat =>
+    const updatedSeats = seats.map(seat =>
       seat.id === seatId ? { ...seat, selected: !seat.selected } : seat
-    ));
+  );
+  setSeats(updatedSeats);
+
+    // Update selectedSeats state based on selected seats
+    const newlySelectedSeats = updatedSeats.filter(seat => seat.selected);
+    setSelectedSeats(newlySelectedSeats);
+
+    
   };
 
   return (
@@ -53,7 +89,7 @@ function SelectSeats() {
             className={`seat ${seat.selected ? 'selected' : ''}`}
             onClick={() => handleSeatClick(seat.id)}
           >
-            {seat.name}
+            {seat.seatNumber}
           </div>
         ))}
       </div>
