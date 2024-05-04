@@ -13,6 +13,7 @@ import EditProfileAdmin from "./EditProfileAdmin";
 import EditStatusType from "./EditStatusType";
 import ManagePromos from "./ManagePromos";
 import AddMovie from "./AddMovie";
+import UpdateMovie from "./UpdateMovie";
 import AddPromo from "./AddPromo";
 import ManageExistingMovies from "./ManageExistingMovies";
 import ForgotPassword from "./ForgetPassword";
@@ -65,6 +66,7 @@ function App() {
         <Route path="/admin/manage-promos" element={<ManagePromos />} />
         <Route path="/admin/manage-movies/add-movie" element={<AddMovie />} />
         <Route path="/admin/manage-movies/manage-existing-movies" element={<ManageExistingMovies />} />
+        <Route path="/admin/manage-movies/manage-existing-movies/updatemovie/:movieTitle" element={<UpdateMovie />} />
         <Route path="/admin/manage-promos/add-promo" element={<AddPromo />} />
         <Route path="/admin/manage-movies/add-showtime" element={<AddShowtime />} />
 

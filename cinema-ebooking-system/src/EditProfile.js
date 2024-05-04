@@ -117,25 +117,25 @@ function EditProfile() {
           <form action="" id="signUpForm" onSubmit={handleSubmitEditProfile}>
             <div className="form-group">
               <label>* First Name:</label>
-              <input type="text" className="form-control" id="firstName" placeholder={userInfo.firstName}/>
+              <input type="text" className="form-control" id="firstName" defaultValue={userInfo.firstName}/>
             </div>
             <div className="form-group">
               <label>* Last Name:</label>
-              <input type="text" className="form-control" id="lastName" placeholder={userInfo.lastName}/>
+              <input type="text" className="form-control" id="lastName" defaultValue={userInfo.lastName}/>
             </div>
             <div className="form-group">
               <label>* Phone Number: (Format: 123-456-7890)</label>
-              <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo.phoneNumber}/>
+              <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" defaultValue={userInfo.phoneNumber}/>
             </div>
             {userInfo && (
               <>
               <div  className="form-group">
               <label>Home Address:</label>
-              <input id="homeAddress" type="text" className="form-control" placeholder={homeInfo && homeInfo.homeAddr}/>
+              <input id="homeAddress" type="text" className="form-control" defaultValue={homeInfo && homeInfo.homeAddr}/>
             </div>
             <div  className="form-group">
               <label>City:</label>
-              <input id="homeCity" type="text" className="form-control" placeholder={homeInfo && homeInfo.homeCity}/>
+              <input id="homeCity" type="text" className="form-control" defaultValue={homeInfo && homeInfo.homeCity}/>
             </div>
             <div className="form-group">
               <label>State:</label>
@@ -196,7 +196,7 @@ function EditProfile() {
             </div>
             <div className="form-group">
               <label>Zip:</label>
-              <input id="homeZip" type="number" min="0" className="form-control" placeholder={homeInfo && homeInfo.homeZip}/>
+              <input id="homeZip" type="number" min="0" className="form-control" defaultValue={homeInfo && homeInfo.homeZip}/>
             </div>
             </>
             )}
