@@ -12,7 +12,7 @@ function BookTicket() {
   const [selectedShowtime, setSelectedShowtime] = useState("");
   const [seats, setSeats] = useState([]);
 
-  const [movieFromURl, setMovieFromURL] = useState("");
+  const [movieFromURL, setMovieFromURL] = useState("");
   const [showtimeFromURL, setShowtimeFromURL] = useState("");
   const [movies, setMovies] = useState([]);
   const [showTimes, setShowTimes] = useState([]);
@@ -27,6 +27,7 @@ function BookTicket() {
   useEffect(() => {
     // Clear seats when the selected movie changes
     setSelectedShowtime("");
+    setShowtimeFromURL("");
   }, [selectedMovieId]); // Dependency on selectedMovieId
 
   useEffect(() => {
@@ -56,6 +57,7 @@ function BookTicket() {
     const showtime = getShowtimeFromURL();
     if (showtime) {
       setShowtimeFromURL(showtime);
+      setSelectedShowtime(showtime);
       axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${showtime}`)
       .then(response => {
         if (response.data.status === "FAILED") {
@@ -150,13 +152,19 @@ function BookTicket() {
   
 
   const handleMovieChange = (e) => {
-    
     const selectedMovieId = e.target.value;
     setSelectedMovieId(selectedMovieId);
+
+    const selectedMovie = movies.find(movie => movie._id === selectedMovieId);
+
+    if (selectedMovie) {
+        setMovieFromURL(selectedMovie.title);
+    }
+
     const filteredShowtimes = showTimes.filter(showtime => showtime.movie === selectedMovieId);
     setSelectedShowtimes(filteredShowtimes);
-    
-  };
+};
+
 
   const handleShowtimeChange = (e) => {
     setSelectedShowtime(e.target.value);
@@ -168,12 +176,12 @@ function BookTicket() {
   const handleSubmit = (e) => {
     e.preventDefault();
     //do stuff to save data
-    navigate(`/bookticket/order-summary?movieTitle=${movieFromURl}&showtime=${encodeURIComponent(selectedShowtime)}`);
+    navigate(`/bookticket/order-summary?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(selectedShowtime)}`);
   }
 
   const handleSeats = (e) => {
     e.preventDefault();
-    navigate(`/bookticket/select-seats?movieTitle=${movieFromURl}&showtime=${encodeURIComponent(selectedShowtime)}`);
+    navigate(`/bookticket/select-seats?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(selectedShowtime)}`);
   }
   useEffect(() => {
     // Call handleMovieChange function when component mounts
@@ -196,7 +204,7 @@ function BookTicket() {
               <label>Movie Title:</label>
               <select className='form-control' id="title" onChange={handleMovieChange} >
                 
-              <option value="" disabled selected>{movieFromURl && movieFromURl}</option>
+              <option value="" disabled selected>{movieFromURL && movieFromURL}</option>
                 {movies
                 .filter(movie => (
                   movie.category === "Now Showing"
@@ -210,7 +218,7 @@ function BookTicket() {
             <div className="form-group">
               <label>Showtime:</label>
               <select className='form-control' id="showtime" value={selectedShowtime} onChange={handleShowtimeChange}>
-                <option value="" disabled selected>{showtimeFromURL.date && showtimeFromURL.date.substring(0,10)} {showtimeFromURL && showtimeFromURL.period} </option>
+                <option value="" disabled selected>{showtimeFromURL.date && showtimeFromURL.date.substring(0,10)} {showtimeFromURL && (showtimeFromURL.period ? showtimeFromURL.period.time : showtimeFromURL.period)} </option>
                 {selectedShowtimes && selectedShowtimes
                 .sort((a, b) => a.date.localeCompare(b.date))
                 .map(showtime => (
@@ -230,7 +238,7 @@ function BookTicket() {
                     {seat.seatNumber}
                     <div className="form-group">
                       <select className='form-control' id={seat.id} >
-                        <option value="" selected></option>
+                        <option value={seat.age} selected></option>
                         <option value="Adult">Adult</option>
                         <option value="Child">Child</option>
                         <option value="Senior">Senior</option>

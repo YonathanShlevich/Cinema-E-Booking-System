@@ -3,12 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Admin.css';
 
 function OrderSummary() {
-  const [tickets, setTickets] = useState([
-    { id: 1, seat: "A1", age: "Child", price: 10 },
-    { id: 2, seat: "A2", age: "Adult", price: 12 },
-    { id: 3, seat: "A3", age: "Senior", price: 9 }
-    // Add more ticket objects as needed
-  ]);
+  const [tickets, setTickets] = useState([]);
 
   const handleDelete = (id) => {
     // Filter out the ticket with the specified ID

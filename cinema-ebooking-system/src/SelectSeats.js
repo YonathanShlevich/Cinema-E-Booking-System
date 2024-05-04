@@ -9,7 +9,7 @@ function SelectSeats() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [seats, setSeats] = useState([[]]);
+    const [seats, setSeats] = useState([]);
     const [showtime, setShowtime] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [movieFromURl, setMovieFromURL] = useState("");
@@ -30,7 +30,11 @@ function SelectSeats() {
             // do nothing
             console.log(response.data.message)
           } else {
-            const seats = response.data.seats
+            const seats = response.data.seats.map(seat => ({
+              ...seat,
+              selected: false, // Set the initial value of the "selected" property
+              age: ""
+            }));
             setSeats(seats)
             
           }
@@ -56,12 +60,8 @@ function SelectSeats() {
 
     useEffect(() => {
       console.log(seats);
-      console.log(
-        seats.map(seat => (
-          
-          (typeof seat)
-        ))
-      );
+      
+      
     }, [seats]);
     const handleConfirmSeats = (e) => {
         e.preventDefault();
@@ -95,7 +95,7 @@ function SelectSeats() {
   const handleSeatClick = (seatId) => {
     // Update the state to toggle seat selection status
     const updatedSeats = seats.map(seat =>
-      seat.id === seatId ? { ...seat, selected: !seat.selected } : seat
+      seat.seatNumber === seatId ? { ...seat, selected: !seat.selected } : seat
   );
   setSeats(updatedSeats);
 
@@ -114,11 +114,10 @@ function SelectSeats() {
         {seats.map(seat => (
           <div
             key={seat.seatNumber}
-            //className={`seat ${seat.status === 'Available' ? (seat.selected ? 'selected-green' : '') : 'unavailable'}`}
-            className={`seat ${seat.status === 'Available' ? '' : 'unavailable'}`}
+            className={`seat ${seat.status === 'Available' ? (seat.selected ? 'selected-green' : '') : 'unavailable'}`}
             onClick={seat.status === 'Available' ? () => handleSeatClick(seat.seatNumber) : null}
           >
-            {seat.seatNumber}{seat.status}
+            {seat.seatNumber}
           </div>
         ))}
 

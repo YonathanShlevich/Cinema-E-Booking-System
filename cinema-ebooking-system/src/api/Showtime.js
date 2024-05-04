@@ -188,6 +188,7 @@ router.get("/pullShowtimeFromID/:showtimeID", async (req, res) => {
 
     try {
         const result = await ShowTime.findOne({ _id: showtimeID })
+            .populate('period', 'time')
             .populate('seats');
 
         if (!result) {
