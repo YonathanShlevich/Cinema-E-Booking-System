@@ -33,7 +33,8 @@ function SelectSeats() {
             const seats = response.data.seats.map(seat => ({
               ...seat,
               selected: false, // Set the initial value of the "selected" property
-              age: ""
+              age: "",
+              price: 0
             }));
             setSeats(seats)
             
@@ -71,25 +72,7 @@ function SelectSeats() {
   // Define seats array with initial state
   
 
-  // Function to generate seats
-  function generateSeats() {
-    const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-    const seatsPerRow = 8;
-    let seatId = 1;
-    let generatedSeats = [];
-
-    for (let row of rows) {
-      for (let i = 1; i <= seatsPerRow; i++) {
-        generatedSeats.push({
-          id: seatId++,
-          seatNumber: `${row}${i}`,
-          selected: false
-        });
-      }
-    }
-
-    return generatedSeats;
-  }
+  
 
   // Function to handle seat selection
   const handleSeatClick = (seatId) => {

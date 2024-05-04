@@ -70,8 +70,32 @@ useEffect(() => {
 
     // Parse the JSON string into a JavaScript array
     const selectedSeats = JSON.parse(decodedSeatsString);
-    console.log(selectedSeats)
-    setTickets(selectedSeats);
+    
+    const tickets = selectedSeats.map(seat => {
+      let price = 0;
+      switch (seat.age) {
+          case "Child":
+              price = 9;
+              break;
+          case "Adult":
+              price = 12;
+              break;
+          case "Senior":
+              price = 8;
+              break;
+          default:
+              // Handle other cases if needed
+              break;
+      }
+      return {
+          ...seat,
+          price: price
+      };
+  });
+  
+
+
+    setTickets(tickets);
   }
 }, [location.search]);
 
@@ -83,9 +107,9 @@ useEffect(() => {
 
   // ---------------------------------------------------------
 
-  const handleDelete = (id) => {
+  const handleDelete = (seatNumber) => {
     // Filter out the ticket with the specified ID
-    const updatedTickets = tickets.filter(ticket => ticket.id !== id);
+    const updatedTickets = tickets.filter(ticket => ticket.seatNumber !== seatNumber);
     
     // Update the state with the filtered tickets
     setTickets(updatedTickets);
@@ -116,7 +140,7 @@ useEffect(() => {
           {tickets.map(ticket => (
             <div key={ticket.id}>
               
-              <div>{ticket.seatNumber} {ticket.age}- - - - $price here <button onClick={() => handleDelete(ticket.id)}>Delete</button></div>
+              <div>{ticket.seatNumber} {ticket.age} - - - - ${ticket.price} <button onClick={() => handleDelete(ticket.seatNumber)}>Delete</button></div>
               
             </div>
           ))}
