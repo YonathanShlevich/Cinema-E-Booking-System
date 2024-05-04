@@ -171,12 +171,35 @@ function BookTicket() {
     
   };
 
+  const handleAgeChange = (seatNumber, selectedValue) => {
+    // Update the state to reflect the new age for the selected seat
+    setSeats(prevSeats => {
+        // Find the index of the seat with the matching seat number
+        const seatIndex = prevSeats.findIndex(seat => seat.seatNumber === seatNumber);
+        
+        // If the seat is found, update its age property
+        if (seatIndex !== -1) {
+            const updatedSeats = [...prevSeats]; // Create a copy of the seats array
+            updatedSeats[seatIndex] = {
+                ...updatedSeats[seatIndex],
+                age: selectedValue
+            };
+            return updatedSeats; // Return the updated seats array
+        }
+        
+        // If the seat is not found, return the previous state without making any changes
+        return prevSeats;
+    });
+};
+
+  
+
   
 
   const handleSubmit = (e) => {
     e.preventDefault();
     //do stuff to save data
-    navigate(`/bookticket/order-summary?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(selectedShowtime)}`);
+    navigate(`/bookticket/order-summary?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(selectedShowtime)}&seats=${encodeURIComponent(JSON.stringify(seats))}`);
   }
 
   const handleSeats = (e) => {
@@ -231,14 +254,14 @@ function BookTicket() {
             }
             
             <div className="form-group">
-              <label>Selected Seats:</label>
+              <label>{seats.length > 0 ? `Selected Seats:` : ""}</label>
               <ul>
                 {seats.map(seat => (
                   <li key={seat.id}>
                     {seat.seatNumber}
                     <div className="form-group">
-                      <select className='form-control' id={seat.id} >
-                        <option value={seat.age} selected></option>
+                      <select className='form-control' id={seat.id} onChange={(e) => handleAgeChange(seat.seatNumber, e.target.value)} >
+                        <option value={seat.age} selected>{seat.age}</option>
                         <option value="Adult">Adult</option>
                         <option value="Child">Child</option>
                         <option value="Senior">Senior</option>
@@ -248,9 +271,10 @@ function BookTicket() {
                 ))}
               </ul>
             </div>
-            {seats.length !== 0 && 
-            <button className="btn btn-primary" onClick={handleSubmit}>Continue</button>
-          }
+            {seats.length !== 0 && seats.every(seat => seat.age !== "") && (
+              <button className="btn btn-primary" onClick={handleSubmit}>Continue</button>
+            )}
+
           </form>
         </div>
       </div>
