@@ -4,6 +4,7 @@ const Movie = require('../models/Movie');
 const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
 const ShowTime = require('../models/ShowTime');
+const Seat = require('../models/Seat');
 
 /*
     THIS FILE SHOULD ONLY HOLD: ADDSHOWTIME, DELETESHOWTIME, AND UPDATESHOWTIME
@@ -115,7 +116,16 @@ router.post("/addShowtime", async (req, res) => {
         date: date
     })
     
-
+    //Seats should be associated with showTime. Creates seats based on room size
+    for (let i = 1; i <= roomObject.totalSeats; i++) {
+        const newSeat = new Seat({
+            showTime: newShowTime._id,
+            seatNumber: i
+        });
+        await newSeat.save();
+        newShowTime.seats.push(newSeat);
+    }
+    
     await newShowTime.save().then(result => {
         return res.json({
             status: "SUCCESS",
