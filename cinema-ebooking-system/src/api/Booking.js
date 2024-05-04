@@ -4,6 +4,7 @@ const Booking = require('../models/Booking');
 const Movie = require('../models/Movie');
 const ShowTime = require('../models/ShowTime');
 const ShowPeriod = require('../models/ShowPeriod');
+const User = require('../models/User');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 const paymentCard = require('../models/paymentCard');
 
@@ -14,15 +15,18 @@ const paymentCard = require('../models/paymentCard');
 router.post("/addBooking", async(req, res) => {
 
 
-    let {bookingNumber, ticketNumber, showTime, creditCard, promoId, total} = req.body;
+    let {bookingNumber, ticketNumber, showTime, creditCard, userId, promoId, total} = req.body;
     //validate our movie, showtime, and payment cards are the real deal :P
 
     
 
-    
+    //find showtime and user objects to make sure they're real
 
     const showTimeObject = await ShowTime.findOne({
         _id: showTime
+    });
+    const userObject = await User.findOne({
+        _id: userId
     });
     const paymentCardObject = await paymentCard.findOne({_id: creditCard});
     if(!showTimeObject || !paymentCardObject){
@@ -48,6 +52,7 @@ router.post("/addBooking", async(req, res) => {
         ticketNumber: ticketNumber, 
         showTime: showTimeObject, 
         creditCard: paymentCardObject,
+        userId: userObject,
         promoId: promoId,
         total: total
     })
@@ -95,6 +100,28 @@ router.get("/pullCCfromId/:ccId", async(req, res) =>{
             return res.json({
                 status: "FAILED",
                 message: 'showperiod does not exist'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
+})
+
+//given an title, can we pull a showtime
+router.get("/pullBookingsfromUserId/:uId", async(req, res) =>{
+    console.log("pulling show time info")
+    const uId = req.params.uId;
+    Booking.find({userId: uId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'no bookings exist for this user!'
             });
         }   
         return res.json(result); //This just returns the full json of the items in the User

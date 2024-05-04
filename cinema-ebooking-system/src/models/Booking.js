@@ -7,6 +7,7 @@ const BookingSchema = new Schema({
     ticketNumber: Number,
     showTime: {type: Schema.Types.ObjectId, ref: 'Showtime'},
     creditCard: {type: Schema.Types.ObjectId, ref: 'paymentCard'},
+    userId: {type: Schema.Types.ObjectId, ref: 'User'},
     promoId: Number,
     total: Number,
 });
