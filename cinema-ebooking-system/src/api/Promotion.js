@@ -113,6 +113,28 @@ router.get("/allPromos", (req, res) =>{
         })
 })
 
+router.get("/promoCode/:code", (req, res) =>{
+    const code = req.params.code; 
+    Promotion.findOne({code: code})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Promotion does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
 //Send email?
 /*
     1) Find all users with promotion being true
