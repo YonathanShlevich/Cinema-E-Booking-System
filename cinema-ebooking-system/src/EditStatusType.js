@@ -59,11 +59,11 @@ function EditStatusType() {
             <form id="signUpForm" onSubmit={handleSubmitEditStatusType}>
               <div className="form-group">
                 <label>* User Type:</label>
-                <input type="number" className="form-control" id="type" placeholder={userInfo.type} min={1} max={2} required />
+                <input type="number" className="form-control" id="type" defaultValue={userInfo.type} min={1} max={2} required />
               </div>
               <div className="form-group">
                 <label>* User Status:</label>
-                <input type="number" className="form-control" id="status" placeholder={userInfo.status} min={1} max={3} required />
+                <input type="number" className="form-control" id="status" defaultValue={userInfo.status} min={1} max={3} required />
               </div>
               <button type="submit" className="btn btn-primary" style={{ marginRight: '8px' }}>Submit</button>
               <div className="button-space"></div>
