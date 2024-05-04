@@ -30,7 +30,7 @@ function SelectSeats() {
             // do nothing
             console.log(response.data.message)
           } else {
-            const seats = response.data.seats.map(seatString => JSON.parse(seatString));
+            const seats = response.data.seats
             setSeats(seats)
             
           }
