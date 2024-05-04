@@ -232,10 +232,10 @@ router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
                 { new: true }
             );
 
-            return res.json({
-                status: "FAILED",
-                message: 'You are not logged in'
-            });
+            // return res.json({
+            //     status: "FAILED",
+            //     message: 'You are not logged in'
+            // });
         }
 
         // Check if the user exists
@@ -247,8 +247,6 @@ router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
             });
         }
 
-        // Check if the movie exists
-        const movieExists = await Movie.exists({ title: movieTitle });
         if (!movieExists) {
             return res.json({
                 status: "FAILED",
