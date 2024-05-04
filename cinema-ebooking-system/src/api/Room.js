@@ -11,10 +11,10 @@ router.post("/addRoom", async (req, res) => {
     let {seatAvailability, name, totalSeats} = req.body;
 
 
-    if(seatAvailability > totalSeats || seatAvailability < 0){
+    if(seatAvailability !== totalSeats){
         return res.json({
             status: "FAILED",
-            message: "Seat Availability must be equal to or less than total seats and greater than 0"
+            message: "Seat Availability must be equal to Total Seats"
         });
     }
 
@@ -30,17 +30,22 @@ router.post("/addRoom", async (req, res) => {
             message: "Room already exists"
         })
     }
-    newRoom.save().then(result => {
-        return res.json({
-            status: "SUCCESS",
-            message: "Room added successfully"
-        });
-    }).catch(err =>{
-        return res.json({
-            status: "FAILED",
-            message: "Room was unable to be created"
+    
+
+    newRoom.save()
+        .then(result => {
+            return res.json({
+                status: "SUCCESS",
+                message: "Room added successfully"
+            });
         })
-    })
+        .catch(err => {
+            console.log(err);
+            return res.json({
+                status: "FAILED",
+                message: "Room was unable to be created"
+            });
+        });
 
 })
 
