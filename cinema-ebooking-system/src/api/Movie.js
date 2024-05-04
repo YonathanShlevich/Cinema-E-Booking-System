@@ -225,18 +225,18 @@ router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
     try { 
         const movieExists = await Movie.exists({ title: movieTitle });
         
-        if (movieExists) {
-            const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
-                { title: movieTitle },
-                { $push: reviewUpdates },
-                { new: true }
-            );
+        // if (movieExists) {
+        //     const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
+        //         { title: movieTitle },
+        //         { $push: reviewUpdates },
+        //         { new: true }
+        //     );
 
-            // return res.json({
-            //     status: "FAILED",
-            //     message: 'You are not logged in'
-            // });
-        }
+        //     // return res.json({
+        //     //     status: "FAILED",
+        //     //     message: 'You are not logged in'
+        //     // });
+        // }
 
         // Check if the user exists
         const userExists = await User.exists({ _id: userID });
