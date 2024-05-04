@@ -4,9 +4,10 @@ const Booking = require('../models/Booking');
 const Movie = require('../models/Movie');
 const ShowTime = require('../models/ShowTime');
 const ShowPeriod = require('../models/ShowPeriod');
+const paymentCard = require('../models/paymentCard');
 const User = require('../models/User');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
-const paymentCard = require('../models/paymentCard');
+
 
 
 //require("dotenv").config();
@@ -70,32 +71,11 @@ router.post("/addBooking", async(req, res) => {
     })
 })
 
-//given an title, can we pull a showtime
-router.get("/pullShowTimefromId/:showId", async(req, res) =>{
-    console.log("pulling show time info")
-    const stId = req.params.showId;
-    const stObject = await ShowTime.findOne({_id: stId}).then(result => {
-        if(!result){ //If the userID doesn't exist
-            return res.json({
-                status: "FAILED",
-                message: 'showperiod does not exist'
-            });
-        }   
-        return res.json(result); //This just returns the full json of the items in the User
-    }).catch(error =>{
-        //console.log(`Error: ${error}`);
-        return res.json({
-            status: "FAILED",
-            message: 'Error with pulling data'
-        });
-    })
-
-})
-//given an title, can we pull a showtime
+//pull cc info given ccid
 router.get("/pullCCfromId/:ccId", async(req, res) =>{
     console.log("pulling show time info")
     const ccId = req.params.ccId;
-    const ccObject = await PaymentCard.findOne({_id: ccId}).then(result => {
+    paymentCard.findOne({_id: ccId}).then(result => {
         if(!result){ //If the userID doesn't exist
             return res.json({
                 status: "FAILED",
