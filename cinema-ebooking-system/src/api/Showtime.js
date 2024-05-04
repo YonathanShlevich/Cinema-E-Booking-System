@@ -181,6 +181,26 @@ router.get("/pullShowtime/:movieTitle", async (req, res) =>{
             });
         })
 })
+router.get("/pullShowtimefromId/:id", async (req, res) =>{
+    const stid = req.params.id; //Pulling movie from params
+    
+    ShowTime.findOne({_id: stid})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
 //given an id, can we pull a showperiod
 router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
     console.log("pulling show period info")
