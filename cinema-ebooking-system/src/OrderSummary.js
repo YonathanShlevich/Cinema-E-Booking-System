@@ -121,7 +121,7 @@ useEffect(() => {
   }
 
   const handleConfirm = () => {
-    navigate("/bookticket/checkout")
+    navigate(`/bookticket/checkout?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(showtimeFromURL._id)}&seats=${encodeURIComponent(JSON.stringify(tickets))}`)
   }
 
   // Calculate total price
