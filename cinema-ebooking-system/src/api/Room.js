@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/Room');
+const Seat = require('../models/Seat');
 
 /*
     The only reason this exists is because it is required to have some non-manual way to change rooms
@@ -11,10 +12,10 @@ router.post("/addRoom", async (req, res) => {
     let {seatAvailability, name, totalSeats} = req.body;
 
 
-    if(seatAvailability > totalSeats || seatAvailability < 0){
+    if(seatAvailability !== totalSeats){
         return res.json({
             status: "FAILED",
-            message: "Seat Availability must be equal to or less than total seats and greater than 0"
+            message: "Seat Availability must be equal to Total Seats"
         });
     }
 
@@ -30,17 +31,31 @@ router.post("/addRoom", async (req, res) => {
             message: "Room already exists"
         })
     }
-    newRoom.save().then(result => {
-        return res.json({
-            status: "SUCCESS",
-            message: "Room added successfully"
+    
+
+    for (let i = 1; i <= totalSeats; i++) {
+        const newSeat = new Seat({
+            room: name,
+            seatNumber: i
         });
-    }).catch(err =>{
-        return res.json({
-            status: "FAILED",
-            message: "Room was unable to be created"
+        await newSeat.save();
+        newRoom.seats.push(newSeat);
+    }
+
+    newRoom.save()
+        .then(result => {
+            return res.json({
+                status: "SUCCESS",
+                message: "Room added successfully"
+            });
         })
-    })
+        .catch(err => {
+            console.log(err);
+            return res.json({
+                status: "FAILED",
+                message: "Room was unable to be created"
+            });
+        });
 
 })
 
