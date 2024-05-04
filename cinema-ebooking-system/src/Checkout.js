@@ -5,10 +5,83 @@ import axios from "axios";
 
 function Checkout() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const [movieFromURL, setMovieFromURL] = useState("");
+    const [showtimeFromURL, setShowtimeFromURL] = useState("");
+    const [seats, setSeats] = useState([]);
+
 
     const [selectedOption, setSelectedOption] = useState('existingCard');
     const [loggedInUserId, setLoggedInUserId] = useState(null);
     const [userInfo, setUserInfo] = useState(null); //Used for User's info
+    const [cardInfo, setCardInfo] = useState([]); //Card info, TODO: How to only store 3 cards
+
+    const [total, setTotal] = useState(null);
+
+    useEffect(() => {
+      const getTotalFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('total');
+      };
+      const total = getTotalFromURL();
+      if (total) {
+        setTotal(total);
+      }
+    }, [location.search]);
+
+    useEffect(() => {
+      const getMovieFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('movieTitle');
+      };
+      const movieTitle = getMovieFromURL();
+      if (movieTitle) {
+        setMovieFromURL(movieTitle);
+      }
+    }, [location.search]);
+    
+    useEffect(() => {
+      const getShowtimeFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('showtime');
+      };
+      const showtime = getShowtimeFromURL();
+      if (showtime) {
+        setShowtimeFromURL(showtime);
+        axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${showtime}`)
+        .then(response => {
+          if (response.data.status === "FAILED") {
+            // do nothing
+            console.log(response.data.message)
+          } else {
+    
+            setShowtimeFromURL(response.data)
+           
+          }
+        })
+        .catch(error => { 
+          console.error('Error fetching showtime info:', error);
+        });
+    
+      }
+    }, [location.search]);
+
+    useEffect(() => {
+      const getSeatsFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('seats');
+      };
+      const encodedSeats = getSeatsFromURL();
+      if (encodedSeats) {
+        // Decode the URL-encoded string
+        const decodedSeatsString = decodeURIComponent(encodedSeats);
+  
+        // Parse the JSON string into a JavaScript array
+        const selectedSeats = JSON.parse(decodedSeatsString);
+        setSeats(selectedSeats);
+      }
+    }, [location.search]);
 
 
     useEffect(() => {
@@ -17,6 +90,23 @@ function Checkout() {
       };
       setLoggedInUserId(getLoggedInUserId());
     }, []);
+
+    //Same as previous 2 but for payment card info
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/user/data/paymentCard/${loggedInUserId}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setCardInfo(response.data.cards)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching user info:', error);
+      });
+  }, [loggedInUserId]);
 
     //Pulling data from our backend using a Use Effect block: User
   useEffect(() => {
@@ -43,10 +133,14 @@ function Checkout() {
         // submit to db
         navigate("/bookticket/order-confirmation")
     }
+    const handleBack = () => {
+      navigate(`/bookticket/order-summary?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(showtimeFromURL._id)}&seats=${encodeURIComponent(JSON.stringify(seats))}`);
+
+    }
   return (
 
     <div>
-      <Link to="/bookticket/order-summary" className="backbutton"> Back</Link>
+      <button className="backbutton" onClick={(handleBack)}> Really? You want to go back now?</button>
       <div className="card">
         <div className="card-header">
           <h2>Checkout</h2>
@@ -54,17 +148,18 @@ function Checkout() {
         <div className="card-body">
         <div className="form-group">
               <label>*Name:</label>
-              <input disabled type="text" className="form-control" id="name" placeholder={userInfo.firstName + " " + userInfo.lastName}/>
+              <input disabled type="text" className="form-control" id="name" placeholder={userInfo && userInfo.firstName + " " + userInfo.lastName}/>
             </div>
             <div className="form-group">
               <label>*Phone Number:</label>
-              <input disabled id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo.phoneNumber}/>
+              <input disabled id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo && userInfo.phoneNumber}/>
             </div>
             <div className="form-group">
               <label>*Email:</label>
-              <input disabled id="email" type="email" className="form-control" placeholder={userInfo.email} />
+              <input disabled id="email" type="email" className="form-control" placeholder={userInfo && userInfo.email} />
             </div>
-            <div className="form-group">
+            {cardInfo && 
+              <div className="form-group">
               
                 <label>
                 <input
@@ -77,13 +172,19 @@ function Checkout() {
               </label>
                     {selectedOption === 'existingCard' && (
                   <select className="form-control">
-                    {/* Dropdown options for existing cards */}
-                    <option>Card 1</option>
-                    <option>Card 2</option>
-                    <option>Card 3</option>
+                    <option selected></option>
+                    {cardInfo.map(card => (
+                      <option key={card._id} className="saved-cards">
+                          {card.cardType} ****{card.cardNumber?.toString().slice(-4)}
+                      </option>
+                    ))}
                   </select>
                     )}
             </div>
+              
+              
+              }
+            
             
               <label>
               <input
@@ -189,7 +290,7 @@ function Checkout() {
               <input id="promo" type="text" className="form-control" />
             </div>
             <div className="form-group">
-              <label>Total: $36.99</label>
+              <label>Total: ${total}</label>
             </div>
             <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
         </div>
