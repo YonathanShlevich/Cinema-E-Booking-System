@@ -3,8 +3,8 @@ const Schema = mongoose.Schema;
 
 //Attributes of a User table
 const SeatSchema = new Schema({
-    room: String,
     ticket: {type: Schema.Types.ObjectId, ref: 'Ticket'},
+    showTime: {type: Schema.Types.ObjectId, ref: 'Showtime'},
     status: {
         type: String,
         enum: ['Available', 'Unavailable'],

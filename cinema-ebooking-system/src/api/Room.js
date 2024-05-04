@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Room = require('../models/Room');
-const Seat = require('../models/Seat');
 
 /*
     The only reason this exists is because it is required to have some non-manual way to change rooms
@@ -32,15 +31,6 @@ router.post("/addRoom", async (req, res) => {
         })
     }
     
-
-    for (let i = 1; i <= totalSeats; i++) {
-        const newSeat = new Seat({
-            room: name,
-            seatNumber: i
-        });
-        await newSeat.save();
-        newRoom.seats.push(newSeat);
-    }
 
     newRoom.save()
         .then(result => {
