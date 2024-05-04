@@ -5,8 +5,6 @@ const Schema = mongoose.Schema;
 const BookingSchema = new Schema({
     bookingNumber: Number,
     ticketNumber: Number,
-    movieTitle: {type: Schema.Types.ObjectId, ref: 'Movie'},
-    showDate: Date,
     showTime: {type: Schema.Types.ObjectId, ref: 'Showtime'},
     creditCard: {type: Schema.Types.ObjectId, ref: 'paymentCard'},
     promoId: Number,
