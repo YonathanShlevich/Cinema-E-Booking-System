@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './SelectSeats.css';
+import axios from "axios";
+
 
 function SelectSeats() {
 
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [seats, setSeats] = useState(generateSeats());
+    const [seats, setSeats] = useState([[]]);
     const [showtime, setShowtime] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [movieFromURl, setMovieFromURL] = useState("");
@@ -21,6 +23,23 @@ function SelectSeats() {
       const showtime = showtimeFromURL();
       if (showtime) {
         setShowtime(showtime)
+        //set the seats from the showtime
+        axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${showtime}`)
+        .then(response => {
+          if (response.data.status === "FAILED") {
+            // do nothing
+            console.log(response.data.message)
+          } else {
+            const seats = response.data.seats.map(seatString => JSON.parse(seatString));
+            setSeats(seats)
+            
+          }
+        })
+        .catch(error => { 
+          console.error('Error fetching showtime info:', error);
+        });
+
+
       }
     }, [location.search]);
 
@@ -35,6 +54,15 @@ function SelectSeats() {
       }
     }, [location.search]);
 
+    useEffect(() => {
+      console.log(seats);
+      console.log(
+        seats.map(seat => (
+          
+          (typeof seat)
+        ))
+      );
+    }, [seats]);
     const handleConfirmSeats = (e) => {
         e.preventDefault();
         //update chosen seats
@@ -85,13 +113,15 @@ function SelectSeats() {
         {/* Map over seats array to render each seat */}
         {seats.map(seat => (
           <div
-            key={seat.id}
-            className={`seat ${seat.selected ? 'selected' : ''}`}
-            onClick={() => handleSeatClick(seat.id)}
+            key={seat.seatNumber}
+            //className={`seat ${seat.status === 'Available' ? (seat.selected ? 'selected-green' : '') : 'unavailable'}`}
+            className={`seat ${seat.status === 'Available' ? '' : 'unavailable'}`}
+            onClick={seat.status === 'Available' ? () => handleSeatClick(seat.seatNumber) : null}
           >
-            {seat.seatNumber}
+            {seat.seatNumber}{seat.status}
           </div>
         ))}
+
       </div>
       <p className='warning'>Red seats have already been booked</p>
       <button className='btn btn-primary' onClick={handleConfirmSeats}>Confirm Selection</button>
