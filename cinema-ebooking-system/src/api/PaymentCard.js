@@ -5,21 +5,9 @@ const bcrypt = require('bcrypt');
 
 router.post("/addCard", async (req, res) => {
     console.log("adding a card");
-    //const { userId } = req.params;
     
     try {
-        /*
-        // Check if the user already has three or more cards
-        const cardCount = await paymentCard.countDocuments({ userId: userId });
-        if (cardCount >= 3) {
-            return res.json({
-                status: "FAILED",
-                message: "You have already reached the maximum number of cards (3)"
-            });
-        }
-        */
-
-        let { userId, cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip } = req.body;
+        let {cardType, expDate, cardNumber, billingAddr, billingCity, billingState, billingZip } = req.body;
 
         const attributes = [
             { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: true },
@@ -52,16 +40,6 @@ router.post("/addCard", async (req, res) => {
             }
         }
 
-        // done with checking, time to add a card brother
-        /*
-        const user = await User.findOne({ _id: userId });
-        if (!user) {
-            return res.json({
-                status: "FAILED",
-                message: "User not found"
-            });
-        }
-        */
         console.log(cardNumber);
         const lastFourDigits = cardNumber.slice(-4);
         // Hash everything except the last 4 digits
@@ -70,7 +48,6 @@ router.post("/addCard", async (req, res) => {
         const hashedCreditCard = hashedPortion + lastFourDigits;
         
         const newPaymentCard = new PaymentCard({
-            userId,
             cardType,
             expDate,
             cardNumber: hashedCreditCard,
