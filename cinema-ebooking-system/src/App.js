@@ -9,8 +9,11 @@ import EditProfile from "./EditProfile";
 import Admin from "./Admin";
 import ManageMovies from "./ManageMovies";
 import ManageUsers from "./ManageUsers";
+import EditProfileAdmin from "./EditProfileAdmin";
+import EditStatusType from "./EditStatusType";
 import ManagePromos from "./ManagePromos";
 import AddMovie from "./AddMovie";
+import UpdateMovie from "./UpdateMovie";
 import AddPromo from "./AddPromo";
 import ManageExistingMovies from "./ManageExistingMovies";
 import ForgotPassword from "./ForgetPassword";
@@ -21,6 +24,7 @@ import OrderConfirmation from "./OrderConfirmation";
 import SelectSeats from "./SelectSeats";
 import AddCard from "./AddCard"
 import AddShowtime from "./AddShowtime";
+import Suspended from "./Suspended";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -41,6 +45,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/suspended" element={<Suspended />} />
         <Route path="/verification" element={<Verification />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/viewprofile" element={<ViewProfile />} />
@@ -56,9 +61,12 @@ function App() {
         />
         <Route path="/admin/manage-movies" element={<ManageMovies />} />
         <Route path="/admin/manage-users" element={<ManageUsers />} />
+        <Route path="/admin/manage-users/editprofile/:userId" element={<EditProfileAdmin />} />
+        <Route path="/admin/manage-users/editstatustype/:userId" element={<EditStatusType />} />
         <Route path="/admin/manage-promos" element={<ManagePromos />} />
         <Route path="/admin/manage-movies/add-movie" element={<AddMovie />} />
         <Route path="/admin/manage-movies/manage-existing-movies" element={<ManageExistingMovies />} />
+        <Route path="/admin/manage-movies/manage-existing-movies/updatemovie/:movieTitle" element={<UpdateMovie />} />
         <Route path="/admin/manage-promos/add-promo" element={<AddPromo />} />
         <Route path="/admin/manage-movies/add-showtime" element={<AddShowtime />} />
 

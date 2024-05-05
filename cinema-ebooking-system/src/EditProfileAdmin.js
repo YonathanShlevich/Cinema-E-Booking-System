@@ -1,14 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 
-function EditProfile() {
+function EditProfileAdmin() {
 
     const [userInfo, setUserInfo] = useState(null); //Used for User's info
     const [homeInfo, setHomeInfo] = useState(null); //Home info
     
-    const userId = localStorage.getItem('loggedInUserId');
+    const { userId } = useParams();
 
     //Pulling data from our backend using a Use Effect block: User
   useEffect(() => {
@@ -25,7 +25,7 @@ function EditProfile() {
       .catch(error => {
         console.error('Error fetching user info:', error);
       });
-  }, []);
+  }, [userId]);
 
   //Pulling data from our backend using a Use Effect block: Home Address
   useEffect(() => {
@@ -42,7 +42,7 @@ function EditProfile() {
       .catch(error => {
         console.error('Error fetching user info:', error);
       });
-  }, []);
+  }, [userId]);
 
     const navigate = useNavigate();
 
@@ -87,7 +87,7 @@ function EditProfile() {
               
             } else {
               window.alert("Profile updated successfully.");
-              navigate("/viewprofile");
+              navigate("/admin/manage-users");
               
             }
         } catch (error) {
@@ -107,7 +107,7 @@ function EditProfile() {
   return (
 
     <div>
-      <Link to="/viewprofile" className="backbutton"> Back to Profile</Link>
+      <Link to="/admin/manage-users" className="backbutton"> Back to Manage User</Link>
       <div className="card">
         <div className="card-header">
           <h2>Edit Profile</h2>
@@ -226,4 +226,4 @@ function EditProfile() {
   );
 }
 
-export default EditProfile;
+export default EditProfileAdmin;

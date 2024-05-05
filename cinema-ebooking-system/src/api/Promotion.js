@@ -163,4 +163,32 @@ const sendVerificationEmail = async ({code, end, discount}, res) => {
     }
 }
 
+
+//Delete promos
+router.post("/deletePromotion/:promoCode", async (req, res) => {
+    let { promoCode } = req.params;
+    
+    try {
+        const promoExists = await Promotion.exists({ code: promoCode });
+        if (promoExists) {
+            const deletePromo = await Promotion.findOneAndDelete({ code: promoCode }); //Delete promo
+            return res.json({
+                status: "SUCCESS",
+                message: "Promotion deleted successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "Promotion not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error deleting Promotion: " + err.message
+        });
+    }
+});
+
+
 module.exports = router;

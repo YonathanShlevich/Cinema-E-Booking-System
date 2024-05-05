@@ -74,6 +74,30 @@ function generateAttributes(firstName, lastName, email, password, phoneNumber, c
 }
 
 
+//Return all users
+router.get("/allUsers", (req, res) =>{
+    User.find({})
+        .then(result => {
+            
+            if(!result){
+                return res.json({
+                    status: "FAILED",
+                    message: 'Users do not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+
+
+
 //GET function to pull info into View Profile
 router.get("/data/:userID", (req, res) =>{
     const userID = req.params.userID; //Pulling userId from the URL parameters
@@ -185,12 +209,13 @@ router.post('/signin', (req, res) => {
         User.find({email}).then(data => {
             if(data.length){
                 //Checking if the user is verified
-                if(data[0].status != 1){ 
+                if(data[0].status == 2){ 
                     res.json({
                         status: "FAILED",
                         message: "Email has not yet been verified, check your email inbox"
                     });
                 } else {
+                    
                     //Comparing passwords
                     const hashedPW = data[0].password;
                     //Debugging passwords: console.log(data[0].password + " : " + hashedPW);
@@ -1035,6 +1060,7 @@ router.post("/addCard/:userId", async (req, res) => {
     }
 });
 
+
 router.get("/pullCCsfromUserId/:id", async (req, res) =>{
     const uid = req.params.id; //Pulling movie from params
     
@@ -1055,6 +1081,64 @@ router.get("/pullCCsfromUserId/:id", async (req, res) =>{
             });
         })
 })
+
+//API to update status and type 
+router.post("/editTypeStatus/:userId", async (req, res) => {
+    let { userId } = req.params;
+    let { status, type } = req.body; 
+    const userUpdates = {};
+
+    if (status !== null || type !== undefined || status == 1 || status == 2 || status == 3 )
+        { userUpdates["status"] = status; }   //If status is being changed
+    if (type !== null || type !== undefined || type == 1 || type == 2)
+        { userUpdates["type"] = type; }   //If type is being changed
+
+    const userFilter = {_id: userId};
+
+    await User.findOneAndUpdate(userFilter, {$set: userUpdates}, {new: true})
+                .catch((error) => {
+                    return res.json({
+                    status: 'FAILED',
+                    message: "User not found",
+                });
+            });
+    return res.json({
+        status: "SUCCESSFUL",
+        message: "User status/type updated!"
+    });
+
+
+
+});
+
+//Delete user
+router.post("/deleteUser/:email", async (req, res) => {
+    let { email } = req.params;
+    
+    try {
+        const userExists = await User.exists({ email: email });
+        if (userExists) {
+            const deleteUser = await User.findOneAndDelete({ email: email }); //Delete promo
+            return res.json({
+                status: "SUCCESS",
+                message: "User deleted successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "User not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error deleting User: " + err.message
+        });
+    }
+});
+
+
+
 
 
 

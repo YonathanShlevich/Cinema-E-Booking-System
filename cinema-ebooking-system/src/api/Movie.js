@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Movie = require('../models/Movie');
+const User = require('./../models/User');
 
 /*
     THIS FILE SHOULD ONLY HOLD: ADDMOVIE, DELETEMOVIE, AND UPDATEMOVIE
@@ -189,40 +190,92 @@ router.post("/updateMovie/:movieTitle", async (req, res) => {
 /* 
     API Route to only update reviews. It's just a much smaller updateMovie function made to only update reviews
 */
-router.post("/updateReview/:movieTitle", async (req, res) => {
-    let { movieTitle } = req.params;
+router.post("/updateReview/:movieTitle/:userID", async (req, res) => {
+    let { movieTitle, userID } = req.params;
     let { reviews } = req.body;
-    console.log(movieTitle + " : " + reviews)
+
     const reviewUpdates = {}; //
-    reviewUpdates["reviews"] = reviews;
+    reviewUpdates["reviews"] = reviews
+    if (userID !== "null") {
+      
+       User.findOne({_id: userID})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'You do not have permission to add a review'
+                });
+            }   
+            
+        }).catch(error =>{
+            console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        }) 
+    } else {
+        return res.json({
+            status: "FAILED",
+            message: 'You are not logged in'
+        });
+    }
+    
     // Finding movie and updating
     try { 
         const movieExists = await Movie.exists({ title: movieTitle });
         
-        if (movieExists) {
-            const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
-                { title: movieTitle },
-                { $push: reviewUpdates },
-                { new: true }
-            );
+        // if (movieExists) {
+        //     const updatedMovie = await Movie.findOneAndUpdate( //Updating the movie
+        //         { title: movieTitle },
+        //         { $push: reviewUpdates },
+        //         { new: true }
+        //     );
+
+        //     // return res.json({
+        //     //     status: "FAILED",
+        //     //     message: 'You are not logged in'
+        //     // });
+        // }
+
+        // Check if the user exists
+        const userExists = await User.exists({ _id: userID });
+        if (!userExists) {
             return res.json({
-                status: "SUCCESS",
-                message: "Movie updated successfully",
+                status: "FAILED",
+                message: 'You do not have permission to add a review'
             });
-        } else {
+        }
+
+        if (!movieExists) {
             return res.json({
                 status: "FAILED",
                 message: "Movie not found"
             });
         }
+
+        // Update the movie with the review
+        const updatedMovie = await Movie.findOneAndUpdate(
+            { title: movieTitle },
+            { $push: reviewUpdates },
+            { new: true }
+        );
+
+        return res.json({
+            status: "SUCCESS",
+            message: "Movie updated successfully",
+            updatedMovie: updatedMovie // Optional: Include updated movie data in response
+        });
+
     } catch (err) {
+        console.error("Error updating movie:", err);
         return res.json({
             status: "FAILED",
             message: "Error updating movie: " + err.message
         });
     }
+});
 
-})
 
 //API Route to Delete a Movie
 router.post("/deleteMovie/:movieTitle", async (req, res) => {
