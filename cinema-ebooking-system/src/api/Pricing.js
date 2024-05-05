@@ -54,4 +54,31 @@ router.post("/addPricing", async (req, res) => {
     })
 })
 
+//Adding the one pricings model
+router.post("/updatePricing", async (req, res) => {
+    let { childCost, adultCost, seniorCost, bookingFee } = req.body;
+
+
+    const pricingUpdates = {};
+    if( childCost !== undefined){ pricingUpdates["childCost"] = childCost}; 
+    if( adultCost !== undefined){ pricingUpdates["adultCost"] = adultCost}; 
+    if( seniorCost !== undefined){ pricingUpdates["seniorCost"] = seniorCost}; 
+    if( bookingFee !== undefined){ pricingUpdates["bookingFee"] = bookingFee}; 
+
+    console.log(pricingUpdates)
+    //Just to pull from currently existing pricing chart without any ID
+    const pricingChecks = await Pricing.exists();
+    console.log(pricingChecks._id)
+    //Checking if the body has the pricings
+    const updatedPricing = await Pricing.findOneAndUpdate( //Updating the room
+                { _id: pricingChecks._id },
+                { $set:  pricingUpdates},
+                { new: true }
+            );
+    return res.json({
+        status: "SUCCESS",
+        message: "Pricing Chart was updated!"
+    });
+});
+
 module.exports = router;
