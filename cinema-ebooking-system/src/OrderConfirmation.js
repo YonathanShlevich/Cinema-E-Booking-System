@@ -1,23 +1,47 @@
-import React, {useState} from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Admin.css';
 
 function OrderConfirmation() {
 
-    const [tickets, setTickets] = useState([
-        { id: 1, seat: "A1", age: "Child", price: 10 },
-        { id: 2, seat: "A2", age: "Adult", price: 12 },
-        { id: 3, seat: "A3", age: "Senior", price: 9 }
-        // Add more ticket objects as needed
-      ]);
+    const [tickets, setTickets] = useState([]);
+    const [booking, setBookingFromURL] = useState("");
 
       const totalPrice = tickets.reduce((acc, ticket) => acc + ticket.price, 0);
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const backToHome = () => {
         navigate("/")
     }
+
+    useEffect(() => {
+      const getBookingFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('booking');
+      };
+      const booking = getShowtimeFromURL();
+      if (booking) {
+        setBookingFromURL(booking);
+        axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${booking}`)
+        .then(response => {
+          if (response.data.status === "FAILED") {
+            // do nothing
+            console.log(response.data.message)
+          } else {
+    
+           
+          }
+        })
+        .catch(error => { 
+          console.error('Error fetching booking info:', error);
+        });
+    
+      }
+    }, [location.search]);
+
+
   return (
 
     <div>

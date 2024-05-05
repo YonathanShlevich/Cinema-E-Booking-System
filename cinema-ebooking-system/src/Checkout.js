@@ -10,6 +10,7 @@ function Checkout() {
     const [movieFromURL, setMovieFromURL] = useState("");
     const [showtimeFromURL, setShowtimeFromURL] = useState("");
     const [seats, setSeats] = useState([]);
+    const [seatNumbers, setSeatNumbers] = useState([]);
 
 
     const [selectedOption, setSelectedOption] = useState('existingCard');
@@ -17,7 +18,11 @@ function Checkout() {
     const [userInfo, setUserInfo] = useState(null); //Used for User's info
     const [cardInfo, setCardInfo] = useState([]); //Card info, TODO: How to only store 3 cards
 
+    const [selectedCard, setSelectedCard] = useState("");
+
     const [total, setTotal] = useState(null);
+    const [discount, setDiscount] = useState(0);
+    const [promoId, setPromoId] = useState(null);
 
     useEffect(() => {
       const getTotalFromURL = () => {
@@ -79,7 +84,11 @@ function Checkout() {
   
         // Parse the JSON string into a JavaScript array
         const selectedSeats = JSON.parse(decodedSeatsString);
+        const selectedSeatNumbers = selectedSeats.map(seat => seat.seatNumber);
         setSeats(selectedSeats);
+        setSeatNumbers(selectedSeatNumbers);
+
+
       }
     }, [location.search]);
 
@@ -131,12 +140,60 @@ function Checkout() {
 
     const handleSubmit = () => {
         // submit to db
-        navigate("/bookticket/order-confirmation")
+
+
+        const formData = {
+          tickets: seatNumbers,
+          showTime: showtimeFromURL,
+          creditCard: selectedCard,
+          userId: loggedInUserId,
+          promoId: promoId,
+          total: (total - total*discount).toFixed(2)
+        };
+      axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+          window.alert("Submit failed: " + response.data.message)
+        } else {
+          navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+
+        }
+        
+      })
+      .catch(error => {
+        window.alert(error)
+        console.error('Error fetching user info:', error);
+      });
+        //navigate("/bookticket/order-confirmation")
     }
     const handleBack = () => {
       navigate(`/bookticket/order-summary?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(showtimeFromURL._id)}&seats=${encodeURIComponent(JSON.stringify(seats))}`);
 
     }
+
+    const handlePromo = (event) => {
+      const promoCode = document.getElementById("promo").value;
+      axios.get(`http://localhost:4000/Promotion/promoCode/${promoCode}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+          window.alert(response.data.message)
+        } else {
+          setDiscount((response.data.discount/100))
+          setPromoId(promoCode)
+        }
+        
+      })
+      .catch(error => {
+        console.error('Error fetching promo info:', error);
+      });
+    };
+
+    const handleCardChange = (event) => {
+      setSelectedCard(event.target.value);
+    };
+
   return (
 
     <div>
@@ -171,10 +228,10 @@ function Checkout() {
                 Use existing card
               </label>
                     {selectedOption === 'existingCard' && (
-                  <select className="form-control">
+                  <select className="form-control" onChange={handleCardChange}>
                     <option selected></option>
                     {cardInfo.map(card => (
-                      <option key={card._id} className="saved-cards">
+                      <option key={card._id} className="saved-cards" value={card._id}>
                           {card.cardType} ****{card.cardNumber?.toString().slice(-4)}
                       </option>
                     ))}
@@ -288,11 +345,18 @@ function Checkout() {
             <div className="form-group">
               <label>Enter Promo Code:</label>
               <input id="promo" type="text" className="form-control" />
-            </div>
+              
+            </div>   
+             <button className="btn btn-primary" onClick={handlePromo}>Update Total</button>
+
             <div className="form-group">
-              <label>Total: ${total}</label>
+              <label>Total: ${(total - total*discount).toFixed(2)}</label>
             </div>
+            { selectedCard &&
             <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
+
+            }
+            
         </div>
 
       </div>

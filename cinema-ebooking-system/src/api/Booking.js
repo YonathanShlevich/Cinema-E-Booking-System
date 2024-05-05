@@ -53,6 +53,7 @@ router.post("/addBooking", async(req, res) => {
 
     const createdTickets = [];
     for (let i = 0; i < tickets.length; i++) {  //Ticket spread
+        console.log(tickets[i]);
         const seatNumber = tickets[i];  //An array of seat numbers that'll get turned into tickets
         const seat = await Seat.findOne({ showTime: showTimeObject._id, seatNumber: seatNumber });  //Checks by showtime AND seatNumber 
         if (seat && seat.status === 'Available') {  //If the seat exists and is available, create the ticket
@@ -82,10 +83,7 @@ router.post("/addBooking", async(req, res) => {
 
         //If a booking goes through, all the seats that get bought need to update into tickets
         //There is an array of tickets that relate to the updated seats
-        return res.json({
-            status: "SUCCESS",
-            message: "New Booking was created!"
-        });
+        return res.json(result);
     }).catch(err => {
         return res.json({
             status: "FAILED",
@@ -122,6 +120,27 @@ router.get("/pullBookingsfromUserId/:uId", async(req, res) =>{
     console.log("pulling show time info")
     const uId = req.params.uId;
     Booking.find({userId: uId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'no bookings exist for this user!'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
+})
+
+//given an bookingID, can we pull a booking
+router.get("/pullBooking/:bookingId", async(req, res) =>{
+    const bookingId = req.params.booking;
+    Booking.find({_id: bookingId}).then(result => {
         if(!result){ //If the userID doesn't exist
             return res.json({
                 status: "FAILED",
