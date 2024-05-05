@@ -4,7 +4,9 @@ const Movie = require('../models/Movie');
 const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
 const ShowTime = require('../models/ShowTime');
-
+const Seat = require('../models/Seat');
+const Tickets = require('../models/Tickets');
+const Booking = require('../models/Booking');
 /*
     THIS FILE SHOULD ONLY HOLD: ADDSHOWTIME, DELETESHOWTIME, AND UPDATESHOWTIME
 */
@@ -115,7 +117,16 @@ router.post("/addShowtime", async (req, res) => {
         date: date
     })
     
-
+    //Seats should be associated with showTime. Creates seats based on room size
+    for (let i = 1; i <= roomObject.totalSeats; i++) {
+        const newSeat = new Seat({
+            showTime: newShowTime._id,
+            seatNumber: i
+        });
+        await newSeat.save();
+        newShowTime.seats.push(newSeat);
+    }
+    
     await newShowTime.save().then(result => {
         return res.json({
             status: "SUCCESS",
@@ -171,9 +182,38 @@ router.get("/pullShowtime/:movieTitle", async (req, res) =>{
             });
         })
 })
+
+//GET function to pull info from showtime by id
+router.get("/pullShowtimeFromID/:showtimeID", async (req, res) => {
+    const showtimeID = req.params.showtimeID;
+
+    try {
+        const result = await ShowTime.findOne({ _id: showtimeID })
+            .populate('period', 'time')
+            .populate('seats');
+
+        if (!result) {
+            return res.json({
+                status: "FAILED",
+                message: 'Showtime does not exist'
+            });
+        }
+
+        
+        console.log(result)
+        return res.json(result);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    }
+});
+
+
 //given an id, can we pull a showperiod
 router.get("/pullShowPeriodfromId/:periodId", async(req, res) =>{
-    console.log("pulling show period info")
     const periodId = req.params.periodId;
     const periodObject = await ShowPeriod.findOne({_id: periodId}).then(result => {
         if(!result){ //If the userID doesn't exist
@@ -214,5 +254,49 @@ router.get("/allShowtimes", (req, res) =>{
             });
         })
 })
+
+
+
+//Delete showtime and all seats associated with it
+//Possibly also all bookings with the movie
+router.post("/deleteShowtime/:showtimeID", async (req, res) => {
+    const { showtimeID } = req.params;
+    console.log(showtimeID);
+    try { //Putting into a try loop because the other way was not working
+        //Checking if the movie exists
+        const showTimeExists = await ShowTime.exists({ _id: showtimeID });
+        if (showTimeExists) {
+            //Delete all seats, tickets, and bookings related to the showtime
+            
+            // Delete associated seats
+            await Seat.deleteMany({ showTime: showtimeID });
+
+            // Delete associated tickets
+            // await Tickets.deleteMany({ showTime: showtimeID });
+
+            // Delete associated bookings
+            // await Booking.deleteMany({ showTime: showtimeID });
+
+            // Delete the showtime itself
+            await ShowTime.findByIdAndDelete(showtimeID);
+
+            return res.json({
+                status: "SUCCESS",
+                message: "Showtime and all associated objects deleted successfully",
+            });
+        } else {
+            return res.json({
+                status: "FAILED",
+                message: "Showtime not found"
+            });
+        }
+    } catch (err) {
+        return res.json({
+            status: "FAILED",
+            message: "Error deleting showtime: " + err.message
+        });
+    }
+})
+
 
 module.exports = router;

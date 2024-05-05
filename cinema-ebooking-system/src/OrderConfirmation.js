@@ -1,34 +1,64 @@
-import React, {useState} from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Admin.css';
+import axios from "axios";
 
 function OrderConfirmation() {
 
-    const [tickets, setTickets] = useState([
-        { id: 1, seat: "A1", age: "Child", price: 10 },
-        { id: 2, seat: "A2", age: "Adult", price: 12 },
-        { id: 3, seat: "A3", age: "Senior", price: 9 }
-        // Add more ticket objects as needed
-      ]);
+    const [tickets, setTickets] = useState([]);
+    const [bookingFromURL, setBookingFromURL] = useState("");
+    const [booking, setBooking] = useState(null);
 
       const totalPrice = tickets.reduce((acc, ticket) => acc + ticket.price, 0);
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const backToHome = () => {
         navigate("/")
     }
+
+    useEffect(() => {
+      const getBookingFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('booking');
+      };
+      const booking = getBookingFromURL();
+      if (booking) {
+        setBookingFromURL(booking);
+        console.log(booking)
+        axios.get(`http://localhost:4000/Booking/pullBooking/${booking}`)
+        .then(response => {
+          if (response.data.status === "FAILED") {
+            // do nothing
+            console.log(response.data.message)
+          } else {
+            setBooking(response.data)
+            console.log(response.data)
+           
+          }
+        })
+        .catch(error => { 
+          console.error('Error fetching booking info:', error);
+        });
+    
+      }
+    }, [location.search]);
+
+
   return (
 
     <div>
-      
-      <div className="card">
+      {
+        booking &&
+        <div className="card">
         <div className="card-header">
           <h2>Order Confirmation</h2>
         </div>
         <div className="card-body">
-        <div>Movie Title: Revenant</div>
-            <div>Show Time: March 3, 2023, 10:15 AM</div>
+          <div>Unique Booking ID: {booking._id}</div>
+        <div>Movie Title: {booking.showTime.movie.title}</div>
+            <div>Show Time: {booking.showTime.date.substring(0,10)} {booking.showTime.period.time}</div>
           {tickets.map(ticket => (
             <div key={ticket.id}>
               
@@ -36,16 +66,25 @@ function OrderConfirmation() {
               
             </div>
           ))}
-          <div>Online Fee: $3</div>
-          <div>Tax: ${(totalPrice * .07).toFixed(2)}</div>
-          <div></div>
-          <div>Total Price: ${(totalPrice + (totalPrice * .07) + 3).toFixed(2)}</div>
+          
+          <div>
+            {
+              booking.promoId &&
+              <div>
+                Promo Code: {booking.promoId}
+              </div>
+            }
+          </div>
+          <div>Charged: ${booking && booking.total}</div>
+          <div>Card: {booking.creditCard.cardType} *****{booking.creditCard.cardNumber?.toString().slice(-4)}</div>
             <p>A confirmation email has been sent to your email address</p>
             <button className="btn btn-primary"onClick={backToHome}>Back to Home</button>
         
         </div>
 
       </div>
+      }
+      
     </div>
 
   );

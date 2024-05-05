@@ -8,6 +8,7 @@ const ShowtimeSchema = new Schema({
     room: {type: Schema.Types.ObjectId, ref: 'Room'},
     period: {type: Schema.Types.ObjectId, ref: 'ShowPeriod'}, //Period is a set chunk of time the theater has for a movie, we will split it into 30 minute inverals
     date: Date,
+    seats: [{type: Schema.Types.ObjectId, ref: 'Seat'}] // Array of seats
 });
 
 const Showtime = mongoose.model('Showtime', ShowtimeSchema);

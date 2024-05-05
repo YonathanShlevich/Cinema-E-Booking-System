@@ -1,18 +1,203 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Admin.css';
+import axios from "axios";
 
 function Checkout() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const [movieFromURL, setMovieFromURL] = useState("");
+    const [showtimeFromURL, setShowtimeFromURL] = useState("");
+    const [seats, setSeats] = useState([]);
+    const [seatNumbers, setSeatNumbers] = useState([]);
+
+
+    const [selectedOption, setSelectedOption] = useState('existingCard');
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
+    const [userInfo, setUserInfo] = useState(null); //Used for User's info
+    const [cardInfo, setCardInfo] = useState([]); //Card info, TODO: How to only store 3 cards
+
+    const [selectedCard, setSelectedCard] = useState("");
+
+    const [total, setTotal] = useState(null);
+    const [discount, setDiscount] = useState(0);
+    const [promoId, setPromoId] = useState(null);
+
+    useEffect(() => {
+      const getTotalFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('total');
+      };
+      const total = getTotalFromURL();
+      if (total) {
+        setTotal(total);
+      }
+    }, [location.search]);
+
+    useEffect(() => {
+      const getMovieFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('movieTitle');
+      };
+      const movieTitle = getMovieFromURL();
+      if (movieTitle) {
+        setMovieFromURL(movieTitle);
+      }
+    }, [location.search]);
+    
+    useEffect(() => {
+      const getShowtimeFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('showtime');
+      };
+      const showtime = getShowtimeFromURL();
+      if (showtime) {
+        setShowtimeFromURL(showtime);
+        axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${showtime}`)
+        .then(response => {
+          if (response.data.status === "FAILED") {
+            // do nothing
+            console.log(response.data.message)
+          } else {
+    
+            setShowtimeFromURL(response.data)
+           
+          }
+        })
+        .catch(error => { 
+          console.error('Error fetching showtime info:', error);
+        });
+    
+      }
+    }, [location.search]);
+
+    useEffect(() => {
+      const getSeatsFromURL = () => {
+        const params = new URLSearchParams(location.search);
+        return params.get('seats');
+      };
+      const encodedSeats = getSeatsFromURL();
+      if (encodedSeats) {
+        // Decode the URL-encoded string
+        const decodedSeatsString = decodeURIComponent(encodedSeats);
+  
+        // Parse the JSON string into a JavaScript array
+        const selectedSeats = JSON.parse(decodedSeatsString);
+        const selectedSeatNumbers = selectedSeats.map(seat => seat.seatNumber);
+        setSeats(selectedSeats);
+        setSeatNumbers(selectedSeatNumbers);
+
+
+      }
+    }, [location.search]);
+
+
+    useEffect(() => {
+      const getLoggedInUserId = () => {
+        return localStorage.getItem('loggedInUserId');
+      };
+      setLoggedInUserId(getLoggedInUserId());
+    }, []);
+
+    //Same as previous 2 but for payment card info
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/user/data/paymentCard/${loggedInUserId}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setCardInfo(response.data.cards)
+
+        }
+      })
+      .catch(error => { 
+        console.error('Error fetching user info:', error);
+      });
+  }, [loggedInUserId]);
+
+    //Pulling data from our backend using a Use Effect block: User
+  useEffect(() => {
+    //Pulls the userID and sets response to second var
+    axios.get(`http://localhost:4000/user/data/${loggedInUserId}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+        } else {
+          setUserInfo(response.data); //Set user info to the response data
+        }
+        
+      })
+      .catch(error => {
+        console.error('Error fetching user info:', error);
+      });
+  }, [loggedInUserId]);
+
+    const handleOptionChange = (event) => {
+      setSelectedOption(event.target.value);
+    };
 
     const handleSubmit = () => {
         // submit to db
-        navigate("/bookticket/order-confirmation")
+
+
+        const formData = {
+          tickets: seatNumbers,
+          showTime: showtimeFromURL,
+          creditCard: selectedCard,
+          userId: loggedInUserId,
+          promoId: promoId,
+          total: (total - total*discount).toFixed(2)
+        };
+      axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+          window.alert("Submit failed: " + response.data.message)
+        } else {
+          navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+
+        }
+        
+      })
+      .catch(error => {
+        window.alert(error)
+        console.error('Error fetching user info:', error);
+      });
+        //navigate("/bookticket/order-confirmation")
     }
+    const handleBack = () => {
+      navigate(`/bookticket/order-summary?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(showtimeFromURL._id)}&seats=${encodeURIComponent(JSON.stringify(seats))}`);
+
+    }
+
+    const handlePromo = (event) => {
+      const promoCode = document.getElementById("promo").value;
+      axios.get(`http://localhost:4000/Promotion/promoCode/${promoCode}`) //Calls our data backend GET call
+      .then(response => {
+        if (response.data.status === "FAILED") {
+          // do nothing
+          window.alert(response.data.message)
+        } else {
+          setDiscount((response.data.discount/100))
+          setPromoId(promoCode)
+        }
+        
+      })
+      .catch(error => {
+        console.error('Error fetching promo info:', error);
+      });
+    };
+
+    const handleCardChange = (event) => {
+      setSelectedCard(event.target.value);
+    };
+
   return (
 
     <div>
-      <Link to="/bookticket/order-summary" className="backbutton"> Back</Link>
+      <button className="backbutton" onClick={(handleBack)}> Really? You want to go back now?</button>
       <div className="card">
         <div className="card-header">
           <h2>Checkout</h2>
@@ -20,26 +205,55 @@ function Checkout() {
         <div className="card-body">
         <div className="form-group">
               <label>*Name:</label>
-              <input type="text" className="form-control" id="name"/>
+              <input disabled type="text" className="form-control" id="name" placeholder={userInfo && userInfo.firstName + " " + userInfo.lastName}/>
             </div>
             <div className="form-group">
-              <label>*Phone Number: (Format: 123-456-7890)</label>
-              <input id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder='123-456-7890'/>
+              <label>*Phone Number:</label>
+              <input disabled id="tel" type="tel" className="form-control" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder={userInfo && userInfo.phoneNumber}/>
             </div>
             <div className="form-group">
               <label>*Email:</label>
-              <input id="email" type="email" className="form-control" />
+              <input disabled id="email" type="email" className="form-control" placeholder={userInfo && userInfo.email} />
             </div>
-            <div className="form-group">
-              <label>Use Existing Card:</label>
-                <select id="existingCard" className='form-control'>
-                    <option value="" selected></option>
-                    <option value="1">Visa **********1234</option>
-                    <option value="2">Amex **********5678</option>
-                </select>
+            {cardInfo && 
+              <div className="form-group">
+              
+                <label>
+                <input
+                  type="radio"
+                  value="existingCard"
+                  checked={selectedOption === 'existingCard'}
+                  onChange={handleOptionChange}
+                />
+                Use existing card
+              </label>
+                    {selectedOption === 'existingCard' && (
+                  <select className="form-control" onChange={handleCardChange}>
+                    <option selected></option>
+                    {cardInfo.map(card => (
+                      <option key={card._id} className="saved-cards" value={card._id}>
+                          {card.cardType} ****{card.cardNumber?.toString().slice(-4)}
+                      </option>
+                    ))}
+                  </select>
+                    )}
             </div>
+              
+              
+              }
             
-            <p>OR - Card Information</p>
+            
+              <label>
+              <input
+                type="radio"
+                value="differentCard"
+                checked={selectedOption === 'differentCard'}
+                onChange={handleOptionChange}
+              />
+              Input card information
+            </label>
+            {selectedOption === 'differentCard' && (
+              <div>
             <div className="form-group">
               <label>Card Type:</label>
               <select id="cardType" className="form-control">
@@ -125,15 +339,24 @@ function Checkout() {
               <label>Zip:</label>
               <input id="billingZip" type="number" min="0" className="form-control" />
             </div>
+            </div>
+            )}
             <p>Promo Code?</p>
             <div className="form-group">
               <label>Enter Promo Code:</label>
               <input id="promo" type="text" className="form-control" />
-            </div>
+              
+            </div>   
+             <button className="btn btn-primary" onClick={handlePromo}>Update Total</button>
+
             <div className="form-group">
-              <label>Total: $36.99</label>
+              <label>Total: ${(total - total*discount).toFixed(2)}</label>
             </div>
+            { selectedCard &&
             <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
+
+            }
+            
         </div>
 
       </div>

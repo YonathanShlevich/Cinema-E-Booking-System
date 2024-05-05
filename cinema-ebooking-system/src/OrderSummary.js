@@ -1,18 +1,115 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Admin.css';
+import axios from "axios";
+
 
 function OrderSummary() {
-  const [tickets, setTickets] = useState([
-    { id: 1, seat: "A1", age: "Child", price: 10 },
-    { id: 2, seat: "A2", age: "Adult", price: 12 },
-    { id: 3, seat: "A3", age: "Senior", price: 9 }
-    // Add more ticket objects as needed
-  ]);
 
-  const handleDelete = (id) => {
+  const location = useLocation();
+
+  const [tickets, setTickets] = useState([]);
+  const [movieFromURL, setMovieFromURL] = useState("");
+  const [showtimeFromURL, setShowtimeFromURL] = useState("");
+  const [loggedInUserId, setLoggedInUserId] = useState(null);
+ // --------------------------------------------------------
+
+ useEffect(() => {
+  const getLoggedInUserId = () => {
+    return localStorage.getItem('loggedInUserId');
+  };
+  setLoggedInUserId(getLoggedInUserId());
+}, []);
+
+useEffect(() => {
+  const getMovieFromURL = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('movieTitle');
+  };
+  const movieTitle = getMovieFromURL();
+  if (movieTitle) {
+    setMovieFromURL(movieTitle);
+  }
+}, [location.search]);
+
+useEffect(() => {
+  const getShowtimeFromURL = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('showtime');
+  };
+  const showtime = getShowtimeFromURL();
+  if (showtime) {
+    setShowtimeFromURL(showtime);
+    axios.get(`http://localhost:4000/showtime/pullShowtimeFromID/${showtime}`)
+    .then(response => {
+      if (response.data.status === "FAILED") {
+        // do nothing
+        console.log(response.data.message)
+      } else {
+
+        setShowtimeFromURL(response.data)
+       
+      }
+    })
+    .catch(error => { 
+      console.error('Error fetching showtime info:', error);
+    });
+
+  }
+}, [location.search]);
+
+useEffect(() => {
+  const getSeatsFromURL = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('seats');
+  };
+  const encodedSeats = getSeatsFromURL();
+  if (encodedSeats) {
+    // Decode the URL-encoded string
+    const decodedSeatsString = decodeURIComponent(encodedSeats);
+
+    // Parse the JSON string into a JavaScript array
+    const selectedSeats = JSON.parse(decodedSeatsString);
+    
+    const tickets = selectedSeats.map(seat => {
+      let price = 0;
+      switch (seat.age) {
+          case "Child":
+              price = 9;
+              break;
+          case "Adult":
+              price = 12;
+              break;
+          case "Senior":
+              price = 8;
+              break;
+          default:
+              // Handle other cases if needed
+              break;
+      }
+      return {
+          ...seat,
+          price: price
+      };
+  });
+  
+
+
+    setTickets(tickets);
+  }
+}, [location.search]);
+
+
+
+
+
+
+
+  // ---------------------------------------------------------
+
+  const handleDelete = (seatNumber) => {
     // Filter out the ticket with the specified ID
-    const updatedTickets = tickets.filter(ticket => ticket.id !== id);
+    const updatedTickets = tickets.filter(ticket => ticket.seatNumber !== seatNumber);
     
     // Update the state with the filtered tickets
     setTickets(updatedTickets);
@@ -20,11 +117,11 @@ function OrderSummary() {
 
   const navigate = useNavigate();
   const handleUpdate = () => {
-    navigate("/bookticket")
+    navigate(`/bookticket?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(showtimeFromURL._id)}&seats=${encodeURIComponent(JSON.stringify(tickets))}`);
   }
 
   const handleConfirm = () => {
-    navigate("/bookticket/checkout")
+    navigate(`/bookticket/checkout?movieTitle=${movieFromURL}&showtime=${encodeURIComponent(showtimeFromURL._id)}&seats=${encodeURIComponent(JSON.stringify(tickets))}&total=${(totalPrice + (totalPrice * .07) + 3).toFixed(2)}`)
   }
 
   // Calculate total price
@@ -38,12 +135,12 @@ function OrderSummary() {
           <h2>Order Summary</h2>
         </div>
         <div className="card-body">
-            <div>Movie Title: Revenant</div>
-            <div>Show Time: March 3, 2023, 10:15 AM</div>
+            <div>Movie Title: {movieFromURL}</div>
+            <div>Show Time: {showtimeFromURL.date && showtimeFromURL.date.substring(0,10)} {showtimeFromURL.period && showtimeFromURL.period.time}</div>
           {tickets.map(ticket => (
             <div key={ticket.id}>
               
-              <div>{ticket.seat} - - - - ${ticket.price.toFixed(2)} <button onClick={() => handleDelete(ticket.id)}>Delete</button></div>
+              <div>{ticket.seatNumber} {ticket.age} - - - - ${ticket.price} <button onClick={() => handleDelete(ticket.seatNumber)}>Delete</button></div>
               
             </div>
           ))}

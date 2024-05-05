@@ -5,7 +5,7 @@ const User = require('../models/User');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 
 //Env variables
-require("dotenv").config(); //TAKE A SECOND LOOK AT THIS
+require("dotenv").config(); 
 
 //nodemailer
 let transporter = nodemailer.createTransport({
@@ -16,9 +16,6 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-/*
-    THIS FILE SHOULD ONLY HOLD: ADDPROMOTION
-*/
 
 //Yet another API router, this time to add a promotion
 router.post("/addPromotion", async (req, res) => {
@@ -94,6 +91,28 @@ router.post("/addPromotion", async (req, res) => {
 router.get("/allPromos", (req, res) =>{
     //const movieTitle = req.params.movieTitle; 
     Promotion.find({})
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Promotion does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
+router.get("/promoCode/:code", (req, res) =>{
+    const code = req.params.code; 
+    Promotion.findOne({code: code})
         .then(result => {
             
             if(!result){ //If the userID doesn't exist

@@ -13,14 +13,14 @@ const Showtime = require('../models/ShowTime');
 
 //API to create a seat
 router.post("/addSeat", async (req, res) => {
-    let {showId, roomId, status} = req.body;
+    let {showId, roomId, status, seatNumber} = req.body;
     
 
     //bring seat attributes through postman(admin functionality)
-    console.log(showId + " : " + roomId + " : " + status )
+    console.log(showId + " : " + roomId + " : " + status + " : " + seatNumber)
 
 
-    if(!showId || !roomId || !status){
+    if(!showId || !roomId || !status || !seatNumber){
         return res.json({
             status: "FAILED",
             message: "Input fields not filled out"
@@ -48,7 +48,8 @@ router.post("/addSeat", async (req, res) => {
     const newSeat = new Seat({
         showId: showExists,
         roomId: roomExists, 
-        status: status
+        status: status,
+        seatNumber: seatNumber
     })
     await newSeat.save().then(result => {
         return res.json({
@@ -64,17 +65,6 @@ router.post("/addSeat", async (req, res) => {
     })
 
 });
-
-
-
-
-
-
-
-
-
-//router.get("/Movi")
-
 
 
 

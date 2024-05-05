@@ -1060,6 +1060,28 @@ router.post("/addCard/:userId", async (req, res) => {
     }
 });
 
+
+router.get("/pullCCsfromUserId/:id", async (req, res) =>{
+    const uid = req.params.id; //Pulling movie from params
+    
+    paymentCard.find({userId: uid})
+        .then(result => {
+            if(!result){ //If the userID doesn't exist
+                return res.json({
+                    status: "FAILED",
+                    message: 'Movie does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
+})
+
 //API to update status and type 
 router.post("/editTypeStatus/:userId", async (req, res) => {
     let { userId } = req.params;
@@ -1114,9 +1136,6 @@ router.post("/deleteUser/:email", async (req, res) => {
         });
     }
 });
-
-
-
 
 
 

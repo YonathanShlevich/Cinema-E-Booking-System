@@ -108,9 +108,15 @@
     cursor: pointer;
   }
   
-  .selected {
+  .selected-green {
     background-color: green;
     color: white;
+  }
+  
+  .unavailable {
+    background-color: red;
+    color: white;
+    pointer-events: none; /* Disables pointer events, making the seat unclickable */
   }
 
   .warning {

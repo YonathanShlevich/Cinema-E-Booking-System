@@ -11,10 +11,10 @@ router.post("/addRoom", async (req, res) => {
     let {seatAvailability, name, totalSeats} = req.body;
 
 
-    if(seatAvailability > totalSeats || seatAvailability < 0){
+    if(seatAvailability !== totalSeats){
         return res.json({
             status: "FAILED",
-            message: "Seat Availability must be equal to or less than total seats and greater than 0"
+            message: "Seat Availability must be equal to Total Seats"
         });
     }
 
@@ -30,22 +30,30 @@ router.post("/addRoom", async (req, res) => {
             message: "Room already exists"
         })
     }
-    newRoom.save().then(result => {
-        return res.json({
-            status: "SUCCESS",
-            message: "Room added successfully"
-        });
-    }).catch(err =>{
-        return res.json({
-            status: "FAILED",
-            message: "Room was unable to be created"
+    
+
+    newRoom.save()
+        .then(result => {
+            return res.json({
+                status: "SUCCESS",
+                message: "Room added successfully"
+            });
         })
-    })
+        .catch(err => {
+            console.log(err);
+            return res.json({
+                status: "FAILED",
+                message: "Room was unable to be created"
+            });
+        });
 
 })
 
 
 //Update room
+/*
+    This is how we update the seat 
+*/
 router.post("/updateRoom/:roomName", async (req, res) => {
     let { roomName } = req.params;
 
@@ -108,21 +116,33 @@ router.post("/updateRoom/:roomName", async (req, res) => {
 /*
     Decrements the seat availability for the room. The reason this exists is soley for when a seat
     gets bought out for this room. 
+
+    When this function is called, it takes in the roomName as well as an array of seats bought.
+    We will then update that many seats and if even one breaks, we cancel the whole order.
 */
 router.post("/decrementRoomSeat/:roomName", async (req, res) => {
     let { roomName } = req.params;
-    
+    let { seatsBought } = req.body;
     const room = await Room.findOne({ name: roomName });
 
-    const roomUpdates = {};
-    roomUpdates["seatAvailability"] = (room.seatAvailability - 1);
+    //Checking length of seatsBought array 
+    let numberOfSeats = seatsBought.length;
 
+    const roomUpdates = {};
+    //Checks if the amount of seats taken is more than allotted 
+    roomUpdates["seatAvailability"] = (room.seatAvailability - numberOfSeats);
     if(roomUpdates["seatAvailability"] < 0){
         return res.json({
             status: "FAILED",
-            message: "All seats are full"
+            message: "You've picked more seats than are available"
         });
     }
+
+
+    /*
+        Now we are going to check if those seats are available
+        Then we will use a for loop to create an array of seatObjects and once 
+    */
 
     try { 
         //Checking if the room exists
@@ -134,6 +154,12 @@ router.post("/decrementRoomSeat/:roomName", async (req, res) => {
                 { $set:  roomUpdates},
                 { new: true }
             );
+
+            /*
+                Here's how we will update the room seats 
+            */
+
+
             return res.json({
                 status: "SUCCESS",
                 message: "Room seat availability decremented by 1 successfully",
