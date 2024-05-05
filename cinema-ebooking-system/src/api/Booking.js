@@ -161,7 +161,6 @@ router.get("/pullBooking/:bookingId", async(req, res) =>{
         }
 
         
-        console.log(result)
         return res.json(result);
     } catch (error) {
         console.error('Error:', error);
