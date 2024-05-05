@@ -400,12 +400,12 @@ router.post('/signup', (req, res) => {
 
 //send the user an email if profile has been updated
 const sendProfileUpdatedEmail = async (userId) => {
-    //URL for the email, in our case currently it is localhost:5000
+    //URL for the email, in our case currently it is localhost:4000
     const user =  await User.findOne({ _id: userId });
     // console.log("Attempting to send profile update email");
     // console.log(user);
     
-    const currentURL = "http://localhost:5000/";
+    const currentURL = "http://localhost:4000/";
     if(user) {
         //Mail options
         const mailOptions = {
@@ -973,9 +973,7 @@ router.delete("/card/:cardId/:userId", (req, res) => {
 });
 
 router.post("/addCard/:userId", async (req, res) => {
-    console.log("adding a card");
     const { userId } = req.params;
-
     try {
         // Check if the user already has three or more cards
         const cardCount = await paymentCard.countDocuments({ userId: userId });
