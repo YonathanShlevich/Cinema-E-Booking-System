@@ -8,6 +8,7 @@ require('./api/Movie');
 require('./api/Room');
 require('./api/ShowTime');
 require('./api/Booking');
+require('./api/PaymentCard');
 const app = require('express')();
 const port = 4000;
 
@@ -19,6 +20,7 @@ const ShowTimeRouter = require('./api/ShowTime');
 const SeatRouter = require('./api/Seat');
 const PromotionRouter = require('./api/Promotion');
 const BookingRouter = require('./api/Booking');
+const PaymentCardRouter = require('./api/PaymentCard');
 
 //Adding CORS
 let cors = require("cors");
@@ -37,6 +39,7 @@ app.use('/showtime', ShowTimeRouter);
 app.use('/seat', SeatRouter);
 app.use('/promotion', PromotionRouter);
 app.use('/booking', BookingRouter);
+app.use('/paymentcard', PaymentCardRouter);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
