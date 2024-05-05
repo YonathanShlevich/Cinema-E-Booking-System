@@ -65,7 +65,6 @@ router.post("/addBooking", async(req, res) => {
                 bookingId: newBooking._id, // Assuming bookingNumber is unique and suitable as booking id
                 seat: seat._id
             });
-            await newTicket.save();
             createdTickets.push(newTicket);
         } else {
             //If seat is not available
@@ -74,6 +73,25 @@ router.post("/addBooking", async(req, res) => {
                 message: `Seat ${seatNumber} is not available`
             });
         }
+    }
+
+    //Save the tickets after they're all confirmed
+    try {
+        for (let i = 0; i < createdTickets.length; i++) {
+            await createdTickets[i].save();
+        }
+    } catch (error) {
+        // Rollback changes if there's an error
+        for (let i = 0; i < createdTickets.length; i++) {
+            const seat = await Seat.findById(createdTickets[i].seat);
+            seat.status = 'Available';
+            await seat.save();
+        }
+        return res.json({
+            status: "FAILED",
+            message: "Tickets could not be saved",
+            error: error.message
+        });
     }
 
     newBooking.tickets = createdTickets;    //Updates tickets
