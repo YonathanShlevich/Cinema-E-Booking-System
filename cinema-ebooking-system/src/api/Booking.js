@@ -139,22 +139,37 @@ router.get("/pullBookingsfromUserId/:uId", async(req, res) =>{
 
 //given an bookingID, can we pull a booking
 router.get("/pullBooking/:bookingId", async(req, res) =>{
-    const bookingId = req.params.booking;
-    Booking.find({_id: bookingId}).then(result => {
-        if(!result){ //If the userID doesn't exist
+    const bookingId = req.params.bookingId;
+    try {
+        const result = await Booking.findOne({ _id: bookingId })
+        .populate({
+            path: 'showTime',
+            populate: [
+                { path: 'period', select: 'time' },
+                { path: 'date' },
+                {path: 'movie', select: 'title'}
+            ]
+        })
+        .populate('creditCard', 'cardType cardNumber');
+            
+
+        if (!result) {
             return res.json({
                 status: "FAILED",
-                message: 'no bookings exist for this user!'
+                message: 'Showtime does not exist'
             });
-        }   
-        return res.json(result); //This just returns the full json of the items in the User
-    }).catch(error =>{
-        //console.log(`Error: ${error}`);
+        }
+
+        
+        console.log(result)
+        return res.json(result);
+    } catch (error) {
+        console.error('Error:', error);
         return res.json({
             status: "FAILED",
             message: 'Error with pulling data'
         });
-    })
+    }
 
 })
 
