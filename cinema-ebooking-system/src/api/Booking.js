@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
-const Movie = require('../models/Movie');
 const ShowTime = require('../models/ShowTime');
-const ShowPeriod = require('../models/ShowPeriod');
 const paymentCard = require('../models/paymentCard');
 const User = require('../models/User');
+const Seat = require('../models/Seat');
+const Tickets = require('../models/Tickets');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 
 
@@ -16,7 +16,7 @@ const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 router.post("/addBooking", async(req, res) => {
 
 
-    let {bookingNumber, ticketNumber, showTime, creditCard, userId, promoId, total} = req.body;
+    let {bookingNumber, tickets, showTime, creditCard, userId, promoId, total} = req.body;
     //validate our movie, showtime, and payment cards are the real deal :P
 
     
@@ -36,21 +36,50 @@ router.post("/addBooking", async(req, res) => {
             message: "Invalid movie, showtime, or creditcard entered"
         });
     }
-    //check that the booking, promoId and ticket number don't already exist
+    //check that the booking and tickets don't already exist
     validateBn = await Booking.findOne({bookingNumber: bookingNumber});
-    validateTn = await Booking.findOne({ticketNumber: ticketNumber});
-    validatePr = await Booking.findOne({promoId: promoId});
-    if(validateBn || validateTn|| validatePr) {
+    if(validateBn) {
         return res.json({
             status: "FAILED",
-            message: "duplicate booking number, ticket number, or promo id entered- please try another number/id"
+            message: "Duplicate booking number"
         });
     }
     
+    /*
+        We need to create as many tickets as are asked for based on the number of tickets
+        To do that we need to find the seat based on the showtime and then create the tickets 
+        with those seats assuming they're available
+    */
+    const createdTickets = [];
+    for (let i = 0; i < tickets.length; i++) {  //Ticket spread
+        const seatNumber = tickets[i];  //An array of seat numbers that'll get turned into tickets
+        const seat = await Seat.findOne({ showTime: showTimeObject._id, seatNumber: seatNumber });  //Checks by showtime AND seatNumber 
+        if (seat && seat.status === 'Available') {  //If the seat exists and is available, create the ticket
+            //Making the seat unavailable
+            seat.status = 'Unavailable';
+            await seat.save();
+
+            const newTicket = new Tickets({
+                id: seat._id.toString(), // Assuming seat._id is unique and suitable as ticket id
+                bookingId: bookingNumber, // Assuming bookingNumber is unique and suitable as booking id
+                seat: seat._id
+            });
+            await newTicket.save();
+            createdTickets.push(newTicket);
+        } else {
+            //If seat is not available
+            return res.json({
+                status: "FAILED",
+                message: `Seat ${seatNumber} is not available`
+            });
+        }
+    }
+
+
     //object calling:
     const newBooking = new Booking ({
         bookingNumber: bookingNumber,
-        ticketNumber: ticketNumber, 
+        tickets: createdTickets, 
         showTime: showTimeObject, 
         creditCard: paymentCardObject,
         userId: userObject,
@@ -58,6 +87,12 @@ router.post("/addBooking", async(req, res) => {
         total: total
     })
     await newBooking.save().then(result => {
+
+        //If a booking goes through, all the seats that get bought need to update into tickets
+        //There is an array of tickets that relate to the updated seats
+
+
+
         return res.json({
             status: "SUCCESS",
             message: "New movie Booking was created!"
