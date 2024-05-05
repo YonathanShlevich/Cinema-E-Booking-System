@@ -231,6 +231,51 @@ router.get("/allBookings", (req, res) =>{
         })
 })
 
+
+router.post("/cancelBooking/:bookingId", async(req, res) =>{
+    const bookingId = req.params.bookingId; //grab the booking id that needs to be deleted
+
+    //set the status of all seats in this booking to available
+    const bookingObject = await Booking.findOne({_id : bookingId});
+    const showTimeObject = await ShowTime.findOne({_id : bookingObject.showTime});
+    
+    if(!bookingObject) {
+        return res.json({
+            status: "FAILED",
+            message: `invalid booking`
+        });
+    }
+    //make status of all seats in tht category available
+
+    for(let i = 0; i < bookingObject.tickets.length; i++){ 
+        const bookingInstance = bookingObject.tickets[i];
+        const ticketObj = await Tickets.findOne({_id: bookingInstance}); //ticket Object
+        const seatObj = await Seat.findOne({_id: ticketObj.seat});
+        if(seatObj){
+           //set seat status to "available" and save
+           seatObj.status = "Available";
+           await seatObj.save();
+        }
+    }
+    //delete the booking
+    Booking.deleteOne({_id: bookingId}).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'no bookings exist? this should never happen unless db is empty'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
+})
+
 module.exports = router;
 
 
