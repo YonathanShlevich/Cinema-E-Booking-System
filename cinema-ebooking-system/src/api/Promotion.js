@@ -5,7 +5,7 @@ const User = require('../models/User');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 
 //Env variables
-require("dotenv").config(); //TAKE A SECOND LOOK AT THIS
+require("dotenv").config(); 
 
 //nodemailer
 let transporter = nodemailer.createTransport({
@@ -16,9 +16,6 @@ let transporter = nodemailer.createTransport({
     }
 });
 
-/*
-    THIS FILE SHOULD ONLY HOLD: ADDPROMOTION
-*/
 
 //Yet another API router, this time to add a promotion
 router.post("/addPromotion", async (req, res) => {

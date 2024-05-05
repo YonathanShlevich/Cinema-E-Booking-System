@@ -8,9 +8,15 @@ const Seat = require('../models/Seat');
 const Tickets = require('../models/Tickets');
 const nodemailer = require("nodemailer"); // I LOVE NODEMAILER
 
+let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.AUTH_EMAIL,
+        pass: process.env.AUTH_PASSWORD
+    }
+});
 
-
-//require("dotenv").config();
+require("dotenv").config();
 
 //add booking
 router.post("/addBooking", async(req, res) => {
@@ -25,7 +31,10 @@ router.post("/addBooking", async(req, res) => {
 
     const showTimeObject = await ShowTime.findOne({
         _id: showTime
-    });
+    }).populate('movie period');
+    let movieTitle = showTimeObject.movie.title;
+    let movieTime = showTimeObject.period.time;
+    let movieDate = showTimeObject.date;
     const userObject = await User.findOne({
         _id: userId
     });
@@ -75,7 +84,7 @@ router.post("/addBooking", async(req, res) => {
         }
     }
 
-    //Save the tickets after they're all confirmed
+    //Save the tickets after they're all confirmed and retace if failed
     try {
         for (let i = 0; i < createdTickets.length; i++) {
             await createdTickets[i].save();
@@ -96,8 +105,30 @@ router.post("/addBooking", async(req, res) => {
 
     newBooking.tickets = createdTickets;    //Updates tickets
 
-    await newBooking.save().then(result => {
+    await newBooking.save().then(async result => {
 
+        //Send email after booking is complete
+        try {
+            //Pulls from userObject: Line 29
+            const mailOptions = {
+                from: process.env.AUTH_EMAIL,
+                to: userObject.email, // Use the user's email address
+                subject: "Booking Confirmation",
+                html: `<p>This is the email confirmation for your booking of ${movieTitle} at ${movieTime} on ${movieDate}. You can check your purcahse history on the OnlyReels site.</p>`, // Fill in the email content
+            };
+
+            // Send email
+            transporter.sendMail(mailOptions); // You need to implement this function to send the email
+        
+
+            console.log("Email sent successfully to user.");
+        } catch (error) {
+            return res.json({
+                status: "FAILED",
+                message: "Error sending booking confirmation email",
+                error: error.message
+            });
+        }
         //If a booking goes through, all the seats that get bought need to update into tickets
         //There is an array of tickets that relate to the updated seats
         return res.json({
@@ -201,3 +232,15 @@ router.get("/allBookings", (req, res) =>{
 })
 
 module.exports = router;
+
+
+/* Testing info for a booking
+ {
+    "tickets": ["8", "1"],
+    "showTime": "66367d5652a296d9f797bfc0",
+    "creditCard": "660332b6e5115a9d74d7c9c1",
+    "userId": "66030844736299a2f0ef8ae4",
+    "promoId": 1234,
+    "total": 13.75
+}
+ */
