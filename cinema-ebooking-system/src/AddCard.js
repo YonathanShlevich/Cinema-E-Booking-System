@@ -24,7 +24,7 @@ function AddCard() {
         }
         try {
             // Make the API call to add the card
-            const response = await axios.post(`http://localhost:5000/user/addCard/${userId}`, formData);
+            const response = await axios.post(`http://localhost:4000/user/addCard/${userId}`, formData);
 
             
             
