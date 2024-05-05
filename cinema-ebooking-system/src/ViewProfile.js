@@ -172,7 +172,7 @@ function deleteCard(cardId) {
             </div>  
             <div>
             {/* Past Booking Display */}
-            <Link to={`/viewprofile/past-booking/${userInfo._id}`} className="edit-button">Past Booking</Link>
+            <Link to={`/viewprofile/past-booking/${userId}`} className="edit-button">Past Booking</Link>
             </div>  
           </>
         )}

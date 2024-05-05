@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 function PastBooking() {
-  const [userInfo, setUserInfo] = useState(null);
-  const { userId } = useParams();
-  const navigate = useNavigate();
+  const [bookingInfo, setbookingInfo] = useState(null);
+  const userId = localStorage.getItem('loggedInUserId');
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/user/booking/pullBookingsfromUserId/${userId}`)
+    axios.get(`http://localhost:4000/booking/pullBookingsfromUserId/${userId}`)
       .then(response => {
         if (response.data.status === "FAILED") {
           // Handle error
         } else {
-          setUserInfo(response.data);
+            setbookingInfo(response.data);
+            window.alert(JSON.stringify(response.data));
         }
       })
       .catch(error => {
         console.error('Error fetching user info:', error);
       });
-  }, [userId]);
+  }, []);
 
   return (
     <div>
@@ -28,11 +28,11 @@ function PastBooking() {
         <div className="card-header">
           <h2>Past Bookings</h2>
         </div>
-        {userInfo && (
+        {bookingInfo && (
           <>
             <div>
-              {/* Fisrt name Display */}
-              <strong> Name:</strong> {userInfo.ticket}
+              {/* Showtime Display */}
+              <strong>Showtime:</strong> {bookingInfo.showTime}
             </div>
           </>
         )}
