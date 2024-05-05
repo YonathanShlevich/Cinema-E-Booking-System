@@ -157,6 +157,27 @@ router.get("/pullBookingsfromUserId/:uId", async(req, res) =>{
 
 })
 
+router.get("/pullBookingsfromCheckout/:bookingID", async(req, res) =>{
+    const bookingID = req.params.bookingID;
+    Booking.findById(bookingID).then(result => {
+        if(!result){ //If the userID doesn't exist
+            return res.json({
+                status: "FAILED",
+                message: 'This booking does not exist'
+            });
+        }   
+        return res.json(result); //This just returns the full json of the items in the User
+    }).catch(error =>{
+        //console.log(`Error: ${error}`);
+        return res.json({
+            status: "FAILED",
+            message: 'Error with pulling data'
+        });
+    })
+
+})
+
+
 router.get("/allBookings", (req, res) =>{
     //const movieTitle = req.params.movieTitle; 
     Booking.find({})
