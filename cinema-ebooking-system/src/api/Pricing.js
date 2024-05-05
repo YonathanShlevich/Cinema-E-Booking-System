@@ -5,6 +5,14 @@ const Pricing = require('../models/Pricing');
 //Adding the one pricings model
 router.post("/addPricing", async (req, res) => {
 
+    const pricingChecks = await Pricing.exists();
+    if (pricingChecks) {
+        return res.json({
+            status: "FAILED",
+            message: "Pricing data already exists"
+        });
+    }
+
     let { childCost, adultCost, seniorCost, bookingFee } = req.body;
 
     //Checking if the body has the pricings
