@@ -238,6 +238,7 @@ router.post("/cancelBooking/:bookingId", async(req, res) =>{
     //set the status of all seats in this booking to available
     const bookingObject = await Booking.findOne({_id : bookingId});
     const showTimeObject = await ShowTime.findOne({_id : bookingObject.showTime});
+    const currTime = Date.now();
     
     if(!bookingObject) {
         return res.json({
