@@ -5,10 +5,10 @@ const Schema = mongoose.Schema;
 const TicketsSchema = new Schema({
     id: String, //Pulled from Seat
     bookingId: Number,
-    seatId: Number
+    seat: {type: Schema.Types.ObjectId, ref: 'Seat'}
 
 });
 
 const Tickets = mongoose.model('Tickets', TicketsSchema);
 
-module.exports = ShowPeriod;
+module.exports = Tickets;
