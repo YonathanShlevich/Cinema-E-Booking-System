@@ -81,4 +81,40 @@ router.post("/updatePricing", async (req, res) => {
     });
 });
 
+
+
+
+
+//Pull Pricings
+router.get("/pullPricings", async(req, res) =>{
+    try {
+        const pricingExists = await Pricing.exists();
+        if (!pricingExists) {
+            return res.json({
+                status: "FAILED",
+                message: 'Pricing data does not exist'
+            });
+        }
+        
+        const pricingData = await Pricing.findOne(); // Find the first document in the Pricing collection
+        return res.json({
+            status: "SUCCESS",
+            data: pricingData
+        });
+        
+    } catch (error) {
+        console.error("Error pulling pricing data:", error);
+        return res.json({
+            status: "FAILED",
+            message: "An error occurred while pulling pricing data"
+        });
+    }
+
+})
+
+
+
+
+
+
 module.exports = router;
