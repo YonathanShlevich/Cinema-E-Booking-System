@@ -421,7 +421,7 @@ function Checkout() {
               <input id="promo" type="text" className="form-control" />
               
             </div>   
-             <button className="btn btn-primary" onClick={handlePromo}>Update Total</button>
+             <button className="btn btn-primary" onClick={handlePromo}>Apply Promo</button>
 
             <div className="form-group">
               <label>Total: ${(total - total*discount).toFixed(2)}</label>
