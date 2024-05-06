@@ -19,6 +19,7 @@ const Home = () => {
   const [selectedGenre, setSelectedGenre] = useState(null);
   const [carouselVisible, setCarouselVisible] = useState(true);
   const [filterClicked, setFilterClicked] = useState(false);
+  const [selectedShowtimeFilter, setSelectedShowtimeFilter] = useState('all');
 
   useEffect(() => {
     //Function to get user ID from localStorage
@@ -82,7 +83,7 @@ const Home = () => {
   };
     // Function to handle genre selection
       const handleGenreSelection = (genre) => {
-        setSelectedGenre(genre);
+        setSelectedGenre(prevGenre => prevGenre === genre ? null : genre);
     };
 
     const genres = [...new Set(movies.map(movie => movie.genre))];
@@ -275,10 +276,43 @@ const Home = () => {
     setSelectedGenre(null); // Reset selected genre when searching
   };
 
+// Function for filtering through show time
+const showTimeFilter = (movie) => (showtime) => {
+  const today = new Date();
+  const nextSevenDays = new Date(today);
+  nextSevenDays.setDate(nextSevenDays.getDate() + 7);
+  const nextThirtyDays = new Date(today);
+  nextThirtyDays.setDate(nextThirtyDays.getDate() + 30);
+
+  if (selectedShowtimeFilter === 'today') {
+
+      // Check if the showtime date is today
+      const showtimeDate = new Date(showtime.date);
+      return showtime.movie === movie._id && showtimeDate.toISOString().split('T')[0] === today.toISOString().split('T')[0];
+  }
+  if (selectedShowtimeFilter === 'nextSevenDays') {
+      // Check if the showtime date falls within the next seven days
+      return showtime.movie === movie._id && showtime.date >= today.toISOString().split('T')[0] && showtime.date <= nextSevenDays.toISOString().split('T')[0];
+  }
+  if (selectedShowtimeFilter === 'nextThirtyDays') {
+      // Check if the showtime date falls within the next thirty days
+      return showtime.movie === movie._id && showtime.date >= today.toISOString().split('T')[0] && showtime.date <= nextThirtyDays.toISOString().split('T')[0];
+  }
+};
+
+
+  
+  
+  
+    
+    
+  
+
   // Filter movies based on search term
   const filteredMovies = movies.filter(movie =>
     (!selectedGenre || movie.genre.toLowerCase() === selectedGenre.toLowerCase()) &&
-    movie.title.toLowerCase().includes(searchTerm.toLowerCase())
+    (selectedShowtimeFilter === 'all' ||
+        showTimes.some(showTimeFilter(movie)))
 );
 
   return (
@@ -353,6 +387,7 @@ const Home = () => {
       {/* Section for Filtering Buttons */}
       {filterClicked && (
       <ul className="genre_filter">
+        <h3>Genre:  </h3>
       {/* Map over the genres array to dynamically render buttons */}
         {genres.map((genre, index) => (
         <li key={index}>
@@ -367,6 +402,14 @@ const Home = () => {
       ))}
     </ul>
       )}
+        {/*Filtering buttons for showtime */ }
+        <div className='showtime_filter'>
+          <h3>Showdate: </h3>
+          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('all')}>All</button>
+          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('today')}>Today</button>
+          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('nextSevenDays')}>Next 7 Days</button>
+          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('nextThirtyDays')}>Next 30 Days</button>
+        </div>
 
 
       <div id="myModal" class="modal">
@@ -418,7 +461,7 @@ const Home = () => {
         {/* Mapping through filteredMovies array to display Coming Soon movies, 
         this should show all of them since the filter has nothing */}
         
-        {filteredMovies.map((movie, index) => (
+        {filteredMovies.map((movie) => (
           movie.category === 'Coming Soon' && (
             <div key={movie._id} className="movie-item">
               
