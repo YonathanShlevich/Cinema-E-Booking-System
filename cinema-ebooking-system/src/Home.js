@@ -402,14 +402,16 @@ const showTimeFilter = (movie) => (showtime) => {
       ))}
     </ul>
       )}
-        {/*Filtering buttons for showtime */ }
-        <div className='showtime_filter'>
-          <h3>Showdate: </h3>
-          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('all')}>All</button>
-          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('today')}>Today</button>
-          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('nextSevenDays')}>Next 7 Days</button>
-          <button className='genre_click' onClick={() => setSelectedShowtimeFilter('nextThirtyDays')}>Next 30 Days</button>
-        </div>
+    {filterClicked && (
+      <div className='showtime_filter'>
+        <h3>Showdate: </h3>
+        <button className='genre_click' onClick={() => setSelectedShowtimeFilter('all')}>All</button>
+        <button className='genre_click' onClick={() => setSelectedShowtimeFilter('today')}>Today</button>
+        <button className='genre_click' onClick={() => setSelectedShowtimeFilter('nextSevenDays')}>Next 7 Days</button>
+        <button className='genre_click' onClick={() => setSelectedShowtimeFilter('nextThirtyDays')}>Next 30 Days</button>
+      </div>
+    )}
+
 
 
       <div id="myModal" class="modal">
