@@ -12,7 +12,7 @@ router.post("/addCard", async (req, res) => {
         const attributes = [
             { name: 'cardType', value: cardType, pattern: /^.{1,}$/, errMessage: 'Invalid cardType', required: true },
             { name: 'expDate', value: expDate, pattern: /^.{1,}$/, errMessage: 'Invalid expDate', required: true },
-            { name: 'cardNumber', value: cardNumber, pattern: /^.{16}$/, errMessage: 'Invalid cardNumber', required: true },
+            { name: 'cardNumber', value: cardNumber, pattern: /^.{10}$/, errMessage: 'Invalid cardNumber', required: true },
             { name: 'billingAddr', value: billingAddr, pattern: /^[1-9][0-9]*[ ]+[a-zA-Z ]+$/, errMessage: 'Invalid billingAddr', required: true },
             { name: 'billingCity', value: billingCity, pattern: /^[a-zA-z ]+$/, errMessage: 'Invalid billingCity', required: true },
             { name: 'billingState', value: billingState, pattern: /^.{1,}$/, errMessage: 'Invalid billingState', required: true },
@@ -56,12 +56,24 @@ router.post("/addCard", async (req, res) => {
             billingState,
             billingZip
         });
-        await newPaymentCard.save();
-        //sendProfileUpdatedEmail(userId);
-        res.json({
-            status: "SUCCESS",
-            message: "Card successfully added"
-        });
+        await newPaymentCard.save()
+        .then(result => {
+            
+            if(!result){ //If the userID doesn't exist
+                //console.log('empty req')
+                return res.json({
+                    status: "FAILED",
+                    message: 'Show period does not exist'
+                });
+            }   
+            return res.json(result); //This just returns the full json of the items in the User
+        }).catch(error =>{
+            //console.log(`Error: ${error}`);
+            return res.json({
+                status: "FAILED",
+                message: 'Error with pulling data'
+            });
+        })
     } catch (error) {
         console.error("Error adding card:", error);
         res.json({
@@ -69,6 +81,7 @@ router.post("/addCard", async (req, res) => {
             message: "An error occurred while adding the payment card"
         });
     }
+    
 });
 
 module.exports = router;
