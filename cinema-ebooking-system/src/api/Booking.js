@@ -115,7 +115,7 @@ router.post("/addBooking", async(req, res) => {
                 from: process.env.AUTH_EMAIL,
                 to: userObject.email, // Use the user's email address
                 subject: "Booking Confirmation",
-                html: `<p>This is the email confirmation for your booking of ${movieTitle} at ${movieTime} on ${movieDate}. You can check your purcahse history on the OnlyReels site.</p>`, // Fill in the email content
+                html: `<p>This is the email confirmation for your booking of ${movieTitle} at ${movieTime} on ${new Date(movieDate).toUTCString()}. You can check your purcahse history on the OnlyReels site.</p>`, // Fill in the email content
             };
 
             // Send email

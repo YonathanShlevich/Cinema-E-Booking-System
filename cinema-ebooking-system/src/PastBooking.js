@@ -5,10 +5,11 @@ import "./PastBooking.css"
 
 //function for formatting the date to look better
 function formatDateString(dateString) {
-  const options = { month: 'long', day: 'numeric', year: 'numeric' };
+  const options = { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' };
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', options);
 }
+
 
 function PastBooking() {
   const [bookingInfo, setBookingInfo] = useState([]);
@@ -66,6 +67,9 @@ function PastBooking() {
               </div>
               <div className="booking-details-info">
                 <strong>Date:</strong> {booking.showTime.date}
+              </div>
+              <div className="booking-details-info">
+                <strong>Time:</strong> {booking.showTime.period.time}
               </div>
               <div className="booking-details-info">
                 <strong>Total:</strong> ${booking.total.toFixed(2)}

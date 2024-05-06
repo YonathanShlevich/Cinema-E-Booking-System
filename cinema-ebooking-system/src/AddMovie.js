@@ -131,10 +131,17 @@ function AddMovie() {
                     <select id="genre" className="form-control">
                         <option value="" selected></option>
                         <option value="Horror">Horror</option>
+                        <option value="Exploitation Horror">Exploitation Horror</option>
                         <option value="Drama">Drama</option>
                         <option value="Action">Action</option>
                         <option value="Comedy">Comedy</option>
                         <option value="Sci-fi">Sci-fi</option>
+                        <option value="Romance">Romance</option>
+                        <option value="Thriller">Thriller</option>
+                        <option value="Fantasy">Fantasy</option>
+                        <option value="Documentary">Documentary</option>
+                        <option value="Adventure">Adventure</option>
+                        <option value="Crime">Crime</option>
                         
                     </select>
                 </div>
