@@ -136,6 +136,7 @@ function Checkout() {
 
     const handleOptionChange = (event) => {
       setSelectedOption(event.target.value);
+      setSelectedCard(null)
     };
 
     const handleSubmit = () => {
