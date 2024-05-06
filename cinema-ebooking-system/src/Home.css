@@ -293,3 +293,11 @@ nav  {
     margin-top: 1%;
 
 }
+
+.showtime_filter {
+
+  display: flex;
+  list-style: none;
+  margin-left: 20px;
+
+}
