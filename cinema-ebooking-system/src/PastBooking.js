@@ -49,7 +49,7 @@ function PastBooking() {
 
   return (
     <div>
-      <Link to="/viewprofile" className="back-button"> Back to Profile</Link>
+      <Link to="/viewprofile" className="back-to-profile-link"> Back to Profile</Link>
       <div className="container">
         
       </div>
@@ -62,10 +62,10 @@ function PastBooking() {
             <div key={index} className="booking-details">
               <h3><u>Booking {index + 1}</u></h3>
               <div className="booking-details-info">
-                <strong>Date:</strong> {booking.showTime.date}
+                <strong>Movie:</strong> {booking.showTime.movie.title}
               </div>
               <div className="booking-details-info">
-                <strong>Movie:</strong> {booking.showTime.movie.title}
+                <strong>Date:</strong> {booking.showTime.date}
               </div>
               <div className="booking-details-info">
                 <strong>Total:</strong> ${booking.total.toFixed(2)}

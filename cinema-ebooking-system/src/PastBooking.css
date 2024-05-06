@@ -3,7 +3,7 @@
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 10px; /* Adjusted padding */
-    margin-top: 3%;
+    margin-top: 5%;
     margin-left: 35%; /* Adjusted margin */
     width: 30%;
   }
@@ -31,13 +31,8 @@
   
   .back-to-profile-link {
     display: block;
-    margin-bottom: 20px;
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .back-to-profile-link:hover {
-    color: #000;
+    margin-top: 10px;
+    margin-left: 20px;
     text-decoration: underline;
   }
   
