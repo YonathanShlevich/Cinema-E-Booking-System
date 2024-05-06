@@ -140,6 +140,7 @@ function Checkout() {
     };
 
     const handleSubmit = () => {
+        var creditCard = null;
         // submit to db
         if (selectedOption === 'differentCard') { // different card is selected
           const cardType = document.getElementById("cardType").value;
@@ -165,12 +166,34 @@ function Checkout() {
             axios.post(`http://localhost:4000/PaymentCard/addCard`, cardFormData)
             .then(response => {
               if (response.data.status === "FAILED") {
-                // do nothing
-                console.log(response.data)
+                
                 window.alert(response.data.message)
                 return;
               } else {
-                console.log(response.data)
+                creditCard = response.data._id;
+                const formData = {
+                  tickets: seatNumbers,
+                  showTime: showtimeFromURL,
+                  creditCard: creditCard,
+                  userId: loggedInUserId,
+                  promoId: promoId,
+                  total: (total - total*discount).toFixed(2)
+                };
+              axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
+              .then(response => {
+                if (response.data.status === "FAILED") {
+                  // do nothing
+                  window.alert("Submit failed: " + response.data.message)
+                } else {
+                  navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+        
+                }
+                
+              })
+              .catch(error => {
+                window.alert(error)
+                console.error('Error fetching user info:', error);
+              });
               }
               
             })
@@ -179,38 +202,43 @@ function Checkout() {
             });
 
 
+
+
           } else { // not all the infomation is entered
-             return;
+            window.alert("not all card info is entered")
+            return;
           }
           
         } else {
+          creditCard = selectedCard;
+            const formData = {
+              tickets: seatNumbers,
+              showTime: showtimeFromURL,
+              creditCard: creditCard,
+              userId: loggedInUserId,
+              promoId: promoId,
+              total: (total - total*discount).toFixed(2)
+            };
+          axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
+          .then(response => {
+            if (response.data.status === "FAILED") {
+              // do nothing
+              window.alert("Submit failed: " + response.data.message)
+            } else {
+              navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
 
-        }
-
-
-        const formData = {
-          tickets: seatNumbers,
-          showTime: showtimeFromURL,
-          creditCard: selectedCard,
-          userId: loggedInUserId,
-          promoId: promoId,
-          total: (total - total*discount).toFixed(2)
-        };
-      axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
-      .then(response => {
-        if (response.data.status === "FAILED") {
-          // do nothing
-          window.alert("Submit failed: " + response.data.message)
-        } else {
-          navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+            }
+            
+          })
+          .catch(error => {
+            window.alert(error)
+            console.error('Error fetching user info:', error);
+          });
 
         }
         
-      })
-      .catch(error => {
-        window.alert(error)
-        console.error('Error fetching user info:', error);
-      });
+
+        
         //navigate("/bookticket/order-confirmation")
     }
     const handleBack = () => {
