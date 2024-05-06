@@ -141,6 +141,51 @@ function Checkout() {
 
     const handleSubmit = () => {
         // submit to db
+        if (selectedOption === 'differentCard') { // different card is selected
+          const cardType = document.getElementById("cardType").value;
+          const cardNumber = document.getElementById("cardNumber").value;
+          const billingCity = document.getElementById("billingCity").value;
+          const billingState = document.getElementById("billingState").value;
+          const billingZip = document.getElementById("billingZip").value;
+          const billingAddress = document.getElementById("billingAddress").value;
+          const exp = document.getElementById("exp").value;
+
+          if (cardType && cardNumber && billingCity && billingState && billingZip && billingAddress && exp) {
+            const cardFormData = {
+              cardType: cardType,
+              expDate: exp,
+              cardNumber: cardNumber,
+              billingAddr: billingAddress,
+              billingCity: billingCity,
+              billingState: billingState,
+              billingZip: billingZip
+            };
+
+            // add a card
+            axios.post(`http://localhost:4000/PaymentCard/addCard`, cardFormData)
+            .then(response => {
+              if (response.data.status === "FAILED") {
+                // do nothing
+                console.log(response.data)
+                window.alert(response.data.message)
+                return;
+              } else {
+                console.log(response.data)
+              }
+              
+            })
+            .catch(error => {
+              console.error('Error fetching promo info:', error);
+            });
+
+
+          } else { // not all the infomation is entered
+             return;
+          }
+          
+        } else {
+
+        }
 
 
         const formData = {
@@ -353,7 +398,12 @@ function Checkout() {
             <div className="form-group">
               <label>Total: ${(total - total*discount).toFixed(2)}</label>
             </div>
-            { selectedCard &&
+            { (selectedCard && selectedOption === 'existingCard' )&&
+            <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
+
+            }
+            { 
+              selectedOption === 'differentCard' &&
             <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
 
             }
