@@ -128,16 +128,6 @@ router.post("/addShowtime", async (req, res) => {
         newShowTime.seats.push(newSeat);
     }
     
-    //Seats should be associated with showTime. Creates seats based on room size
-    for (let i = 1; i <= roomObject.totalSeats; i++) {
-        const newSeat = new Seat({
-            showTime: newShowTime._id,
-            seatNumber: i
-        });
-        await newSeat.save();
-        newShowTime.seats.push(newSeat);
-    }
-    
     await newShowTime.save().then(result => {
         return res.json({
             status: "SUCCESS",
