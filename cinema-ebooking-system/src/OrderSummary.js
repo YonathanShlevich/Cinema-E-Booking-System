@@ -12,6 +12,7 @@ function OrderSummary() {
   const [movieFromURL, setMovieFromURL] = useState("");
   const [showtimeFromURL, setShowtimeFromURL] = useState("");
   const [loggedInUserId, setLoggedInUserId] = useState(null);
+  const [pricing, setPricing] = useState(null);
  // --------------------------------------------------------
 
  useEffect(() => {
@@ -19,6 +20,24 @@ function OrderSummary() {
     return localStorage.getItem('loggedInUserId');
   };
   setLoggedInUserId(getLoggedInUserId());
+}, []);
+
+useEffect(() => {
+  axios.get(`http://localhost:4000/Pricing/pullPricings`)
+    .then(response => {
+      if (response.data.status === "FAILED") {
+        // do nothing
+        console.log(response.data.message)
+      } else {
+
+        setPricing(response.data.data)
+        console.log(response.data.data)
+      }
+    })
+    .catch(error => { 
+      console.error('Error fetching pricing info:', error);
+    });
+  
 }, []);
 
 useEffect(() => {
@@ -64,7 +83,7 @@ useEffect(() => {
     return params.get('seats');
   };
   const encodedSeats = getSeatsFromURL();
-  if (encodedSeats) {
+  if (encodedSeats && pricing) {
     // Decode the URL-encoded string
     const decodedSeatsString = decodeURIComponent(encodedSeats);
 
@@ -75,13 +94,13 @@ useEffect(() => {
       let price = 0;
       switch (seat.age) {
           case "Child":
-              price = 9;
+              price = pricing.childCost;
               break;
           case "Adult":
-              price = 12;
+              price = pricing.adultCost;
               break;
           case "Senior":
-              price = 8;
+              price = pricing.seniorCost;
               break;
           default:
               // Handle other cases if needed
@@ -97,7 +116,7 @@ useEffect(() => {
 
     setTickets(tickets);
   }
-}, [location.search]);
+}, [pricing]);
 
 
 
@@ -144,7 +163,7 @@ useEffect(() => {
               
             </div>
           ))}
-          <div>Online Fee: $3</div>
+          <div>Online Fee: ${pricing && pricing.bookingFee}</div>
           <div>Tax: ${(totalPrice * .07).toFixed(2)}</div>
           <div></div>
           <div>Total Price: ${(totalPrice + (totalPrice * .07) + 3).toFixed(2)}</div>
