@@ -136,35 +136,109 @@ function Checkout() {
 
     const handleOptionChange = (event) => {
       setSelectedOption(event.target.value);
+      setSelectedCard(null)
     };
 
     const handleSubmit = () => {
+        var creditCard = null;
         // submit to db
+        if (selectedOption === 'differentCard') { // different card is selected
+          const cardType = document.getElementById("cardType").value;
+          const cardNumber = document.getElementById("cardNumber").value;
+          const billingCity = document.getElementById("billingCity").value;
+          const billingState = document.getElementById("billingState").value;
+          const billingZip = document.getElementById("billingZip").value;
+          const billingAddress = document.getElementById("billingAddress").value;
+          const exp = document.getElementById("exp").value;
+
+          if (cardType && cardNumber && billingCity && billingState && billingZip && billingAddress && exp) {
+            const cardFormData = {
+              cardType: cardType,
+              expDate: exp,
+              cardNumber: cardNumber,
+              billingAddr: billingAddress,
+              billingCity: billingCity,
+              billingState: billingState,
+              billingZip: billingZip
+            };
+
+            // add a card
+            axios.post(`http://localhost:4000/PaymentCard/addCard`, cardFormData)
+            .then(response => {
+              if (response.data.status === "FAILED") {
+                
+                window.alert(response.data.message)
+                return;
+              } else {
+                creditCard = response.data._id;
+                const formData = {
+                  tickets: seatNumbers,
+                  showTime: showtimeFromURL,
+                  creditCard: creditCard,
+                  userId: loggedInUserId,
+                  promoId: promoId,
+                  total: (total - total*discount).toFixed(2)
+                };
+              axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
+              .then(response => {
+                if (response.data.status === "FAILED") {
+                  // do nothing
+                  window.alert("Submit failed: " + response.data.message)
+                } else {
+                  navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+        
+                }
+                
+              })
+              .catch(error => {
+                window.alert(error)
+                console.error('Error fetching user info:', error);
+              });
+              }
+              
+            })
+            .catch(error => {
+              console.error('Error fetching promo info:', error);
+            });
 
 
-        const formData = {
-          tickets: seatNumbers,
-          showTime: showtimeFromURL,
-          creditCard: selectedCard,
-          userId: loggedInUserId,
-          promoId: promoId,
-          total: (total - total*discount).toFixed(2)
-        };
-      axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
-      .then(response => {
-        if (response.data.status === "FAILED") {
-          // do nothing
-          window.alert("Submit failed: " + response.data.message)
+
+
+          } else { // not all the infomation is entered
+            window.alert("not all card info is entered")
+            return;
+          }
+          
         } else {
-          navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+          creditCard = selectedCard;
+            const formData = {
+              tickets: seatNumbers,
+              showTime: showtimeFromURL,
+              creditCard: creditCard,
+              userId: loggedInUserId,
+              promoId: promoId,
+              total: (total - total*discount).toFixed(2)
+            };
+          axios.post(`http://localhost:4000/Booking/addBooking`, formData) //Calls our data backend GET call
+          .then(response => {
+            if (response.data.status === "FAILED") {
+              // do nothing
+              window.alert("Submit failed: " + response.data.message)
+            } else {
+              navigate(`/bookticket/order-confirmation?booking=${response.data._id}`)
+
+            }
+            
+          })
+          .catch(error => {
+            window.alert(error)
+            console.error('Error fetching user info:', error);
+          });
 
         }
         
-      })
-      .catch(error => {
-        window.alert(error)
-        console.error('Error fetching user info:', error);
-      });
+
+        
         //navigate("/bookticket/order-confirmation")
     }
     const handleBack = () => {
@@ -347,12 +421,17 @@ function Checkout() {
               <input id="promo" type="text" className="form-control" />
               
             </div>   
-             <button className="btn btn-primary" onClick={handlePromo}>Update Total</button>
+             <button className="btn btn-primary" onClick={handlePromo}>Apply Promo</button>
 
             <div className="form-group">
               <label>Total: ${(total - total*discount).toFixed(2)}</label>
             </div>
-            { selectedCard &&
+            { (selectedCard && selectedOption === 'existingCard' )&&
+            <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
+
+            }
+            { 
+              selectedOption === 'differentCard' &&
             <button className="btn btn-primary"type="submit" onClick={handleSubmit}>Submit Order</button>
 
             }

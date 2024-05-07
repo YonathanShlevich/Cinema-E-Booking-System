@@ -5,6 +5,7 @@ const Room = require('../models/Room');
 const ShowPeriod = require('../models/ShowPeriod');
 const ShowTime = require('../models/ShowTime');
 const Seat = require('../models/Seat');
+
 const Tickets = require('../models/Tickets');
 const Booking = require('../models/Booking');
 /*

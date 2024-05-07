@@ -11,7 +11,7 @@ function Suspended() {
       <div className="suspended-container">
         <img src="./suspended.gif" alt="Suspended Image" className="suspended-image" />
         <h1 className="suspended-heading">Your Account has been Suspended</h1>
-        <p className="suspended-text">Please contact OnlyReels to resolve this situation.</p>
+        <p className="suspended-text">Please contact OnlyFlix to resolve this situation.</p>
       </div>
     </div>
   );

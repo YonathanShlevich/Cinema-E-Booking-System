@@ -115,7 +115,7 @@ router.post("/addBooking", async(req, res) => {
                 from: process.env.AUTH_EMAIL,
                 to: userObject.email, // Use the user's email address
                 subject: "Booking Confirmation",
-                html: `<p>This is the email confirmation for your booking of ${movieTitle} at ${movieTime} on ${movieDate}. You can check your purcahse history on the OnlyReels site.</p>`, // Fill in the email content
+                html: `<p>This is the email confirmation for your booking of ${movieTitle} at ${movieTime} on ${new Date(movieDate).toUTCString().substring(0, 16)}. You can check your purcahse history on the OnlyReels site.</p>`, // Fill in the email content
             };
 
             // Send email
@@ -165,26 +165,38 @@ router.get("/pullCCfromId/:ccId", async(req, res) =>{
 })
 
 //given an title, can we pull a showtime
-router.get("/pullBookingsfromUserId/:uId", async(req, res) =>{
-    console.log("pulling show time info")
+router.get("/pullBookingsfromUserId/:uId", async (req, res) => {
+    console.log("pulling show time info");
     const uId = req.params.uId;
-    Booking.find({userId: uId}).then(result => {
-        if(!result){ //If the userID doesn't exist
+    try {
+        const result = await Booking.find({ userId: uId })
+            .populate({
+                path: 'showTime',
+                populate: [
+                    { path: 'period', select:'time' },
+                    { path: 'date' },
+                    { path: 'movie', select:'title'}
+                ]
+            })
+        if (!result || result.length === 0) {
             return res.json({
                 status: "FAILED",
-                message: 'no bookings exist for this user!'
+                message: 'No bookings exist for this user!'
             });
-        }   
-        return res.json(result); //This just returns the full json of the items in the User
-    }).catch(error =>{
-        //console.log(`Error: ${error}`);
+        }
+
+        console.log(result);
+        
+        return res.json(result);
+    } catch (error) {
+        console.error('Error:', error);
         return res.json({
             status: "FAILED",
             message: 'Error with pulling data'
         });
-    })
-
+    }
 })
+
 
 //given an bookingID, can we pull a booking
 router.get("/pullBooking/:bookingId", async(req, res) =>{
@@ -209,7 +221,7 @@ router.get("/pullBooking/:bookingId", async(req, res) =>{
             });
         }
 
-        
+        console.log(result);
         return res.json(result);
     } catch (error) {
         console.error('Error:', error);

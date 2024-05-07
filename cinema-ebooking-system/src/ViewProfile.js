@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./ViewProfile.css";
 
@@ -169,6 +169,10 @@ function deleteCard(cardId) {
             <div>
             {/* Subscription Display */}
             <strong>Subscribed for Promo:</strong> {userInfo.promo ? 'Yes' : 'No'} {/* Checks if promo is true */}
+            </div>  
+            <div>
+            {/* Past Booking Display */}
+            <Link to={`/viewprofile/past-booking/${userId}`} className="edit-button">Past Booking</Link>
             </div>  
           </>
         )}

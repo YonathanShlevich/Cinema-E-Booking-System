@@ -1,0 +1,38 @@
+.past-booking-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px; /* Adjusted padding */
+    margin-top: 5%;
+    margin-left: 35%; /* Adjusted margin */
+    width: 30%;
+  }
+  
+  .past-booking-card-header {
+    background-color: #f0f0f0;
+    padding: 8px; /* Adjusted padding */
+    border-bottom: 1px solid #ccc;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+  
+  .booking-details {
+    margin-bottom: 20px;
+  }
+  
+  .booking-details h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  
+  .booking-details-info {
+    margin-bottom: 5px;
+  }
+  
+  .back-to-profile-link {
+    display: block;
+    margin-top: 10px;
+    margin-left: 20px;
+    text-decoration: underline;
+  }
+  

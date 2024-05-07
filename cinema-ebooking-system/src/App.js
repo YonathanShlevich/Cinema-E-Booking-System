@@ -25,6 +25,7 @@ import SelectSeats from "./SelectSeats";
 import AddCard from "./AddCard"
 import AddShowtime from "./AddShowtime";
 import Suspended from "./Suspended";
+import PastBooking from "./PastBooking";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -49,6 +50,7 @@ function App() {
         <Route path="/verification" element={<Verification />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/viewprofile" element={<ViewProfile />} />
+        <Route path="/viewprofile/past-booking/:userID" element={<PastBooking />} />
         <Route path="/changepassword" element={<ChangePassword />} />
         <Route path="/editprofile" element={<EditProfile />} />
         <Route path="/addcard" element={<AddCard />} />
