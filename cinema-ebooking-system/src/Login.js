@@ -33,15 +33,17 @@ function Login() {
           // Handle successful signup
           if (response.data.status === "SUCCESS") {
             // Redirect user to verification page or any other appropriate page
-            setLoggedInUserId(response.data.data[0]._id);
-            setLoggedInUserType(response.data.data[0].type);
             if (response.data.data[0].status === 3) {
               navigate('/suspended');
             }
             else if (response.data.data[0].type === 2) {
+              setLoggedInUserId(response.data.data[0]._id);
+              setLoggedInUserType(response.data.data[0].type);
               navigate('/admin');
             }
             else {
+              setLoggedInUserId(response.data.data[0]._id);
+              setLoggedInUserType(response.data.data[0].type);
               navigate('/');
             }
           } else {
